@@ -29,19 +29,12 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
         className="relative bg-black"
         style={{ width: '1280px', height: '720px' }}
       >
-        {/* KV Background - Locked */}
-        <img 
-          src="/kv/kv.png" 
-          alt="Background KV"
-          className="absolute left-0 top-0 pointer-events-none"
-          style={{ width: '1280px', height: '720px' }}
-        />
-
-        {/* Player Photo Layer */}
+        {/* Player Photo Layer - Behind everything */}
         {playerPhoto && (
           <div 
             id="PLAYER_PHOTO"
             className="absolute right-0 top-0 w-[640px] h-[720px] overflow-visible origin-center"
+            style={{ zIndex: 0 }}
           >
             <img 
               src={playerPhoto}
@@ -52,31 +45,31 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
           </div>
         )}
 
-        {/* Match Info Group */}
+        {/* KV Background - On top of photo */}
+        <img 
+          src="/kv/kv.png" 
+          alt="Background KV"
+          className="absolute left-0 top-0 pointer-events-none"
+          style={{ width: '1280px', height: '720px', zIndex: 10 }}
+        />
+
+        {/* Match Info Group - On top of everything */}
         {homeTeam && awayTeam && (
           <div 
             id="MATCH"
             className="absolute left-[80px] top-[360px] flex items-center gap-6"
+            style={{ zIndex: 20 }}
           >
-            {/* Home Team */}
-            <div className="flex flex-col items-center gap-2">
-              <div 
-                id="HOME_NAME"
-                className="text-white uppercase font-bold text-[28px] tracking-tight"
-                style={{ fontFamily: 'Tusker Grotesk, sans-serif' }}
-              >
-                {homeTeam.name.toUpperCase()}
-              </div>
-              <img 
-                id="HOME_CREST"
-                src={homeTeam.crest_url}
-                alt={homeTeam.name}
-                className="h-[100px] w-auto max-w-[140px] object-contain"
-              />
-            </div>
+            {/* Home Crest */}
+            <img 
+              id="HOME_CREST"
+              src={homeTeam.crest_url}
+              alt={homeTeam.name}
+              className="h-[100px] w-auto max-w-[140px] object-contain"
+            />
 
             {/* Scores */}
-            <div className="flex items-center gap-4 mt-[50px]">
+            <div className="flex items-center gap-4">
               <div 
                 id="HOME_SCORE"
                 className="text-white text-[72px] font-bold leading-none"
@@ -100,22 +93,13 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
               </div>
             </div>
 
-            {/* Away Team */}
-            <div className="flex flex-col items-center gap-2">
-              <div 
-                id="AWAY_NAME"
-                className="text-white uppercase font-bold text-[28px] tracking-tight"
-                style={{ fontFamily: 'Tusker Grotesk, sans-serif' }}
-              >
-                {awayTeam.name.toUpperCase()}
-              </div>
-              <img 
-                id="AWAY_CREST"
-                src={awayTeam.crest_url}
-                alt={awayTeam.name}
-                className="h-[100px] w-auto max-w-[140px] object-contain"
-              />
-            </div>
+            {/* Away Crest */}
+            <img 
+              id="AWAY_CREST"
+              src={awayTeam.crest_url}
+              alt={awayTeam.name}
+              className="h-[100px] w-auto max-w-[140px] object-contain"
+            />
           </div>
         )}
       </div>
