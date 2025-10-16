@@ -15,6 +15,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
 
     const photoStyle = {
       transform: `
+        translate(-50%, -50%)
         translateX(${photoTransform.x}px)
         translateY(${photoTransform.y}px)
         scale(${photoTransform.scale})
@@ -26,23 +27,27 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
     return (
       <div 
         ref={ref}
+        id="CANVAS_1280x720"
         className="relative bg-black"
-        style={{ width: '1280px', height: '720px' }}
+        style={{ width: '1280px', height: '720px', overflow: 'hidden' }}
       >
         {/* Player Photo Layer - Behind everything */}
         {playerPhoto && (
-          <div 
+          <img 
             id="PLAYER_PHOTO"
-            className="absolute right-0 top-0 w-[640px] h-[720px] overflow-visible origin-center"
-            style={{ zIndex: 0 }}
-          >
-            <img 
-              src={playerPhoto}
-              alt="Player"
-              className="w-full h-full object-cover"
-              style={photoStyle}
-            />
-          </div>
+            src={playerPhoto}
+            alt="Player"
+            className="absolute"
+            style={{
+              left: '50%',
+              top: '50%',
+              maxWidth: 'none',
+              maxHeight: 'none',
+              transformOrigin: 'center center',
+              zIndex: 0,
+              ...photoStyle,
+            }}
+          />
         )}
 
         {/* KV Background - On top of photo */}

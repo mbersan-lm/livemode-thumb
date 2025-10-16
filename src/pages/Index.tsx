@@ -29,10 +29,24 @@ const Index = () => {
   const handlePhotoUpload = (file: File) => {
     const reader = new FileReader();
     reader.onload = (e) => {
-      setState(prev => ({
-        ...prev,
-        playerPhoto: e.target?.result as string,
-      }));
+      const img = new Image();
+      img.onload = () => {
+        // Compute initial scale to fit entire image inside 1280×720 (contain)
+        const scale0 = Math.min(1280 / img.naturalWidth, 720 / img.naturalHeight);
+        
+        setState(prev => ({
+          ...prev,
+          playerPhoto: e.target?.result as string,
+          photoTransform: {
+            x: 0,
+            y: 0,
+            scale: scale0,
+            scaleX: 1,
+            scaleY: 1,
+          },
+        }));
+      };
+      img.src = e.target?.result as string;
     };
     reader.readAsDataURL(file);
   };
