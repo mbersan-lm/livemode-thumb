@@ -62,7 +62,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
         {homeTeam && awayTeam && (
           <div 
             id="MATCH_ROW"
-            className="absolute left-[72px] top-[330px] flex items-center gap-7"
+            className="absolute left-[72px] top-[345px] flex items-center gap-7"
             style={{ zIndex: 20 }}
           >
             {/* Home Crest */}
