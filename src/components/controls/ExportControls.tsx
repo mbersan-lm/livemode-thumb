@@ -20,6 +20,9 @@ export const ExportControls = ({ canvasRef, matchData }: ExportControlsProps) =>
     try {
       toast.loading('Generating JPG...');
       
+      // Wait for fonts to load to avoid reflow
+      await document.fonts.ready;
+      
       const canvas = await html2canvas(canvasRef.current, {
         width: 1280,
         height: 720,
@@ -27,6 +30,8 @@ export const ExportControls = ({ canvasRef, matchData }: ExportControlsProps) =>
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#000000',
+        windowWidth: 1280,
+        windowHeight: 720,
       });
 
       const homeTeam = teams.find(t => t.id === matchData.homeTeamId);

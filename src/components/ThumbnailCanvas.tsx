@@ -29,7 +29,14 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
         ref={ref}
         id="CANVAS_1280x720"
         className="relative bg-black"
-        style={{ width: '1280px', height: '720px', overflow: 'hidden' }}
+        style={{ 
+          width: '1280px', 
+          height: '720px', 
+          overflow: 'hidden',
+          boxSizing: 'content-box',
+          transform: 'none',
+          scale: '1'
+        }}
       >
         {/* Player Photo Layer - Behind everything */}
         {playerPhoto && (
@@ -63,7 +70,10 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
           <div 
             id="MATCH_ROW"
             className="absolute left-[22px] top-[360px] flex items-center gap-[34px]"
-            style={{ zIndex: 20 }}
+            style={{ 
+              zIndex: 20,
+              transform: 'none'
+            }}
           >
             {/* Home Crest */}
             <img 
