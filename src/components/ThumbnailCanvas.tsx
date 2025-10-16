@@ -62,7 +62,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
         {homeTeam && awayTeam && (
           <div 
             id="MATCH_ROW"
-            className="absolute left-[42px] top-[360px] flex items-center gap-7"
+            className="absolute left-[42px] top-[360px] flex items-center gap-[34px]"
             style={{ zIndex: 20 }}
           >
             {/* Home Crest */}
@@ -70,7 +70,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
               id="HOME_CREST"
               src={homeTeam.crest_url}
               alt={homeTeam.name}
-              className="h-auto w-auto max-w-[180px] max-h-[180px] object-contain"
+              className="h-auto w-auto max-w-[270px] max-h-[270px] object-contain"
             />
 
             {/* Scores */}
@@ -115,7 +115,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
               id="AWAY_CREST"
               src={awayTeam.crest_url}
               alt={awayTeam.name}
-              className="h-auto w-auto max-w-[180px] max-h-[180px] object-contain"
+              className="h-auto w-auto max-w-[270px] max-h-[270px] object-contain"
             />
           </div>
         )}
