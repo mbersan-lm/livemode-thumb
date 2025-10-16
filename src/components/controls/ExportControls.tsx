@@ -30,8 +30,9 @@ export const ExportControls = ({ canvasRef, matchData }: ExportControlsProps) =>
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#000000',
-        windowWidth: 1280,
-        windowHeight: 720,
+        logging: false,
+        x: 0,
+        y: 0,
       });
 
       const homeTeam = teams.find(t => t.id === matchData.homeTeamId);
