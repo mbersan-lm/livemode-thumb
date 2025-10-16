@@ -61,8 +61,8 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
         {/* Match Info Group - On top of everything */}
         {homeTeam && awayTeam && (
           <div 
-            id="MATCH"
-            className="absolute left-[80px] top-[360px] flex items-center gap-6"
+            id="MATCH_ROW"
+            className="absolute left-[72px] top-[330px] flex items-center gap-7"
             style={{ zIndex: 20 }}
           >
             {/* Home Crest */}
@@ -70,29 +70,41 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
               id="HOME_CREST"
               src={homeTeam.crest_url}
               alt={homeTeam.name}
-              className="h-[100px] w-auto max-w-[140px] object-contain"
+              className="h-auto w-auto max-w-[180px] max-h-[180px] object-contain"
             />
 
             {/* Scores */}
             <div className="flex items-center gap-4">
               <div 
                 id="HOME_SCORE"
-                className="text-white text-[72px] font-bold leading-none"
-                style={{ fontFamily: 'Tusker Grotesk, sans-serif' }}
+                className="text-white text-[140px] font-bold"
+                style={{ 
+                  fontFamily: 'Tusker Grotesk, sans-serif',
+                  lineHeight: '0.90',
+                  letterSpacing: '-1%'
+                }}
               >
                 {matchData.homeScore}
               </div>
               <div 
                 id="X_CHAR"
-                className="text-[#CCFF00] text-[48px] font-bold leading-none"
-                style={{ fontFamily: 'Tusker Grotesk, sans-serif' }}
+                className="text-[#C9FF2E] text-[110px] font-bold"
+                style={{ 
+                  fontFamily: 'Tusker Grotesk, sans-serif',
+                  lineHeight: '0.90',
+                  letterSpacing: '-1%'
+                }}
               >
                 x
               </div>
               <div 
                 id="AWAY_SCORE"
-                className="text-white text-[72px] font-bold leading-none"
-                style={{ fontFamily: 'Tusker Grotesk, sans-serif' }}
+                className="text-white text-[140px] font-bold"
+                style={{ 
+                  fontFamily: 'Tusker Grotesk, sans-serif',
+                  lineHeight: '0.90',
+                  letterSpacing: '-1%'
+                }}
               >
                 {matchData.awayScore}
               </div>
@@ -103,7 +115,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
               id="AWAY_CREST"
               src={awayTeam.crest_url}
               alt={awayTeam.name}
-              className="h-[100px] w-auto max-w-[140px] object-contain"
+              className="h-auto w-auto max-w-[180px] max-h-[180px] object-contain"
             />
           </div>
         )}
