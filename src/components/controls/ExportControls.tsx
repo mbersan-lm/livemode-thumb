@@ -18,7 +18,7 @@ export const ExportControls = ({ canvasRef, matchData }: ExportControlsProps) =>
     }
 
     try {
-      toast.loading('Generating PNG...');
+      toast.loading('Generating JPG...');
       
       const canvas = await html2canvas(canvasRef.current, {
         width: 1280,
@@ -32,7 +32,7 @@ export const ExportControls = ({ canvasRef, matchData }: ExportControlsProps) =>
       const homeTeam = teams.find(t => t.id === matchData.homeTeamId);
       const awayTeam = teams.find(t => t.id === matchData.awayTeamId);
       
-      const filename = `MM_${homeTeam?.slug || 'home'}_${awayTeam?.slug || 'away'}_${matchData.homeScore}x${matchData.awayScore}.png`;
+      const filename = `MM_${homeTeam?.slug || 'home'}_${awayTeam?.slug || 'away'}_${matchData.homeScore}x${matchData.awayScore}.jpg`;
 
       canvas.toBlob((blob) => {
         if (blob) {
@@ -42,12 +42,12 @@ export const ExportControls = ({ canvasRef, matchData }: ExportControlsProps) =>
           link.download = filename;
           link.click();
           URL.revokeObjectURL(url);
-          toast.success('PNG exported successfully!');
+          toast.success('JPG exported successfully!');
         }
-      }, 'image/png');
+      }, 'image/jpeg', 0.9);
     } catch (error) {
       console.error('Export error:', error);
-      toast.error('Failed to export PNG');
+      toast.error('Failed to export JPG');
     }
   };
 
@@ -57,8 +57,8 @@ export const ExportControls = ({ canvasRef, matchData }: ExportControlsProps) =>
         <p className="text-sm text-muted-foreground mb-2">Export Settings</p>
         <ul className="text-sm space-y-1">
           <li>• Resolution: 1280 × 720 px</li>
-          <li>• Format: PNG</li>
-          <li>• Quality: Maximum</li>
+          <li>• Format: JPG</li>
+          <li>• Quality: 90%</li>
         </ul>
       </div>
 
@@ -68,7 +68,7 @@ export const ExportControls = ({ canvasRef, matchData }: ExportControlsProps) =>
         size="lg"
       >
         <Download className="w-4 h-4 mr-2" />
-        Export PNG
+        Export JPG
       </Button>
     </div>
   );
