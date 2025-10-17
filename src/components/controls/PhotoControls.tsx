@@ -6,12 +6,14 @@ import { PhotoTransform } from '@/types/thumbnail';
 
 interface PhotoControlsProps {
   photoTransform: PhotoTransform;
+  initialScale: number;
   onTransformChange: (transform: Partial<PhotoTransform>) => void;
   onPhotoUpload: (file: File) => void;
 }
 
 export const PhotoControls = ({ 
   photoTransform, 
+  initialScale,
   onTransformChange,
   onPhotoUpload 
 }: PhotoControlsProps) => {
@@ -34,7 +36,7 @@ export const PhotoControls = ({
     onTransformChange({ 
       x: 0, 
       y: 0, 
-      scale: 1, 
+      scale: initialScale, 
       scaleX: 1, 
       scaleY: 1 
     });
@@ -88,7 +90,7 @@ export const PhotoControls = ({
           <Slider
             value={[photoTransform.scale]}
             onValueChange={([scale]) => onTransformChange({ scale })}
-            min={0.5}
+            min={Math.min(initialScale * 0.9, 0.1)}
             max={2.5}
             step={0.01}
             className="mt-2"

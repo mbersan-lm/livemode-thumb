@@ -17,4 +17,5 @@ export interface ThumbnailState {
   playerPhoto: string | null;
   photoTransform: PhotoTransform;
   matchData: MatchData;
+  initialScale: number;
 }

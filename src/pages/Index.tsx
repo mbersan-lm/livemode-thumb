@@ -24,6 +24,7 @@ const Index = () => {
       homeScore: 0,
       awayScore: 0,
     },
+    initialScale: 0.5,
   });
 
   const handlePhotoUpload = (file: File) => {
@@ -37,6 +38,7 @@ const Index = () => {
         setState(prev => ({
           ...prev,
           playerPhoto: e.target?.result as string,
+          initialScale: scale0,
           photoTransform: {
             x: 0,
             y: 0,
@@ -95,6 +97,7 @@ const Index = () => {
             <TabsContent value="photo" className="mt-6">
               <PhotoControls
                 photoTransform={state.photoTransform}
+                initialScale={state.initialScale}
                 onTransformChange={handleTransformChange}
                 onPhotoUpload={handlePhotoUpload}
               />
