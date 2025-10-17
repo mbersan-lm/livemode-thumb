@@ -76,17 +76,15 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
             }}
           >
             {/* Home Crest */}
-            <div className="w-[216px] h-[216px] -mr-[42px] flex items-end justify-center">
-              <img 
-                id="HOME_CREST"
-                src={homeTeam.crest_url}
-                alt={homeTeam.name}
-                className="max-w-full max-h-full object-contain"
-              />
-            </div>
+            <img 
+              id="HOME_CREST"
+              src={homeTeam.crest_url}
+              alt={homeTeam.name}
+              className="h-auto w-auto max-w-[216px] max-h-[216px] object-contain -mr-[42px]"
+            />
 
             {/* Scores */}
-            <div className="h-[216px] flex items-end gap-4">
+            <div className="flex items-center gap-4">
               <div 
                 id="HOME_SCORE"
                 className="text-white text-[140px] font-bold"
@@ -123,14 +121,12 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
             </div>
 
             {/* Away Crest */}
-            <div className="w-[216px] h-[216px] -ml-[42px] flex items-end justify-center">
-              <img 
-                id="AWAY_CREST"
-                src={awayTeam.crest_url}
-                alt={awayTeam.name}
-                className="max-w-full max-h-full object-contain"
-              />
-            </div>
+            <img 
+              id="AWAY_CREST"
+              src={awayTeam.crest_url}
+              alt={awayTeam.name}
+              className="h-auto w-auto max-w-[216px] max-h-[216px] object-contain -ml-[42px]"
+            />
           </div>
         )}
       </div>

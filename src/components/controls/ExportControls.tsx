@@ -40,14 +40,32 @@ export const ExportControls = ({ canvasRef, matchData }: ExportControlsProps) =>
         y: 0,
         foreignObjectRendering: false,
         onclone: (clonedDoc) => {
-          const node = clonedDoc.getElementById('CANVAS_1280x720');
-          if (!node) return;
-          let p = node.parentElement;
-          while (p) {
-            p.style.transform = 'none';
-            (p.style as any).zoom = '1';
-            (p.style as any).scale = '1';
-            p = p.parentElement;
+          const canvas = clonedDoc.getElementById('CANVAS_1280x720');
+          if (!canvas) return;
+          
+          // Neutralizar transforms dos ancestrais
+          let parent = canvas.parentElement;
+          while (parent) {
+            parent.style.transform = 'none';
+            (parent.style as any).zoom = '1';
+            (parent.style as any).scale = '1';
+            parent = parent.parentElement;
+          }
+          
+          // Ajustar alinhamento vertical apenas no export
+          const matchRow = clonedDoc.getElementById('MATCH_ROW');
+          if (matchRow) {
+            matchRow.style.alignItems = 'flex-end';
+            
+            const homeImg = clonedDoc.getElementById('HOME_CREST') as HTMLImageElement;
+            const awayImg = clonedDoc.getElementById('AWAY_CREST') as HTMLImageElement;
+            
+            if (homeImg) {
+              homeImg.style.paddingBottom = '20px';
+            }
+            if (awayImg) {
+              awayImg.style.paddingBottom = '20px';
+            }
           }
         },
       });
