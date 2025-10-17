@@ -67,7 +67,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
           src={config.kvPath} 
           alt="Background KV"
           className="absolute left-0 top-0 pointer-events-none"
-          style={{ width: '100%', height: '100%', objectFit: 'cover', zIndex: 10 }}
+          style={{ width: '1280px', height: '720px', objectFit: 'contain', zIndex: 10 }}
         />
 
         {/* Match Info Group - On top of everything */}
