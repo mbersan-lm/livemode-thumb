@@ -39,6 +39,17 @@ export const ExportControls = ({ canvasRef, matchData }: ExportControlsProps) =>
         x: 0,
         y: 0,
         foreignObjectRendering: false,
+        onclone: (clonedDoc) => {
+          const node = clonedDoc.getElementById('CANVAS_1280x720');
+          if (!node) return;
+          let p = node.parentElement;
+          while (p) {
+            p.style.transform = 'none';
+            (p.style as any).zoom = '1';
+            (p.style as any).scale = '1';
+            p = p.parentElement;
+          }
+        },
       });
 
       const homeTeam = teams.find(t => t.id === matchData.homeTeamId);

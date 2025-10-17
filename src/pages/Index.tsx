@@ -69,14 +69,12 @@ const Index = () => {
     <div className="min-h-screen bg-background flex">
       {/* Main Canvas Area */}
       <div className="flex-1 flex items-center justify-center p-8">
-        <div className="transform scale-[0.7] origin-center">
-          <ThumbnailCanvas
-            ref={canvasRef}
-            playerPhoto={state.playerPhoto}
-            photoTransform={state.photoTransform}
-            matchData={state.matchData}
-          />
-        </div>
+        <ThumbnailCanvas
+          ref={canvasRef}
+          playerPhoto={state.playerPhoto}
+          photoTransform={state.photoTransform}
+          matchData={state.matchData}
+        />
       </div>
 
       {/* Controls Sidebar */}

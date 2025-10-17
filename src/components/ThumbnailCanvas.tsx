@@ -34,8 +34,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
           height: '720px', 
           overflow: 'hidden',
           boxSizing: 'content-box',
-          transform: 'none',
-          scale: '1'
+          transform: 'none'
         }}
       >
         {/* Player Photo Layer - Behind everything */}
@@ -50,6 +49,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
               top: '50%',
               maxWidth: 'none',
               maxHeight: 'none',
+              objectFit: 'unset',
               transformOrigin: 'center center',
               zIndex: 0,
               ...photoStyle,
@@ -91,7 +91,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
                 style={{ 
                   fontFamily: 'Tusker Grotesk, sans-serif',
                   lineHeight: '0.90',
-                  letterSpacing: '-1%'
+                  letterSpacing: '-0.01em'
                 }}
               >
                 {matchData.homeScore}
@@ -102,7 +102,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
                 style={{ 
                   fontFamily: 'Tusker Grotesk, sans-serif',
                   lineHeight: '0.90',
-                  letterSpacing: '-1%'
+                  letterSpacing: '-0.01em'
                 }}
               >
                 x
@@ -113,7 +113,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
                 style={{ 
                   fontFamily: 'Tusker Grotesk, sans-serif',
                   lineHeight: '0.90',
-                  letterSpacing: '-1%'
+                  letterSpacing: '-0.01em'
                 }}
               >
                 {matchData.awayScore}
