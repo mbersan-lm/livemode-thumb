@@ -23,6 +23,9 @@ export const ExportControls = ({ canvasRef, matchData }: ExportControlsProps) =>
       // Wait for fonts to load to avoid reflow
       await document.fonts.ready;
       
+      // Get the exact position and size of the canvas element
+      const rect = canvasRef.current.getBoundingClientRect();
+      
       const canvas = await html2canvas(canvasRef.current, {
         width: 1280,
         height: 720,
@@ -31,8 +34,11 @@ export const ExportControls = ({ canvasRef, matchData }: ExportControlsProps) =>
         allowTaint: true,
         backgroundColor: '#000000',
         logging: false,
+        scrollX: 0,
+        scrollY: 0,
         x: 0,
         y: 0,
+        foreignObjectRendering: false,
       });
 
       const homeTeam = teams.find(t => t.id === matchData.homeTeamId);
