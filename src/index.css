@@ -16,6 +16,13 @@ html, body {
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Gilroy ExtraBold';
+  src: url('/fonts/Gilroy-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
 */

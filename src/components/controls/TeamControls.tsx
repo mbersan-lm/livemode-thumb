@@ -1,7 +1,9 @@
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { teams } from '@/data/teams';
+import { teamsBrasileirao } from '@/data/teams';
+import { teamsLigue1 } from '@/data/teamsLigue1';
 import { MatchData } from '@/types/thumbnail';
+import { TemplateType } from '@/data/templates';
 import {
   Select,
   SelectContent,
@@ -13,9 +15,11 @@ import {
 interface TeamControlsProps {
   matchData: MatchData;
   onMatchDataChange: (data: Partial<MatchData>) => void;
+  template: TemplateType;
 }
 
-export const TeamControls = ({ matchData, onMatchDataChange }: TeamControlsProps) => {
+export const TeamControls = ({ matchData, onMatchDataChange, template }: TeamControlsProps) => {
+  const currentTeams = template === 'brasileirao' ? teamsBrasileirao : teamsLigue1;
   return (
     <div className="space-y-6">
       <div>
@@ -28,7 +32,7 @@ export const TeamControls = ({ matchData, onMatchDataChange }: TeamControlsProps
             <SelectValue placeholder="Select home team" />
           </SelectTrigger>
           <SelectContent>
-            {teams.map((team) => (
+            {currentTeams.map((team) => (
               <SelectItem key={team.id} value={team.id}>
                 {team.name}
               </SelectItem>
@@ -47,7 +51,7 @@ export const TeamControls = ({ matchData, onMatchDataChange }: TeamControlsProps
             <SelectValue placeholder="Select away team" />
           </SelectTrigger>
           <SelectContent>
-            {teams.map((team) => (
+            {currentTeams.map((team) => (
               <SelectItem key={team.id} value={team.id}>
                 {team.name}
               </SelectItem>

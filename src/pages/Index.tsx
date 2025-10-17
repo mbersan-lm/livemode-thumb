@@ -4,7 +4,9 @@ import { ThumbnailCanvas } from '@/components/ThumbnailCanvas';
 import { PhotoControls } from '@/components/controls/PhotoControls';
 import { TeamControls } from '@/components/controls/TeamControls';
 import { ExportControls } from '@/components/controls/ExportControls';
+import { TemplateControls } from '@/components/controls/TemplateControls';
 import { ThumbnailState } from '@/types/thumbnail';
+import { TemplateType } from '@/data/templates';
 
 const Index = () => {
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -25,6 +27,7 @@ const Index = () => {
       awayScore: 0,
     },
     initialScale: 0.5,
+    template: 'brasileirao',
   });
 
   const handlePhotoUpload = (file: File) => {
@@ -67,6 +70,18 @@ const Index = () => {
     }));
   };
 
+  const handleTemplateChange = (template: TemplateType) => {
+    setState(prev => ({
+      ...prev,
+      template,
+      matchData: {
+        ...prev.matchData,
+        homeTeamId: null,
+        awayTeamId: null,
+      },
+    }));
+  };
+
   return (
     <div className="min-h-screen bg-background flex">
       {/* Main Canvas Area */}
@@ -76,6 +91,7 @@ const Index = () => {
           playerPhoto={state.playerPhoto}
           photoTransform={state.photoTransform}
           matchData={state.matchData}
+          template={state.template}
         />
       </div>
 
@@ -87,12 +103,20 @@ const Index = () => {
             Thumbnail Generator
           </p>
 
-          <Tabs defaultValue="photo" className="w-full">
-            <TabsList className="w-full grid grid-cols-3">
+          <Tabs defaultValue="template" className="w-full">
+            <TabsList className="w-full grid grid-cols-4">
+              <TabsTrigger value="template">Template</TabsTrigger>
               <TabsTrigger value="photo">Photo</TabsTrigger>
               <TabsTrigger value="teams">Teams</TabsTrigger>
               <TabsTrigger value="export">Export</TabsTrigger>
             </TabsList>
+
+            <TabsContent value="template" className="mt-6">
+              <TemplateControls
+                currentTemplate={state.template}
+                onTemplateChange={handleTemplateChange}
+              />
+            </TabsContent>
 
             <TabsContent value="photo" className="mt-6">
               <PhotoControls
@@ -107,6 +131,7 @@ const Index = () => {
               <TeamControls
                 matchData={state.matchData}
                 onMatchDataChange={handleMatchDataChange}
+                template={state.template}
               />
             </TabsContent>
 

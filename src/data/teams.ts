@@ -5,7 +5,7 @@ export interface Team {
   crest_url: string;
 }
 
-export const teams: Team[] = [
+export const teamsBrasileirao: Team[] = [
   { id: '1', name: 'Atlético', slug: 'atletico', crest_url: '/crests/atletico.png' },
   { id: '2', name: 'Bahia', slug: 'bahia', crest_url: '/crests/bahia.png' },
   { id: '3', name: 'Botafogo', slug: 'botafogo', crest_url: '/crests/botafogo.png' },
@@ -27,3 +27,6 @@ export const teams: Team[] = [
   { id: '19', name: 'Vasco', slug: 'vasco', crest_url: '/crests/vasco.png' },
   { id: '20', name: 'Vitória', slug: 'vitoria', crest_url: '/crests/vitoria.png' },
 ];
+
+// Manter export teams para compatibilidade
+export const teams = teamsBrasileirao;

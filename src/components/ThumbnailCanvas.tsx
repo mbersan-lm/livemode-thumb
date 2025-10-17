@@ -1,17 +1,22 @@
 import { forwardRef } from 'react';
-import { teams } from '@/data/teams';
+import { teamsBrasileirao } from '@/data/teams';
+import { teamsLigue1 } from '@/data/teamsLigue1';
 import { PhotoTransform, MatchData } from '@/types/thumbnail';
+import { templates, TemplateType } from '@/data/templates';
 
 interface ThumbnailCanvasProps {
   playerPhoto: string | null;
   photoTransform: PhotoTransform;
   matchData: MatchData;
+  template: TemplateType;
 }
 
 export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
-  ({ playerPhoto, photoTransform, matchData }, ref) => {
-    const homeTeam = teams.find(t => t.id === matchData.homeTeamId);
-    const awayTeam = teams.find(t => t.id === matchData.awayTeamId);
+  ({ playerPhoto, photoTransform, matchData, template }, ref) => {
+    const config = templates[template];
+    const currentTeams = template === 'brasileirao' ? teamsBrasileirao : teamsLigue1;
+    const homeTeam = currentTeams.find(t => t.id === matchData.homeTeamId);
+    const awayTeam = currentTeams.find(t => t.id === matchData.awayTeamId);
 
     const photoStyle = {
       transform: `
@@ -59,7 +64,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
 
         {/* KV Background - On top of photo */}
         <img 
-          src="/kv/kv.png" 
+          src={config.kvPath} 
           alt="Background KV"
           className="absolute left-0 top-0 pointer-events-none"
           style={{ width: '1280px', height: '720px', zIndex: 10 }}
@@ -87,9 +92,10 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
             <div className="flex items-center gap-4">
               <div 
                 id="HOME_SCORE"
-                className="text-white text-[140px] font-bold"
+                className="text-white font-bold"
                 style={{ 
-                  fontFamily: 'Tusker Grotesk, sans-serif',
+                  fontFamily: config.fontFamily,
+                  fontSize: config.scoreFontSize,
                   lineHeight: '1',
                   letterSpacing: '-0.01em'
                 }}
@@ -98,9 +104,10 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
               </div>
               <div 
                 id="X_CHAR"
-                className="text-[#C9FF2E] text-[110px] font-bold"
+                className="text-[#C9FF2E] font-bold"
                 style={{ 
-                  fontFamily: 'Tusker Grotesk, sans-serif',
+                  fontFamily: config.fontFamily,
+                  fontSize: config.xFontSize,
                   lineHeight: '1',
                   letterSpacing: '-0.01em'
                 }}
@@ -109,9 +116,10 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
               </div>
               <div 
                 id="AWAY_SCORE"
-                className="text-white text-[140px] font-bold"
+                className="text-white font-bold"
                 style={{ 
-                  fontFamily: 'Tusker Grotesk, sans-serif',
+                  fontFamily: config.fontFamily,
+                  fontSize: config.scoreFontSize,
                   lineHeight: '1',
                   letterSpacing: '-0.01em'
                 }}
