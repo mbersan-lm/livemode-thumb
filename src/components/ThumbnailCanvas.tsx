@@ -84,13 +84,13 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
             />
 
             {/* Scores */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-end gap-4">
               <div 
                 id="HOME_SCORE"
                 className="text-white text-[140px] font-bold"
                 style={{ 
                   fontFamily: 'Tusker Grotesk, sans-serif',
-                  lineHeight: '0.90',
+                  lineHeight: '1',
                   letterSpacing: '-0.01em'
                 }}
               >
@@ -101,7 +101,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
                 className="text-[#C9FF2E] text-[110px] font-bold"
                 style={{ 
                   fontFamily: 'Tusker Grotesk, sans-serif',
-                  lineHeight: '0.90',
+                  lineHeight: '1',
                   letterSpacing: '-0.01em'
                 }}
               >
@@ -112,7 +112,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
                 className="text-white text-[140px] font-bold"
                 style={{ 
                   fontFamily: 'Tusker Grotesk, sans-serif',
-                  lineHeight: '0.90',
+                  lineHeight: '1',
                   letterSpacing: '-0.01em'
                 }}
               >
