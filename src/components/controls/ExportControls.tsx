@@ -52,20 +52,22 @@ export const ExportControls = ({ canvasRef, matchData }: ExportControlsProps) =>
             parent = parent.parentElement;
           }
           
-          // Ajustar alinhamento vertical apenas no export
-          const matchRow = clonedDoc.getElementById('MATCH_ROW');
-          if (matchRow) {
-            matchRow.style.alignItems = 'flex-end';
-            
-            const homeImg = clonedDoc.getElementById('HOME_CREST') as HTMLImageElement;
-            const awayImg = clonedDoc.getElementById('AWAY_CREST') as HTMLImageElement;
-            
-            if (homeImg) {
-              homeImg.style.paddingBottom = '20px';
-            }
-            if (awayImg) {
-              awayImg.style.paddingBottom = '20px';
-            }
+          // Ajustar alinhamento vertical dos números apenas no export
+          const homeScore = clonedDoc.getElementById('HOME_SCORE') as HTMLElement;
+          const xChar = clonedDoc.getElementById('X_CHAR') as HTMLElement;
+          const awayScore = clonedDoc.getElementById('AWAY_SCORE') as HTMLElement;
+          
+          // Aplicar translateY negativo para "levantar" os números
+          const verticalAdjust = '-30px';
+          
+          if (homeScore) {
+            homeScore.style.transform = `translateY(${verticalAdjust})`;
+          }
+          if (xChar) {
+            xChar.style.transform = `translateY(${verticalAdjust})`;
+          }
+          if (awayScore) {
+            awayScore.style.transform = `translateY(${verticalAdjust})`;
           }
         },
       });
