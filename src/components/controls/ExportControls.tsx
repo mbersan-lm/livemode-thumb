@@ -58,7 +58,7 @@ export const ExportControls = ({ canvasRef, matchData }: ExportControlsProps) =>
           const awayScore = clonedDoc.getElementById('AWAY_SCORE') as HTMLElement;
           
           // Aplicar translateY negativo para "levantar" os números
-          const verticalAdjust = '-35px';
+          const verticalAdjust = '-40px';
           
           if (homeScore) {
             homeScore.style.transform = `translateY(${verticalAdjust})`;
