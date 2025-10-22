@@ -20,4 +20,5 @@ export const teamsSerieA: Team[] = [
   { id: 'sassuolo', name: 'Sassuolo', slug: 'sassuolo', crest_url: '/crests/sassuolo.png' },
   { id: 'torino', name: 'Torino', slug: 'torino', crest_url: '/crests/torino.png' },
   { id: 'udinese', name: 'Udinese', slug: 'udinese', crest_url: '/crests/udinese.png' },
+  { id: 'pisa', name: 'Pisa', slug: 'pisa', crest_url: '/crests/pisa.png' },
 ];
