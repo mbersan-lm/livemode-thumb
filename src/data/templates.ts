@@ -1,4 +1,4 @@
-export type TemplateType = 'brasileirao' | 'ligue1';
+export type TemplateType = 'brasileirao' | 'ligue1' | 'bundesliga';
 
 export interface Template {
   id: TemplateType;
@@ -22,6 +22,14 @@ export const templates: Record<TemplateType, Template> = {
     id: 'ligue1',
     name: 'Ligue 1',
     kvPath: '/kv/kv-ligue1.png',
+    fontFamily: 'Gilroy ExtraBold, sans-serif',
+    scoreFontSize: '140px',
+    xFontSize: '110px',
+  },
+  bundesliga: {
+    id: 'bundesliga',
+    name: 'Bundesliga',
+    kvPath: '/kv/kv-bundesliga.png',
     fontFamily: 'Gilroy ExtraBold, sans-serif',
     scoreFontSize: '140px',
     xFontSize: '110px',

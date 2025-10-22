@@ -18,5 +18,5 @@ export interface ThumbnailState {
   photoTransform: PhotoTransform;
   matchData: MatchData;
   initialScale: number;
-  template: 'brasileirao' | 'ligue1';
+  template: 'brasileirao' | 'ligue1' | 'bundesliga';
 }

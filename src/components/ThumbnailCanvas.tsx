@@ -1,6 +1,7 @@
 import { forwardRef } from 'react';
 import { teamsBrasileirao } from '@/data/teams';
 import { teamsLigue1 } from '@/data/teamsLigue1';
+import { teamsBundesliga } from '@/data/teamsBundesliga';
 import { PhotoTransform, MatchData } from '@/types/thumbnail';
 import { templates, TemplateType } from '@/data/templates';
 
@@ -14,7 +15,10 @@ interface ThumbnailCanvasProps {
 export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
   ({ playerPhoto, photoTransform, matchData, template }, ref) => {
     const config = templates[template];
-    const currentTeams = template === 'brasileirao' ? teamsBrasileirao : teamsLigue1;
+    const currentTeams = 
+      template === 'brasileirao' ? teamsBrasileirao : 
+      template === 'bundesliga' ? teamsBundesliga : 
+      teamsLigue1;
     const homeTeam = currentTeams.find(t => t.id === matchData.homeTeamId);
     const awayTeam = currentTeams.find(t => t.id === matchData.awayTeamId);
 
@@ -74,7 +78,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
         {homeTeam && awayTeam && (
           <div 
             id="MATCH_ROW"
-            className={`absolute left-[22px] ${template === 'ligue1' ? 'top-[335px]' : 'top-[360px]'} flex items-center gap-[34px]`}
+            className={`absolute left-[22px] ${template === 'ligue1' || template === 'bundesliga' ? 'top-[335px]' : 'top-[360px]'} flex items-center gap-[34px]`}
             style={{ 
               zIndex: 20,
               transform: 'none'
