@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { teamsBrasileirao } from '@/data/teams';
 import { teamsLigue1 } from '@/data/teamsLigue1';
 import { teamsBundesliga } from '@/data/teamsBundesliga';
+import { teamsSerieA } from '@/data/teamsSerieA';
 import { MatchData } from '@/types/thumbnail';
 import { TemplateType } from '@/data/templates';
 import {
@@ -22,7 +23,8 @@ interface TeamControlsProps {
 export const TeamControls = ({ matchData, onMatchDataChange, template }: TeamControlsProps) => {
   const currentTeams = 
     template === 'brasileirao' ? teamsBrasileirao : 
-    template === 'bundesliga' ? teamsBundesliga : 
+    template === 'bundesliga' ? teamsBundesliga :
+    template === 'seriea' ? teamsSerieA :
     teamsLigue1;
   return (
     <div className="space-y-6">
