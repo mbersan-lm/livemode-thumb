@@ -148,7 +148,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex">
       {/* Main Canvas Area */}
-      <div className="flex-1 flex items-center justify-center p-8 overflow-y-auto">
+      <div className="flex-1 flex items-center justify-center p-4 overflow-y-auto">
         <div className={getCanvasContainerStyle()}>
           {/* Thumbnail Melhores Momentos */}
           {shouldShowMM && (
