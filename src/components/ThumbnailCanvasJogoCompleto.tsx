@@ -90,7 +90,7 @@ export const ThumbnailCanvasJogoCompleto = forwardRef<HTMLDivElement, ThumbnailC
               id="HOME_CREST_JC"
               src={homeTeam.crest_url}
               alt={homeTeam.name}
-              className="h-auto w-auto max-w-[367px] max-h-[367px] object-contain"
+              className="h-auto w-auto max-w-[257px] max-h-[257px] object-contain"
             />
 
             {/* Away Crest */}
@@ -98,7 +98,7 @@ export const ThumbnailCanvasJogoCompleto = forwardRef<HTMLDivElement, ThumbnailC
               id="AWAY_CREST_JC"
               src={awayTeam.crest_url}
               alt={awayTeam.name}
-              className="h-auto w-auto max-w-[367px] max-h-[367px] object-contain"
+              className="h-auto w-auto max-w-[257px] max-h-[257px] object-contain"
             />
           </div>
         )}
