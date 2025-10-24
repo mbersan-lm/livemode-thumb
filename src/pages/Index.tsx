@@ -131,9 +131,9 @@ const Index = () => {
 
   const getCanvasContainerStyle = () => {
     if (viewMode === 'side-by-side') {
-      return 'flex flex-row gap-4 items-center';
+      return 'flex flex-row gap-1 items-center';
     } else if (viewMode === 'stacked') {
-      return 'flex flex-col gap-4 items-center';
+      return 'flex flex-col gap-1 items-center';
     }
     return 'flex items-center justify-center';
   };
