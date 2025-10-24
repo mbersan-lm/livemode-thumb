@@ -79,7 +79,7 @@ export const ThumbnailCanvasJogoCompleto = forwardRef<HTMLDivElement, ThumbnailC
         {homeTeam && awayTeam && (
           <div 
             id="MATCH_ROW_JC"
-            className={`absolute left-[22px] ${template === 'ligue1' || template === 'bundesliga' || template === 'seriea' ? '-top-[40px]' : '-top-[15px]'} flex items-center gap-[50px]`}
+            className={`absolute left-[22px] ${template === 'ligue1' || template === 'bundesliga' || template === 'seriea' ? '-top-[40px]' : '-top-[15px]'} flex items-center`}
             style={{ 
               zIndex: 20,
               transform: 'none'
@@ -98,7 +98,7 @@ export const ThumbnailCanvasJogoCompleto = forwardRef<HTMLDivElement, ThumbnailC
               id="AWAY_CREST_JC"
               src={awayTeam.crest_url}
               alt={awayTeam.name}
-              className="h-auto w-auto max-w-[322px] max-h-[322px] object-contain"
+              className="h-auto w-auto max-w-[322px] max-h-[322px] object-contain -ml-[30px]"
             />
           </div>
         )}
