@@ -16,7 +16,10 @@ export interface MatchData {
 export interface ThumbnailState {
   playerPhoto: string | null;
   photoTransform: PhotoTransform;
+  jogoCompletoPhoto: string | null;
+  jogoCompletoPhotoTransform: PhotoTransform;
   matchData: MatchData;
   initialScale: number;
+  initialScaleJogoCompleto: number;
   template: 'brasileirao' | 'ligue1' | 'bundesliga' | 'seriea';
 }

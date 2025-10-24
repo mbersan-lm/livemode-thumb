@@ -7,18 +7,19 @@ import { toast } from 'sonner';
 
 interface ExportControlsProps {
   canvasRef: React.RefObject<HTMLDivElement>;
+  canvasRefJogoCompleto: React.RefObject<HTMLDivElement>;
   matchData: MatchData;
 }
 
-export const ExportControls = ({ canvasRef, matchData }: ExportControlsProps) => {
-  const handleExport = async () => {
+export const ExportControls = ({ canvasRef, canvasRefJogoCompleto, matchData }: ExportControlsProps) => {
+  const handleExportMelhoresMomentos = async () => {
     if (!canvasRef.current) {
       toast.error('Canvas not ready');
       return;
     }
 
     try {
-      toast.loading('Generating JPG...');
+      toast.loading('Generating Melhores Momentos JPG...');
       
       // Wait for fonts to load to avoid reflow
       await document.fonts.ready;
@@ -85,12 +86,72 @@ export const ExportControls = ({ canvasRef, matchData }: ExportControlsProps) =>
           link.download = filename;
           link.click();
           URL.revokeObjectURL(url);
-          toast.success('JPG exported successfully!');
+          toast.success('Melhores Momentos JPG exported successfully!');
         }
       }, 'image/jpeg', 0.9);
     } catch (error) {
       console.error('Export error:', error);
       toast.error('Failed to export JPG');
+    }
+  };
+
+  const handleExportJogoCompleto = async () => {
+    if (!canvasRefJogoCompleto.current) {
+      toast.error('Canvas not ready');
+      return;
+    }
+
+    try {
+      toast.loading('Generating Jogo Completo JPG...');
+      
+      await document.fonts.ready;
+      
+      const canvas = await html2canvas(canvasRefJogoCompleto.current, {
+        width: 1280,
+        height: 720,
+        scale: 1,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#000000',
+        logging: false,
+        scrollX: 0,
+        scrollY: 0,
+        x: 0,
+        y: 0,
+        foreignObjectRendering: false,
+        onclone: (clonedDoc) => {
+          const canvas = clonedDoc.getElementById('CANVAS_JOGO_COMPLETO');
+          if (!canvas) return;
+          
+          let parent = canvas.parentElement;
+          while (parent) {
+            parent.style.transform = 'none';
+            (parent.style as any).zoom = '1';
+            (parent.style as any).scale = '1';
+            parent = parent.parentElement;
+          }
+        },
+      });
+
+      const homeTeam = teams.find(t => t.id === matchData.homeTeamId);
+      const awayTeam = teams.find(t => t.id === matchData.awayTeamId);
+      
+      const filename = `JC_${homeTeam?.slug || 'home'}_${awayTeam?.slug || 'away'}.jpg`;
+
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = filename;
+          link.click();
+          URL.revokeObjectURL(url);
+          toast.success('Jogo Completo JPG exported successfully!');
+        }
+      }, 'image/jpeg', 0.9);
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error('Failed to export Jogo Completo JPG');
     }
   };
 
@@ -105,14 +166,26 @@ export const ExportControls = ({ canvasRef, matchData }: ExportControlsProps) =>
         </ul>
       </div>
 
-      <Button 
-        onClick={handleExport}
-        className="w-full"
-        size="lg"
-      >
-        <Download className="w-4 h-4 mr-2" />
-        Export JPG
-      </Button>
+      <div className="space-y-2">
+        <Button 
+          onClick={handleExportMelhoresMomentos}
+          className="w-full"
+          size="lg"
+        >
+          <Download className="w-4 h-4 mr-2" />
+          Export Melhores Momentos
+        </Button>
+
+        <Button 
+          onClick={handleExportJogoCompleto}
+          className="w-full"
+          size="lg"
+          variant="secondary"
+        >
+          <Download className="w-4 h-4 mr-2" />
+          Export Jogo Completo
+        </Button>
+      </div>
     </div>
   );
 };

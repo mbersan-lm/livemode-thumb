@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ThumbnailCanvas } from '@/components/ThumbnailCanvas';
+import { ThumbnailCanvasJogoCompleto } from '@/components/ThumbnailCanvasJogoCompleto';
 import { PhotoControls } from '@/components/controls/PhotoControls';
 import { TeamControls } from '@/components/controls/TeamControls';
 import { ExportControls } from '@/components/controls/ExportControls';
@@ -10,10 +11,19 @@ import { TemplateType } from '@/data/templates';
 
 const Index = () => {
   const canvasRef = useRef<HTMLDivElement>(null);
+  const canvasRefJogoCompleto = useRef<HTMLDivElement>(null);
   
   const [state, setState] = useState<ThumbnailState>({
     playerPhoto: null,
     photoTransform: {
+      x: 0,
+      y: 0,
+      scale: 1,
+      scaleX: 1,
+      scaleY: 1,
+    },
+    jogoCompletoPhoto: null,
+    jogoCompletoPhotoTransform: {
       x: 0,
       y: 0,
       scale: 1,
@@ -27,6 +37,7 @@ const Index = () => {
       awayScore: 0,
     },
     initialScale: 0.5,
+    initialScaleJogoCompleto: 0.5,
     template: 'brasileirao',
   });
 
@@ -56,10 +67,42 @@ const Index = () => {
     reader.readAsDataURL(file);
   };
 
+  const handleJogoCompletoPhotoUpload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const scale0 = Math.min(1280 / img.naturalWidth, 720 / img.naturalHeight);
+        
+        setState(prev => ({
+          ...prev,
+          jogoCompletoPhoto: e.target?.result as string,
+          initialScaleJogoCompleto: scale0,
+          jogoCompletoPhotoTransform: {
+            x: 0,
+            y: 0,
+            scale: scale0,
+            scaleX: 1,
+            scaleY: 1,
+          },
+        }));
+      };
+      img.src = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleTransformChange = (transform: Partial<typeof state.photoTransform>) => {
     setState(prev => ({
       ...prev,
       photoTransform: { ...prev.photoTransform, ...transform },
+    }));
+  };
+
+  const handleJogoCompletoTransformChange = (transform: Partial<typeof state.jogoCompletoPhotoTransform>) => {
+    setState(prev => ({
+      ...prev,
+      jogoCompletoPhotoTransform: { ...prev.jogoCompletoPhotoTransform, ...transform },
     }));
   };
 
@@ -85,14 +128,26 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex">
       {/* Main Canvas Area */}
-      <div className="flex-1 flex items-center justify-center p-8">
-        <ThumbnailCanvas
-          ref={canvasRef}
-          playerPhoto={state.playerPhoto}
-          photoTransform={state.photoTransform}
-          matchData={state.matchData}
-          template={state.template}
-        />
+      <div className="flex-1 flex items-center justify-center p-8 overflow-y-auto">
+        <div className="flex flex-col gap-8">
+          {/* Thumbnail Melhores Momentos */}
+          <ThumbnailCanvas
+            ref={canvasRef}
+            playerPhoto={state.playerPhoto}
+            photoTransform={state.photoTransform}
+            matchData={state.matchData}
+            template={state.template}
+          />
+          
+          {/* Thumbnail Jogo Completo */}
+          <ThumbnailCanvasJogoCompleto
+            ref={canvasRefJogoCompleto}
+            playerPhoto={state.jogoCompletoPhoto}
+            photoTransform={state.jogoCompletoPhotoTransform}
+            matchData={state.matchData}
+            template={state.template}
+          />
+        </div>
       </div>
 
       {/* Controls Sidebar */}
@@ -124,6 +179,10 @@ const Index = () => {
                 initialScale={state.initialScale}
                 onTransformChange={handleTransformChange}
                 onPhotoUpload={handlePhotoUpload}
+                jogoCompletoPhotoTransform={state.jogoCompletoPhotoTransform}
+                initialScaleJogoCompleto={state.initialScaleJogoCompleto}
+                onJogoCompletoTransformChange={handleJogoCompletoTransformChange}
+                onJogoCompletoPhotoUpload={handleJogoCompletoPhotoUpload}
               />
             </TabsContent>
 
@@ -138,6 +197,7 @@ const Index = () => {
             <TabsContent value="export" className="mt-6">
               <ExportControls
                 canvasRef={canvasRef}
+                canvasRefJogoCompleto={canvasRefJogoCompleto}
                 matchData={state.matchData}
               />
             </TabsContent>
