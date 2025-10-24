@@ -6,12 +6,16 @@ import { PhotoControls } from '@/components/controls/PhotoControls';
 import { TeamControls } from '@/components/controls/TeamControls';
 import { ExportControls } from '@/components/controls/ExportControls';
 import { TemplateControls } from '@/components/controls/TemplateControls';
+import { ViewControls, ViewMode, ActiveCanvas } from '@/components/controls/ViewControls';
 import { ThumbnailState } from '@/types/thumbnail';
 import { TemplateType } from '@/data/templates';
 
 const Index = () => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const canvasRefJogoCompleto = useRef<HTMLDivElement>(null);
+  
+  const [viewMode, setViewMode] = useState<ViewMode>('side-by-side');
+  const [activeCanvas, setActiveCanvas] = useState<ActiveCanvas>('mm');
   
   const [state, setState] = useState<ThumbnailState>({
     playerPhoto: null,
@@ -125,28 +129,52 @@ const Index = () => {
     }));
   };
 
+  const getCanvasContainerStyle = () => {
+    if (viewMode === 'side-by-side') {
+      return 'flex flex-row gap-4 items-center';
+    } else if (viewMode === 'stacked') {
+      return 'flex flex-col gap-4 items-center';
+    }
+    return 'flex items-center justify-center';
+  };
+
+  const getCanvasScale = () => {
+    return viewMode === 'individual' ? 1 : 0.5;
+  };
+
+  const shouldShowMM = viewMode !== 'individual' || activeCanvas === 'mm';
+  const shouldShowJC = viewMode !== 'individual' || activeCanvas === 'jc';
+
   return (
     <div className="min-h-screen bg-background flex">
       {/* Main Canvas Area */}
       <div className="flex-1 flex items-center justify-center p-8 overflow-y-auto">
-        <div className="flex flex-col gap-8">
+        <div className={getCanvasContainerStyle()}>
           {/* Thumbnail Melhores Momentos */}
-          <ThumbnailCanvas
-            ref={canvasRef}
-            playerPhoto={state.playerPhoto}
-            photoTransform={state.photoTransform}
-            matchData={state.matchData}
-            template={state.template}
-          />
+          {shouldShowMM && (
+            <div style={{ transform: `scale(${getCanvasScale()})`, transformOrigin: 'center' }}>
+              <ThumbnailCanvas
+                ref={canvasRef}
+                playerPhoto={state.playerPhoto}
+                photoTransform={state.photoTransform}
+                matchData={state.matchData}
+                template={state.template}
+              />
+            </div>
+          )}
           
           {/* Thumbnail Jogo Completo */}
-          <ThumbnailCanvasJogoCompleto
-            ref={canvasRefJogoCompleto}
-            playerPhoto={state.jogoCompletoPhoto}
-            photoTransform={state.jogoCompletoPhotoTransform}
-            matchData={state.matchData}
-            template={state.template}
-          />
+          {shouldShowJC && (
+            <div style={{ transform: `scale(${getCanvasScale()})`, transformOrigin: 'center' }}>
+              <ThumbnailCanvasJogoCompleto
+                ref={canvasRefJogoCompleto}
+                playerPhoto={state.jogoCompletoPhoto}
+                photoTransform={state.jogoCompletoPhotoTransform}
+                matchData={state.matchData}
+                template={state.template}
+              />
+            </div>
+          )}
         </div>
       </div>
 
@@ -158,13 +186,23 @@ const Index = () => {
             Thumbnail Generator
           </p>
 
-          <Tabs defaultValue="template" className="w-full">
-            <TabsList className="w-full grid grid-cols-4">
+          <Tabs defaultValue="view" className="w-full">
+            <TabsList className="w-full grid grid-cols-5">
+              <TabsTrigger value="view">View</TabsTrigger>
               <TabsTrigger value="template">Template</TabsTrigger>
               <TabsTrigger value="photo">Photo</TabsTrigger>
               <TabsTrigger value="teams">Teams</TabsTrigger>
               <TabsTrigger value="export">Export</TabsTrigger>
             </TabsList>
+
+            <TabsContent value="view" className="mt-6">
+              <ViewControls
+                viewMode={viewMode}
+                activeCanvas={activeCanvas}
+                onViewModeChange={setViewMode}
+                onActiveCanvasChange={setActiveCanvas}
+              />
+            </TabsContent>
 
             <TabsContent value="template" className="mt-6">
               <TemplateControls
