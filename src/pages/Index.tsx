@@ -139,7 +139,7 @@ const Index = () => {
   };
 
   const getCanvasScale = () => {
-    return viewMode === 'individual' ? 1 : 0.35;
+    return viewMode === 'individual' ? 1 : 0.5;
   };
 
   const shouldShowMM = viewMode !== 'individual' || activeCanvas === 'mm';
@@ -148,7 +148,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex">
       {/* Main Canvas Area */}
-      <div className="flex-1 flex items-center justify-center p-2 overflow-y-auto">
+      <div className="flex-1 flex items-center justify-center p-8 overflow-y-auto">
         <div className={getCanvasContainerStyle()}>
           {/* Thumbnail Melhores Momentos */}
           {shouldShowMM && (
