@@ -33,6 +33,10 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
         scaleX(${photoTransform.scaleX})
         scaleY(${photoTransform.scaleY})
       `.replace(/\s+/g, ' ').trim(),
+      ...(photoTransform.x < -30 && {
+        WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 150px)',
+        maskImage: 'linear-gradient(to right, transparent 0%, black 150px)',
+      })
     };
 
     return (
