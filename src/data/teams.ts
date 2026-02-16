@@ -26,10 +26,6 @@ export const teamsBrasileirao: Team[] = [
   
   { id: '19', name: 'Vasco', slug: 'vasco', crest_url: '/crests/vasco.png' },
   { id: '20', name: 'Vitória', slug: 'vitoria', crest_url: '/crests/vitoria.png' },
-  { id: '21', name: 'Coritiba', slug: 'coritiba', crest_url: '/crests/coritiba.png' },
-  { id: '22', name: 'Athletico-PR', slug: 'athleticopr', crest_url: '/crests/athleticopr.png' },
-  { id: '23', name: 'Chapecoense', slug: 'chapecoense', crest_url: '/crests/chapecoense.png' },
-  { id: '24', name: 'Remo', slug: 'remo', crest_url: '/crests/remo.png' },
 ];
 
 // Manter export teams para compatibilidade
