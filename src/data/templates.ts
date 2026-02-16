@@ -60,8 +60,10 @@ export const templates: Record<TemplateType, Template> = {
     name: 'Paulistão',
     kvPath: '/kv/kv-paulistao.png',
     kvJogoCompletoPath: '/kv/kv-jogo-completo-paulistao.png',
-    fontFamily: 'Tusker Grotesk, sans-serif',
+    fontFamily: 'Gilroy ExtraBold, sans-serif',
     scoreFontSize: '140px',
     xFontSize: '110px',
+    xFontFamily: 'Gilroy Medium, sans-serif',
+    xColor: '#FFFFFF',
   },
 };
