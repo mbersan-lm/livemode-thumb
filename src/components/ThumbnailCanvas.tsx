@@ -3,6 +3,7 @@ import { teamsBrasileirao } from '@/data/teams';
 import { teamsLigue1 } from '@/data/teamsLigue1';
 import { teamsBundesliga } from '@/data/teamsBundesliga';
 import { teamsSerieA } from '@/data/teamsSerieA';
+import { teamsPaulistao } from '@/data/teamsPaulistao';
 import { PhotoTransform, MatchData } from '@/types/thumbnail';
 import { templates, TemplateType } from '@/data/templates';
 
@@ -20,6 +21,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
       template === 'brasileirao' ? teamsBrasileirao : 
       template === 'bundesliga' ? teamsBundesliga :
       template === 'seriea' ? teamsSerieA :
+      template === 'paulistao' ? teamsPaulistao :
       teamsLigue1;
     const homeTeam = currentTeams.find(t => t.id === matchData.homeTeamId);
     const awayTeam = currentTeams.find(t => t.id === matchData.awayTeamId);
