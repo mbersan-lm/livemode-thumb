@@ -9,21 +9,21 @@ export const teamsBrasileirao: Team[] = [
   { id: '1', name: 'Atlético', slug: 'atletico', crest_url: '/crests/atletico.png' },
   { id: '2', name: 'Bahia', slug: 'bahia', crest_url: '/crests/bahia.png' },
   { id: '3', name: 'Botafogo', slug: 'botafogo', crest_url: '/crests/botafogo.png' },
-  { id: '4', name: 'Ceará', slug: 'ceara', crest_url: '/crests/ceara.png' },
+  
   { id: '5', name: 'Corinthians', slug: 'corinthians', crest_url: '/crests/corinthians.png' },
   { id: '6', name: 'Cruzeiro', slug: 'cruzeiro', crest_url: '/crests/cruzeiro.png' },
   { id: '7', name: 'Flamengo', slug: 'flamengo', crest_url: '/crests/flamengo.png' },
   { id: '8', name: 'Fluminense', slug: 'fluminense', crest_url: '/crests/fluminense.png' },
-  { id: '9', name: 'Fortaleza', slug: 'fortaleza', crest_url: '/crests/fortaleza.png' },
+  
   { id: '10', name: 'Grêmio', slug: 'gremio', crest_url: '/crests/gremio.png' },
   { id: '11', name: 'Internacional', slug: 'internacional', crest_url: '/crests/internacional.png' },
-  { id: '12', name: 'Juventude', slug: 'juventude', crest_url: '/crests/juventude.png' },
+  
   { id: '13', name: 'Mirassol', slug: 'mirassol', crest_url: '/crests/mirassol.png' },
   { id: '14', name: 'Palmeiras', slug: 'palmeiras', crest_url: '/crests/palmeiras.png' },
   { id: '15', name: 'Red Bull Bragantino', slug: 'redbullbragantino', crest_url: '/crests/redbullbragantino.png' },
   { id: '16', name: 'Santos', slug: 'santos', crest_url: '/crests/santos.png' },
   { id: '17', name: 'São Paulo', slug: 'saopaulo', crest_url: '/crests/saopaulo.png' },
-  { id: '18', name: 'Sport', slug: 'sport', crest_url: '/crests/sport.png' },
+  
   { id: '19', name: 'Vasco', slug: 'vasco', crest_url: '/crests/vasco.png' },
   { id: '20', name: 'Vitória', slug: 'vitoria', crest_url: '/crests/vitoria.png' },
 ];
