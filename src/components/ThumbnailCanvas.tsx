@@ -114,12 +114,13 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
               </div>
               <div 
                 id="X_CHAR"
-                className="text-[#C9FF2E] font-bold"
+                className="font-bold"
                 style={{ 
-                  fontFamily: config.fontFamily,
+                  fontFamily: config.xFontFamily || config.fontFamily,
                   fontSize: config.xFontSize,
                   lineHeight: '1',
-                  letterSpacing: '-0.01em'
+                  letterSpacing: '-0.01em',
+                  color: config.xColor || '#C9FF2E',
                 }}
               >
                 x

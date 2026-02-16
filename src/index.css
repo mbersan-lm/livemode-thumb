@@ -23,6 +23,13 @@ html, body {
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Gilroy Medium';
+  src: url('/fonts/Gilroy-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
 */
