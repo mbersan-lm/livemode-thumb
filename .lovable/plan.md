@@ -1,30 +1,30 @@
 
 
-## Melhorar Visualizacao Mobile
+## Corrigir Layout em Tablet e Mobile
 
-### Problema
-O layout atual usa `flex` horizontal fixo: o canvas (1280x720px com scale 0.85) fica ao lado de uma sidebar de 380px. No mobile, o canvas transborda e fica impossivel de visualizar.
+### Problema 1 - Tablet: Thumb cortada nas laterais
+A escala do canvas so muda para telas menores que 768px (mobile). Em tablets (768px-1024px), a escala fixa de 0.85 resulta em um canvas de ~1088px que transborda. A solucao e usar a escala dinamica para TODAS as telas, nao apenas mobile.
 
-### Solucao
-
-Transformar o layout em responsivo: no mobile, empilhar verticalmente (preview em cima, controles embaixo) e escalar o canvas dinamicamente para caber na tela.
+### Problema 2 - Mobile: Espaco preto excessivo
+O container do preview usa `flex-1` que expande para preencher todo o espaco disponivel, criando barras pretas grandes. O ideal e que o container tenha apenas a altura necessaria para o canvas escalado, sem espaco extra, para que o usuario veja preview e controles simultaneamente.
 
 ### Alteracoes em `src/pages/Index.tsx`
 
-1. **Layout responsivo**: Trocar `flex` horizontal fixo por `flex-col` no mobile e `md:flex-row` no desktop
-2. **Sidebar responsiva**: Largura `w-full` no mobile, `md:w-[380px]` no desktop
-3. **Escala dinamica do canvas no mobile**: Usar um wrapper com CSS `transform: scale()` calculado para que o canvas de 1280px caiba na largura da tela. Usar um hook `useIsMobile` ja existente ou calcular via `window.innerWidth`
-4. **Preview compacto no mobile**: O canvas fica no topo com altura controlada, e os controles ficam abaixo com scroll
+1. **Escala dinamica universal**: Remover a condicao `isMobile` e usar `mobileScale` para todas as telas. A formula `Math.min((window.innerWidth - 32) / 1280, 0.85)` ja funciona corretamente para tablets e desktop (retorna 0.85 em telas grandes).
+
+2. **Ajustar para descontar a sidebar no desktop**: No desktop/tablet com sidebar, descontar os 380px da sidebar: `Math.min((window.innerWidth - 380 - 32) / 1280, 0.85)` quando a tela e >= 768px.
+
+3. **Container do preview sem flex-1 no mobile**: Remover `flex-1` do container do preview e usar altura fixa baseada na escala (`scaledHeight + 16` em vez de +32). Manter `flex-1` apenas no desktop para centralizar.
+
+4. **Reduzir padding do container de controles no mobile**: Trocar `p-6` por `p-4` e `p-5` por `p-3` no mobile para economizar espaco vertical.
 
 ### Detalhes Tecnicos
 
-**`src/pages/Index.tsx`**:
-- Importar `useIsMobile` de `@/hooks/use-mobile`
-- Calcular escala mobile: `Math.min(window.innerWidth / 1280, 0.85)` (aprox. 0.3 em telas de 390px)
-- Container do canvas no mobile: altura fixa proporcional (ex: `h-[220px]`) com overflow hidden
-- Layout principal: `flex flex-col md:flex-row`
-- Sidebar: `w-full md:w-[380px]`, com `max-h-[60vh] md:max-h-none overflow-y-auto` no mobile
-- Canvas wrapper: usar `useState` com `useEffect` para recalcular escala no resize
+Arquivo: `src/pages/Index.tsx`
 
-Resultado: no mobile o preview aparece compacto no topo e os controles rolam abaixo. No desktop, tudo continua igual.
+- Linha 109-117: Atualizar `updateScale` para considerar a largura da sidebar em telas >= 768px
+- Linha 119: Remover condicao `isMobile`, usar sempre a escala dinamica
+- Linha 126: Trocar `flex-1` por logica condicional - no mobile, altura fixa; no desktop, `flex-1`
+- Linha 127: Reduzir padding vertical (de +32 para +8)
+- Linha 154: Adicionar classes responsivas para padding menor no mobile
 
