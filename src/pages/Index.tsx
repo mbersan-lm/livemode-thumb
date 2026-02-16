@@ -108,7 +108,10 @@ const Index = () => {
 
   useEffect(() => {
     const updateScale = () => {
-      const scale = Math.min((window.innerWidth - 32) / CANVAS_WIDTH, 0.85);
+      const availableWidth = window.innerWidth >= 768
+        ? window.innerWidth - 380 - 32
+        : window.innerWidth - 16;
+      const scale = Math.min(availableWidth / CANVAS_WIDTH, 0.85);
       setMobileScale(scale);
     };
     updateScale();
@@ -116,15 +119,15 @@ const Index = () => {
     return () => window.removeEventListener('resize', updateScale);
   }, []);
 
-  const canvasScale = isMobile ? mobileScale : 0.85;
+  const canvasScale = mobileScale;
   const scaledHeight = CANVAS_HEIGHT * canvasScale;
 
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row">
       {/* Main Canvas Area */}
       <div
-        className="flex items-center justify-center overflow-hidden bg-[hsl(240_10%_6%)] flex-1"
-        style={isMobile ? { height: scaledHeight + 32, minHeight: scaledHeight + 32 } : undefined}
+        className={`flex items-center justify-center overflow-hidden bg-[hsl(240_10%_6%)] ${isMobile ? '' : 'flex-1'}`}
+        style={isMobile ? { height: scaledHeight + 8, minHeight: scaledHeight + 8 } : undefined}
       >
         <div className="flex items-center justify-center">
           {activeCanvas === 'mm' ? (
@@ -152,14 +155,14 @@ const Index = () => {
       </div>
 
       <div className="w-full md:w-[380px] bg-card border-t md:border-t-0 md:border-l border-border overflow-y-auto flex flex-col flex-1 md:flex-none">
-        <div className="p-6 pb-4 border-b border-border">
+        <div className="p-4 md:p-6 pb-3 md:pb-4 border-b border-border">
           <h1 className="text-xl font-bold tracking-tight">Melhores Momentos</h1>
           <p className="text-xs text-muted-foreground mt-1">
             Thumbnail Generator
           </p>
         </div>
 
-        <div className="p-5 flex-1">
+        <div className="p-3 md:p-5 flex-1">
           {/* Canvas Switcher */}
           <div className="mb-5">
             <ViewControls
