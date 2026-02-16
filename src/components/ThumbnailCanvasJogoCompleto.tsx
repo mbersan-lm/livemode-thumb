@@ -86,7 +86,7 @@ export const ThumbnailCanvasJogoCompleto = forwardRef<HTMLDivElement, ThumbnailC
         {homeTeam && awayTeam && (
           <div 
             id="MATCH_ROW_JC"
-            className={`absolute -left-[3px] ${template === 'ligue1' || template === 'bundesliga' || template === 'seriea' || template === 'paulistao' ? '-top-[40px]' : '-top-[15px]'} flex items-center`}
+            className={`absolute -left-[3px] ${template === 'ligue1' || template === 'bundesliga' || template === 'seriea' || template === 'paulistao' ? '-top-[20px]' : '-top-[15px]'} flex items-center`}
             style={{ 
               zIndex: 20,
               transform: 'none'
