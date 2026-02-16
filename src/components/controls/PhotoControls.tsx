@@ -139,44 +139,13 @@ export const PhotoControls = ({
           </div>
         </div>
 
-        <div className="pt-4 border-t border-border">
-          <h4 className="text-sm font-semibold mb-4">Stretch (Non-uniform)</h4>
-          <div className="space-y-4">
-            <div>
-              <Label>Width Scale: {photoTransform.scaleX.toFixed(2)}x</Label>
-              <Slider
-                value={[photoTransform.scaleX]}
-                onValueChange={([scaleX]) => onTransformChange({ scaleX })}
-                min={0.75}
-                max={1.25}
-                step={0.01}
-                className="mt-2"
-              />
-            </div>
 
-            <div>
-              <Label>Height Scale: {photoTransform.scaleY.toFixed(2)}x</Label>
-              <Slider
-                value={[photoTransform.scaleY]}
-                onValueChange={([scaleY]) => onTransformChange({ scaleY })}
-                min={0.75}
-                max={1.25}
-                step={0.01}
-                className="mt-2"
-              />
-            </div>
-          </div>
-        </div>
 
         <div className="pt-4 border-t border-border space-y-2">
           <h4 className="text-sm font-semibold mb-3">Quick Actions</h4>
           <Button onClick={handleCenter} variant="outline" className="w-full">
             <Maximize2 className="w-4 h-4 mr-2" />
             Center
-          </Button>
-          <Button onClick={handleFillRight} variant="outline" className="w-full">
-            <Maximize2 className="w-4 h-4 mr-2" />
-            Fill Right Area
           </Button>
           <Button onClick={handleReset} variant="outline" className="w-full">
             <RotateCcw className="w-4 h-4 mr-2" />
@@ -241,44 +210,13 @@ export const PhotoControls = ({
           </div>
         </div>
 
-        <div className="pt-4 border-t border-border">
-          <h4 className="text-sm font-semibold mb-4">Stretch (Non-uniform)</h4>
-          <div className="space-y-4">
-            <div>
-              <Label>Width Scale: {jogoCompletoPhotoTransform.scaleX.toFixed(2)}x</Label>
-              <Slider
-                value={[jogoCompletoPhotoTransform.scaleX]}
-                onValueChange={([scaleX]) => onJogoCompletoTransformChange({ scaleX })}
-                min={0.75}
-                max={1.25}
-                step={0.01}
-                className="mt-2"
-              />
-            </div>
 
-            <div>
-              <Label>Height Scale: {jogoCompletoPhotoTransform.scaleY.toFixed(2)}x</Label>
-              <Slider
-                value={[jogoCompletoPhotoTransform.scaleY]}
-                onValueChange={([scaleY]) => onJogoCompletoTransformChange({ scaleY })}
-                min={0.75}
-                max={1.25}
-                step={0.01}
-                className="mt-2"
-              />
-            </div>
-          </div>
-        </div>
 
         <div className="pt-4 border-t border-border space-y-2">
           <h4 className="text-sm font-semibold mb-3">Quick Actions</h4>
           <Button onClick={handleJogoCompletoCenter} variant="outline" className="w-full">
             <Maximize2 className="w-4 h-4 mr-2" />
             Center
-          </Button>
-          <Button onClick={handleJogoCompletoFillRight} variant="outline" className="w-full">
-            <Maximize2 className="w-4 h-4 mr-2" />
-            Fill Right Area
           </Button>
           <Button onClick={handleJogoCompletoReset} variant="outline" className="w-full">
             <RotateCcw className="w-4 h-4 mr-2" />
