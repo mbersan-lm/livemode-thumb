@@ -12,9 +12,9 @@ export const teamsPaulistao: Team[] = [
   { id: 'p9', name: 'Ponte Preta', slug: 'pontepreta', crest_url: '/crests/pontepreta.png' },
   { id: 'p10', name: 'Portuguesa', slug: 'portuguesa', crest_url: '/crests/portuguesa.png' },
   { id: 'p11', name: 'Primavera', slug: 'primavera', crest_url: '/crests/primavera.png' },
-  { id: 'p12', name: 'Red Bull Bragantino', slug: 'redbullbragantino', crest_url: '/crests/redbullbragantino.png' },
-  { id: 'p13', name: 'Santos', slug: 'santos', crest_url: '/crests/santos.png' },
+  { id: 'p12', name: 'Red Bull Bragantino', slug: 'redbullbragantino-paulistao', crest_url: '/crests/redbullbragantino-paulistao.png' },
+  { id: 'p13', name: 'Santos', slug: 'santos-paulistao', crest_url: '/crests/santos-paulistao.png' },
   { id: 'p14', name: 'São Bernardo', slug: 'saobernardo', crest_url: '/crests/saobernardo.png' },
-  { id: 'p15', name: 'São Paulo', slug: 'saopaulo', crest_url: '/crests/saopaulo.png' },
+  { id: 'p15', name: 'São Paulo', slug: 'saopaulo-paulistao', crest_url: '/crests/saopaulo-paulistao.png' },
   { id: 'p16', name: 'Velo Clube', slug: 'veloclube', crest_url: '/crests/veloclube.png' },
 ];
