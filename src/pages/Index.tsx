@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ThumbnailCanvas } from '@/components/ThumbnailCanvas';
 import { ThumbnailCanvasJogoCompleto } from '@/components/ThumbnailCanvasJogoCompleto';
@@ -9,12 +9,18 @@ import { TemplateControls } from '@/components/controls/TemplateControls';
 import { ViewControls, ActiveCanvas } from '@/components/controls/ViewControls';
 import { ThumbnailState } from '@/types/thumbnail';
 import { TemplateType } from '@/data/templates';
+import { useIsMobile } from '@/hooks/use-mobile';
+
+const CANVAS_WIDTH = 1280;
+const CANVAS_HEIGHT = 720;
 
 const Index = () => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const canvasRefJogoCompleto = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
   
   const [activeCanvas, setActiveCanvas] = useState<ActiveCanvas>('mm');
+  const [mobileScale, setMobileScale] = useState(0.3);
   
   const [state, setState] = useState<ThumbnailState>({
     playerPhoto: null,
@@ -100,13 +106,29 @@ const Index = () => {
     }));
   };
 
+  useEffect(() => {
+    const updateScale = () => {
+      const scale = Math.min((window.innerWidth - 32) / CANVAS_WIDTH, 0.85);
+      setMobileScale(scale);
+    };
+    updateScale();
+    window.addEventListener('resize', updateScale);
+    return () => window.removeEventListener('resize', updateScale);
+  }, []);
+
+  const canvasScale = isMobile ? mobileScale : 0.85;
+  const scaledHeight = CANVAS_HEIGHT * canvasScale;
+
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background flex flex-col md:flex-row">
       {/* Main Canvas Area */}
-      <div className="flex-1 flex items-center justify-center overflow-hidden bg-[hsl(240_10%_6%)]">
+      <div
+        className="flex items-center justify-center overflow-hidden bg-[hsl(240_10%_6%)] flex-1"
+        style={isMobile ? { height: scaledHeight + 32, minHeight: scaledHeight + 32 } : undefined}
+      >
         <div className="flex items-center justify-center">
           {activeCanvas === 'mm' ? (
-            <div style={{ transform: 'scale(0.85)', transformOrigin: 'center' }}>
+            <div style={{ transform: `scale(${canvasScale})`, transformOrigin: 'center' }}>
               <ThumbnailCanvas
                 ref={canvasRef}
                 playerPhoto={state.playerPhoto}
@@ -116,7 +138,7 @@ const Index = () => {
               />
             </div>
           ) : (
-            <div style={{ transform: 'scale(0.85)', transformOrigin: 'center' }}>
+            <div style={{ transform: `scale(${canvasScale})`, transformOrigin: 'center' }}>
               <ThumbnailCanvasJogoCompleto
                 ref={canvasRefJogoCompleto}
                 playerPhoto={state.jogoCompletoPhoto}
@@ -129,8 +151,7 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Controls Sidebar */}
-      <div className="w-[380px] bg-card border-l border-border overflow-y-auto flex flex-col">
+      <div className="w-full md:w-[380px] bg-card border-t md:border-t-0 md:border-l border-border overflow-y-auto flex flex-col flex-1 md:flex-none">
         <div className="p-6 pb-4 border-b border-border">
           <h1 className="text-xl font-bold tracking-tight">Melhores Momentos</h1>
           <p className="text-xs text-muted-foreground mt-1">
