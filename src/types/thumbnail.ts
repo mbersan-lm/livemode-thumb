@@ -21,5 +21,5 @@ export interface ThumbnailState {
   matchData: MatchData;
   initialScale: number;
   initialScaleJogoCompleto: number;
-  template: 'brasileirao' | 'ligue1' | 'bundesliga' | 'seriea';
+  template: 'brasileirao' | 'ligue1' | 'bundesliga' | 'seriea' | 'paulistao';
 }
