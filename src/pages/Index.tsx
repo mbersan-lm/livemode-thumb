@@ -6,7 +6,7 @@ import { PhotoControls } from '@/components/controls/PhotoControls';
 import { TeamControls } from '@/components/controls/TeamControls';
 import { ExportControls } from '@/components/controls/ExportControls';
 import { TemplateControls } from '@/components/controls/TemplateControls';
-import { ViewControls, ViewMode, ActiveCanvas } from '@/components/controls/ViewControls';
+import { ViewControls, ActiveCanvas } from '@/components/controls/ViewControls';
 import { ThumbnailState } from '@/types/thumbnail';
 import { TemplateType } from '@/data/templates';
 
@@ -14,7 +14,6 @@ const Index = () => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const canvasRefJogoCompleto = useRef<HTMLDivElement>(null);
   
-  const [viewMode, setViewMode] = useState<ViewMode>('side-by-side');
   const [activeCanvas, setActiveCanvas] = useState<ActiveCanvas>('mm');
   
   const [state, setState] = useState<ThumbnailState>({
@@ -50,20 +49,12 @@ const Index = () => {
     reader.onload = (e) => {
       const img = new Image();
       img.onload = () => {
-        // Compute initial scale to fit entire image inside 1280×720 (contain)
         const scale0 = Math.min(1280 / img.naturalWidth, 720 / img.naturalHeight);
-        
         setState(prev => ({
           ...prev,
           playerPhoto: e.target?.result as string,
           initialScale: scale0,
-          photoTransform: {
-            x: 0,
-            y: 0,
-            scale: scale0,
-            scaleX: 1,
-            scaleY: 1,
-          },
+          photoTransform: { x: 0, y: 0, scale: scale0, scaleX: 1, scaleY: 1 },
         }));
       };
       img.src = e.target?.result as string;
@@ -77,18 +68,11 @@ const Index = () => {
       const img = new Image();
       img.onload = () => {
         const scale0 = Math.min(1280 / img.naturalWidth, 720 / img.naturalHeight);
-        
         setState(prev => ({
           ...prev,
           jogoCompletoPhoto: e.target?.result as string,
           initialScaleJogoCompleto: scale0,
-          jogoCompletoPhotoTransform: {
-            x: 0,
-            y: 0,
-            scale: scale0,
-            scaleX: 1,
-            scaleY: 1,
-          },
+          jogoCompletoPhotoTransform: { x: 0, y: 0, scale: scale0, scaleX: 1, scaleY: 1 },
         }));
       };
       img.src = e.target?.result as string;
@@ -97,62 +81,32 @@ const Index = () => {
   };
 
   const handleTransformChange = (transform: Partial<typeof state.photoTransform>) => {
-    setState(prev => ({
-      ...prev,
-      photoTransform: { ...prev.photoTransform, ...transform },
-    }));
+    setState(prev => ({ ...prev, photoTransform: { ...prev.photoTransform, ...transform } }));
   };
 
   const handleJogoCompletoTransformChange = (transform: Partial<typeof state.jogoCompletoPhotoTransform>) => {
-    setState(prev => ({
-      ...prev,
-      jogoCompletoPhotoTransform: { ...prev.jogoCompletoPhotoTransform, ...transform },
-    }));
+    setState(prev => ({ ...prev, jogoCompletoPhotoTransform: { ...prev.jogoCompletoPhotoTransform, ...transform } }));
   };
 
   const handleMatchDataChange = (data: Partial<typeof state.matchData>) => {
-    setState(prev => ({
-      ...prev,
-      matchData: { ...prev.matchData, ...data },
-    }));
+    setState(prev => ({ ...prev, matchData: { ...prev.matchData, ...data } }));
   };
 
   const handleTemplateChange = (template: TemplateType) => {
     setState(prev => ({
       ...prev,
       template,
-      matchData: {
-        ...prev.matchData,
-        homeTeamId: null,
-        awayTeamId: null,
-      },
+      matchData: { ...prev.matchData, homeTeamId: null, awayTeamId: null },
     }));
   };
-
-  const getCanvasContainerStyle = () => {
-    if (viewMode === 'side-by-side') {
-      return 'flex flex-row gap-0 items-center';
-    } else if (viewMode === 'stacked') {
-      return 'flex flex-col gap-0 items-center';
-    }
-    return 'flex items-center justify-center';
-  };
-
-  const getCanvasScale = () => {
-    return viewMode === 'individual' ? 1 : 0.5;
-  };
-
-  const shouldShowMM = viewMode !== 'individual' || activeCanvas === 'mm';
-  const shouldShowJC = viewMode !== 'individual' || activeCanvas === 'jc';
 
   return (
     <div className="min-h-screen bg-background flex">
       {/* Main Canvas Area */}
-      <div className="flex-1 flex items-center justify-center overflow-y-auto">
-        <div className={getCanvasContainerStyle()}>
-          {/* Thumbnail Melhores Momentos */}
-          {shouldShowMM && (
-            <div style={{ transform: `scale(${getCanvasScale()})`, transformOrigin: 'center' }}>
+      <div className="flex-1 flex items-center justify-center overflow-hidden bg-[hsl(240_10%_6%)]">
+        <div className="flex items-center justify-center">
+          {activeCanvas === 'mm' ? (
+            <div style={{ transform: 'scale(0.85)', transformOrigin: 'center' }}>
               <ThumbnailCanvas
                 ref={canvasRef}
                 playerPhoto={state.playerPhoto}
@@ -161,11 +115,8 @@ const Index = () => {
                 template={state.template}
               />
             </div>
-          )}
-          
-          {/* Thumbnail Jogo Completo */}
-          {shouldShowJC && (
-            <div style={{ transform: `scale(${getCanvasScale()})`, transformOrigin: 'center' }}>
+          ) : (
+            <div style={{ transform: 'scale(0.85)', transformOrigin: 'center' }}>
               <ThumbnailCanvasJogoCompleto
                 ref={canvasRefJogoCompleto}
                 playerPhoto={state.jogoCompletoPhoto}
@@ -179,39 +130,39 @@ const Index = () => {
       </div>
 
       {/* Controls Sidebar */}
-      <div className="w-[400px] bg-card border-l border-border overflow-y-auto">
-        <div className="p-6">
-          <h1 className="text-2xl font-bold mb-2">Melhores Momentos</h1>
-          <p className="text-sm text-muted-foreground mb-6">
+      <div className="w-[380px] bg-card border-l border-border overflow-y-auto flex flex-col">
+        <div className="p-6 pb-4 border-b border-border">
+          <h1 className="text-xl font-bold tracking-tight">Melhores Momentos</h1>
+          <p className="text-xs text-muted-foreground mt-1">
             Thumbnail Generator
           </p>
+        </div>
 
-          <Tabs defaultValue="view" className="w-full">
-            <TabsList className="w-full grid grid-cols-5">
-              <TabsTrigger value="view">View</TabsTrigger>
-              <TabsTrigger value="template">Template</TabsTrigger>
-              <TabsTrigger value="photo">Photo</TabsTrigger>
-              <TabsTrigger value="teams">Teams</TabsTrigger>
-              <TabsTrigger value="export">Export</TabsTrigger>
+        <div className="p-5 flex-1">
+          {/* Canvas Switcher */}
+          <div className="mb-5">
+            <ViewControls
+              activeCanvas={activeCanvas}
+              onActiveCanvasChange={setActiveCanvas}
+            />
+          </div>
+
+          <Tabs defaultValue="template" className="w-full">
+            <TabsList className="w-full grid grid-cols-4 h-10">
+              <TabsTrigger value="template" className="text-xs">Template</TabsTrigger>
+              <TabsTrigger value="photo" className="text-xs">Photo</TabsTrigger>
+              <TabsTrigger value="teams" className="text-xs">Teams</TabsTrigger>
+              <TabsTrigger value="export" className="text-xs">Export</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="view" className="mt-6">
-              <ViewControls
-                viewMode={viewMode}
-                activeCanvas={activeCanvas}
-                onViewModeChange={setViewMode}
-                onActiveCanvasChange={setActiveCanvas}
-              />
-            </TabsContent>
-
-            <TabsContent value="template" className="mt-6">
+            <TabsContent value="template" className="mt-5">
               <TemplateControls
                 currentTemplate={state.template}
                 onTemplateChange={handleTemplateChange}
               />
             </TabsContent>
 
-            <TabsContent value="photo" className="mt-6">
+            <TabsContent value="photo" className="mt-5">
               <PhotoControls
                 photoTransform={state.photoTransform}
                 initialScale={state.initialScale}
@@ -224,7 +175,7 @@ const Index = () => {
               />
             </TabsContent>
 
-            <TabsContent value="teams" className="mt-6">
+            <TabsContent value="teams" className="mt-5">
               <TeamControls
                 matchData={state.matchData}
                 onMatchDataChange={handleMatchDataChange}
@@ -232,7 +183,7 @@ const Index = () => {
               />
             </TabsContent>
 
-            <TabsContent value="export" className="mt-6">
+            <TabsContent value="export" className="mt-5">
               <ExportControls
                 canvasRef={canvasRef}
                 canvasRefJogoCompleto={canvasRefJogoCompleto}
