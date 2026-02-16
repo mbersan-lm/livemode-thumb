@@ -4,7 +4,7 @@ import { teamsLigue1 } from '@/data/teamsLigue1';
 import { teamsBundesliga } from '@/data/teamsBundesliga';
 import { teamsSerieA } from '@/data/teamsSerieA';
 import { PhotoTransform, MatchData } from '@/types/thumbnail';
-import { TemplateType } from '@/data/templates';
+import { templates, TemplateType } from '@/data/templates';
 
 interface ThumbnailCanvasJogoCompletoProps {
   playerPhoto: string | null;
@@ -15,6 +15,7 @@ interface ThumbnailCanvasJogoCompletoProps {
 
 export const ThumbnailCanvasJogoCompleto = forwardRef<HTMLDivElement, ThumbnailCanvasJogoCompletoProps>(
   ({ playerPhoto, photoTransform, matchData, template }, ref) => {
+    const config = templates[template];
     const currentTeams = 
       template === 'brasileirao' ? teamsBrasileirao : 
       template === 'bundesliga' ? teamsBundesliga :
@@ -73,7 +74,7 @@ export const ThumbnailCanvasJogoCompleto = forwardRef<HTMLDivElement, ThumbnailC
 
         {/* KV Background - Jogo Completo */}
         <img 
-          src="/kv/kv-jogo-completo.png" 
+          src={config.kvJogoCompletoPath} 
           alt="Background KV Jogo Completo"
           className="absolute left-0 top-0 pointer-events-none"
           style={{ height: '720px', objectFit: 'contain', objectPosition: 'left', zIndex: 10 }}
