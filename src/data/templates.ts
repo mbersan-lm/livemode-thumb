@@ -7,6 +7,8 @@ export interface Template {
   fontFamily: string;
   scoreFontSize: string;
   xFontSize: string;
+  xFontFamily?: string;
+  xColor?: string;
 }
 
 export const templates: Record<TemplateType, Template> = {
@@ -25,6 +27,8 @@ export const templates: Record<TemplateType, Template> = {
     fontFamily: 'Gilroy ExtraBold, sans-serif',
     scoreFontSize: '140px',
     xFontSize: '110px',
+    xFontFamily: 'Gilroy Medium, sans-serif',
+    xColor: '#FFFFFF',
   },
   bundesliga: {
     id: 'bundesliga',
@@ -33,6 +37,8 @@ export const templates: Record<TemplateType, Template> = {
     fontFamily: 'Gilroy ExtraBold, sans-serif',
     scoreFontSize: '140px',
     xFontSize: '110px',
+    xFontFamily: 'Gilroy Medium, sans-serif',
+    xColor: '#FFFFFF',
   },
   seriea: {
     id: 'seriea',
@@ -41,5 +47,7 @@ export const templates: Record<TemplateType, Template> = {
     fontFamily: 'Gilroy ExtraBold, sans-serif',
     scoreFontSize: '140px',
     xFontSize: '110px',
+    xFontFamily: 'Gilroy Medium, sans-serif',
+    xColor: '#FFFFFF',
   },
 };
