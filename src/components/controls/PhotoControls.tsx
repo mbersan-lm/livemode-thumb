@@ -107,8 +107,8 @@ export const PhotoControls = ({
             <Slider
               value={[photoTransform.x]}
               onValueChange={([x]) => onTransformChange({ x })}
-              min={-600}
-              max={600}
+              min={-1500}
+              max={1500}
               step={1}
               className="mt-2"
             />
@@ -119,8 +119,8 @@ export const PhotoControls = ({
             <Slider
               value={[photoTransform.y]}
               onValueChange={([y]) => onTransformChange({ y })}
-              min={-600}
-              max={600}
+              min={-1500}
+              max={1500}
               step={1}
               className="mt-2"
             />
@@ -178,8 +178,8 @@ export const PhotoControls = ({
             <Slider
               value={[jogoCompletoPhotoTransform.x]}
               onValueChange={([x]) => onJogoCompletoTransformChange({ x })}
-              min={-600}
-              max={600}
+              min={-1500}
+              max={1500}
               step={1}
               className="mt-2"
             />
@@ -190,8 +190,8 @@ export const PhotoControls = ({
             <Slider
               value={[jogoCompletoPhotoTransform.y]}
               onValueChange={([y]) => onJogoCompletoTransformChange({ y })}
-              min={-600}
-              max={600}
+              min={-1500}
+              max={1500}
               step={1}
               className="mt-2"
             />
