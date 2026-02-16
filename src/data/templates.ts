@@ -4,6 +4,7 @@ export interface Template {
   id: TemplateType;
   name: string;
   kvPath: string;
+  kvJogoCompletoPath: string;
   fontFamily: string;
   scoreFontSize: string;
   xFontSize: string;
@@ -16,6 +17,7 @@ export const templates: Record<TemplateType, Template> = {
     id: 'brasileirao',
     name: 'Brasileirão',
     kvPath: '/kv/kv.png',
+    kvJogoCompletoPath: '/kv/kv-jogo-completo.png',
     fontFamily: 'Tusker Grotesk, sans-serif',
     scoreFontSize: '140px',
     xFontSize: '110px',
@@ -24,6 +26,7 @@ export const templates: Record<TemplateType, Template> = {
     id: 'ligue1',
     name: 'Ligue 1',
     kvPath: '/kv/kv-ligue1.png',
+    kvJogoCompletoPath: '/kv/kv-jogo-completo-ligue1.png',
     fontFamily: 'Gilroy ExtraBold, sans-serif',
     scoreFontSize: '140px',
     xFontSize: '110px',
@@ -34,6 +37,7 @@ export const templates: Record<TemplateType, Template> = {
     id: 'bundesliga',
     name: 'Bundesliga',
     kvPath: '/kv/kv-bundesliga.png',
+    kvJogoCompletoPath: '/kv/kv-jogo-completo-bundesliga.png',
     fontFamily: 'Gilroy ExtraBold, sans-serif',
     scoreFontSize: '140px',
     xFontSize: '110px',
@@ -44,6 +48,7 @@ export const templates: Record<TemplateType, Template> = {
     id: 'seriea',
     name: 'Serie A',
     kvPath: '/kv/kv-seriea.png',
+    kvJogoCompletoPath: '/kv/kv-jogo-completo-seriea.png',
     fontFamily: 'Gilroy ExtraBold, sans-serif',
     scoreFontSize: '140px',
     xFontSize: '110px',
