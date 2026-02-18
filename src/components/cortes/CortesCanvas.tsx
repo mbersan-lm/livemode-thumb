@@ -1,0 +1,143 @@
+import { useEffect, useRef, useState, forwardRef } from 'react';
+
+interface CortesCanvasProps {
+  pipImage: string | null;
+  personCutout: string | null;
+  thumbText: string;
+}
+
+export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
+  ({ pipImage, personCutout, thumbText }, ref) => {
+    const textRef = useRef<HTMLDivElement>(null);
+    const [fontSize, setFontSize] = useState(100);
+
+    useEffect(() => {
+      if (!textRef.current || !thumbText) {
+        setFontSize(100);
+        return;
+      }
+
+      let size = 100;
+      const el = textRef.current;
+      el.style.fontSize = `${size}px`;
+
+      while (el.scrollHeight > el.clientHeight && size > 30) {
+        size -= 2;
+        el.style.fontSize = `${size}px`;
+      }
+
+      setFontSize(size);
+    }, [thumbText]);
+
+    return (
+      <div
+        ref={ref}
+        id="CANVAS_CORTES"
+        style={{
+          width: 1280,
+          height: 720,
+          position: 'relative',
+          overflow: 'hidden',
+          backgroundColor: '#0C0C20',
+        }}
+      >
+        {/* Layer 1: BG */}
+        <img
+          src="/cortes/bg-corte.png"
+          alt=""
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            zIndex: 1,
+          }}
+        />
+
+        {/* Layer 2: PIP */}
+        {pipImage && (
+          <div
+            style={{
+              position: 'absolute',
+              left: '2.2%',
+              top: '7.8%',
+              width: '56.6%',
+              height: '64.3%',
+              border: '10px solid #D02046',
+              transform: 'rotate(-1.2deg)',
+              overflow: 'hidden',
+              zIndex: 2,
+            }}
+          >
+            <img
+              src={pipImage}
+              alt=""
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          </div>
+        )}
+
+        {/* Layer 3: Person cutout */}
+        {personCutout && (
+          <img
+            src={personCutout}
+            alt=""
+            style={{
+              position: 'absolute',
+              right: '-6%',
+              top: '-2%',
+              height: '108%',
+              width: 'auto',
+              zIndex: 3,
+            }}
+          />
+        )}
+
+        {/* Layer 4: Logos */}
+        <img
+          src="/cortes/logos-corte.png"
+          alt=""
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            zIndex: 4,
+            pointerEvents: 'none',
+          }}
+        />
+
+        {/* Layer 5: Text */}
+        {thumbText && (
+          <div
+            ref={textRef}
+            style={{
+              position: 'absolute',
+              left: '5%',
+              bottom: '6%',
+              width: '90%',
+              maxHeight: '35%',
+              overflow: 'hidden',
+              zIndex: 5,
+              fontFamily: "'Clash Grotesk', sans-serif",
+              fontWeight: 800,
+              fontSize: `${fontSize}px`,
+              lineHeight: 0.95,
+              textAlign: 'center',
+              color: '#F1E8D5',
+              WebkitTextStroke: '10px #0C0C20',
+              paintOrder: 'stroke fill',
+              textTransform: 'uppercase',
+            }}
+          >
+            {thumbText}
+          </div>
+        )}
+      </div>
+    );
+  }
+);
+
+CortesCanvas.displayName = 'CortesCanvas';
