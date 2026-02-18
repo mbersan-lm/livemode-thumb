@@ -69,34 +69,24 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               height: `${pipFrame.height}%`,
               border: '10px solid #D02046',
               transform: 'rotate(-1.2deg)',
+              overflow: 'hidden',
               zIndex: 2,
             }}
           >
-            <div
+            <img
+              src={pipImage}
+              alt=""
               style={{
                 position: 'absolute',
-                inset: '-50%',
-                width: '200%',
-                height: '200%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                overflow: 'hidden',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                objectPosition: `calc(50% + ${pipTransform.x}px) calc(50% + ${pipTransform.y}px)`,
+                transform: `scale(${pipTransform.scale}) rotate(${pipTransform.rotation}deg)`,
+                transformOrigin: 'center center',
               }}
-            >
-              <img
-                src={pipImage}
-                alt=""
-                style={{
-                  minWidth: '100%',
-                  minHeight: '100%',
-                  objectFit: 'cover',
-                  objectPosition: `calc(50% + ${pipTransform.x}px) calc(50% + ${pipTransform.y}px)`,
-                  transform: `scale(${pipTransform.scale}) rotate(${pipTransform.rotation}deg)`,
-                  transformOrigin: 'center center',
-                }}
-              />
-            </div>
+            />
           </div>
         )}
 
@@ -154,7 +144,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               WebkitTextStroke: '30px #0C0C20',
               paintOrder: 'stroke fill',
               textTransform: 'uppercase',
-              transform: 'rotate(-4deg)',
+              transform: 'rotate(-2deg)',
               transformOrigin: 'center center',
             }}
           >
