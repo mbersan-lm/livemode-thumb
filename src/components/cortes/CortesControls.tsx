@@ -3,7 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
-import { Upload, Trash2, Download, Loader2 } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Upload, Trash2, Download, Loader2, ChevronDown } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { toast } from 'sonner';
 
@@ -11,6 +12,7 @@ interface TransformState {
   x: number;
   y: number;
   scale: number;
+  rotation: number;
 }
 
 interface PipFrameState {
@@ -156,6 +158,10 @@ export const CortesControls = ({
             <Label className="text-xs">Zoom: {pipTransform.scale.toFixed(2)}x</Label>
             <Slider value={[pipTransform.scale]} onValueChange={([scale]) => onPipTransformChange({ scale })} min={0.5} max={3} step={0.01} className="mt-1" />
           </div>
+          <div>
+            <Label className="text-xs">Rotação: {pipTransform.rotation}°</Label>
+            <Slider value={[pipTransform.rotation]} onValueChange={([rotation]) => onPipTransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" />
+          </div>
         </div>
       )}
 
@@ -171,14 +177,23 @@ export const CortesControls = ({
             <Label className="text-xs">Posição Y: {pipFrame.y.toFixed(1)}%</Label>
             <Slider value={[pipFrame.y]} onValueChange={([y]) => onPipFrameChange({ y })} min={-20} max={60} step={0.1} className="mt-1" />
           </div>
-          <div>
-            <Label className="text-xs">Largura: {pipFrame.width.toFixed(1)}%</Label>
-            <Slider value={[pipFrame.width]} onValueChange={([width]) => onPipFrameChange({ width })} min={10} max={90} step={0.1} className="mt-1" />
-          </div>
-          <div>
-            <Label className="text-xs">Altura: {pipFrame.height.toFixed(1)}%</Label>
-            <Slider value={[pipFrame.height]} onValueChange={([height]) => onPipFrameChange({ height })} min={10} max={90} step={0.1} className="mt-1" />
-          </div>
+
+          <Collapsible>
+            <CollapsibleTrigger className="flex items-center gap-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors w-full">
+              <ChevronDown className="w-3 h-3" />
+              Propriedades avançadas
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-3 pt-3">
+              <div>
+                <Label className="text-xs">Largura: {pipFrame.width.toFixed(1)}%</Label>
+                <Slider value={[pipFrame.width]} onValueChange={([width]) => onPipFrameChange({ width })} min={10} max={90} step={0.1} className="mt-1" />
+              </div>
+              <div>
+                <Label className="text-xs">Altura: {pipFrame.height.toFixed(1)}%</Label>
+                <Slider value={[pipFrame.height]} onValueChange={([height]) => onPipFrameChange({ height })} min={10} max={90} step={0.1} className="mt-1" />
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
         </div>
       )}
 
@@ -227,6 +242,10 @@ export const CortesControls = ({
           <div>
             <Label className="text-xs">Zoom: {personTransform.scale.toFixed(2)}x</Label>
             <Slider value={[personTransform.scale]} onValueChange={([scale]) => onPersonTransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" />
+          </div>
+          <div>
+            <Label className="text-xs">Rotação: {personTransform.rotation}°</Label>
+            <Slider value={[personTransform.rotation]} onValueChange={([rotation]) => onPersonTransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" />
           </div>
         </div>
       )}
