@@ -155,11 +155,16 @@ const Index = () => {
       </div>
 
       <div className="w-full md:w-[380px] bg-card border-t md:border-t-0 md:border-l border-border overflow-y-auto flex flex-col flex-1 md:flex-none">
-        <div className="p-4 md:p-6 pb-3 md:pb-4 border-b border-border">
-          <h1 className="text-xl font-bold tracking-tight">Melhores Momentos</h1>
-          <p className="text-xs text-muted-foreground mt-1">
-            Thumbnail Generator
-          </p>
+        <div className="p-4 md:p-6 pb-3 md:pb-4 border-b border-border flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold tracking-tight">Melhores Momentos</h1>
+            <p className="text-xs text-muted-foreground mt-1">
+              Thumbnail Generator
+            </p>
+          </div>
+          <a href="/cortes" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+            Cortes →
+          </a>
         </div>
 
         <div className="p-3 md:p-5 flex-1">
