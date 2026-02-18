@@ -1,37 +1,51 @@
 
 
-# Ajustes no Texto da Thumbnail de Cortes
+# Correcao do Texto: Overflow e Stroke Arredondado
 
-## Problemas Identificados
+## Problemas
 
-1. **Traçado (stroke) com cantos pontiagudos** - O `WebkitTextStroke` usa `lineJoin: miter` por padrão, criando pontas afiadas nas letras.
-2. **Texto responsivo** - O sistema de auto-ajuste ja existe (loop que reduz de 2500px ate 120px), mas o `lineHeight: 0.95` muito apertado e o `overflow: hidden` podem estar impedindo o correto funcionamento.
-3. **Acentos cortados** - O `lineHeight: 0.95` comprime demais verticalmente e o `overflow: hidden` corta os acentos que ultrapassam a caixa do texto. A area precisa de mais espaco superior (padding-top) para acomodar acentos.
+1. **Texto saindo da thumb**: O `overflow: visible` (adicionado para acentos) permite que o texto ultrapasse os limites do canvas. Alem disso, o loop de auto-ajuste nao funciona corretamente com `overflow: visible` porque o `scrollHeight` nao reflete o overflow real.
+
+2. **Stroke pontiagudo**: As propriedades CSS `strokeLinejoin` e `strokeLinecap` nao funcionam em texto HTML com `-webkit-text-stroke`. Essas propriedades so se aplicam a elementos SVG. Para obter um stroke arredondado em texto HTML, e necessario usar a tecnica de **text-shadow multiplo**.
 
 ## Solucao
 
 ### Arquivo: `src/components/cortes/CortesCanvas.tsx`
 
-**1. Stroke arredondado:**
-- Adicionar `lineJoin: 'round'` e `strokeLinecap: 'round'` via propriedades CSS (`strokeLinejoin`, `strokeLinecap`)
-- Alternativa mais robusta: usar a tecnica de text-shadow com multiplas sombras para simular um stroke arredondado, porem isso pode impactar a exportacao. A abordagem mais simples e adicionar `WebkitTextStrokeWidth` + `paintOrder: stroke fill` que ja esta em uso, combinado com SVG-like properties.
-- A solucao mais eficaz para arredondar o stroke via CSS puro e aplicar `-webkit-text-stroke` junto com `paint-order: stroke fill` e adicionar `stroke-linejoin: round` e `stroke-linecap: round` como propriedades CSS no elemento.
+**1. Conter o texto dentro da thumb:**
+- Manter `overflow: hidden` no texto para que ele nao saia dos limites
+- Aumentar o `maxHeight` para `38%` (valor equilibrado entre espaco para acentos e contencao)
+- Aumentar `lineHeight` para `1.2` para garantir espaco para acentos sem precisar de overflow visible
+- Aumentar `paddingTop` para `20px` para acomodar acentos dentro da caixa
+- Garantir que o loop de auto-ajuste funcione corretamente com essas dimensoes
 
-**2. Texto responsivo (ja funciona, ajuste fino):**
-- O loop de auto-ajuste ja existe e funciona. Nenhuma mudanca necessaria na logica, apenas nos parametros de layout para dar mais espaco ao texto.
+**2. Stroke arredondado com text-shadow:**
+- Remover `WebkitTextStroke`, `strokeLinejoin`, `strokeLinecap` e `paintOrder`
+- Substituir por uma funcao que gera multiplas sombras em circulo (24-32 pontos) ao redor do texto, criando um contorno naturalmente arredondado
+- Exemplo: gerar sombras em angulos de 0 a 360 graus com raio de 15px na cor `#0C0C20`, resultando em um stroke suave e arredondado
+- A tecnica usa algo como: `text-shadow: 15px 0 #0C0C20, 14.5px 3.8px #0C0C20, 13px 7.5px #0C0C20, ...` (pontos ao longo de um circulo)
 
-**3. Acentos cortados:**
-- Aumentar `lineHeight` de `0.95` para `1.15` para dar espaco vertical suficiente para acentos
-- Aumentar `maxHeight` de `35%` para `42%` para compensar o aumento do lineHeight
-- Adicionar `paddingTop: '10px'` para dar respiro extra no topo onde os acentos ficam
-- Remover `overflow: hidden` e usar `overflow: visible` para que acentos nao sejam cortados (o canvas pai ja tem `overflow: hidden` para conter tudo)
+## Detalhes Tecnicos
 
-### Resumo das alteracoes no Layer 5 (texto):
+Funcao auxiliar para gerar o text-shadow circular:
 
-- `lineHeight`: `0.95` → `1.15`
-- `maxHeight`: `35%` → `42%`
-- `overflow`: `hidden` → `visible`
-- Adicionar: `paddingTop: '10px'`
-- Adicionar: `strokeLinejoin: 'round'` e `strokeLinecap: 'round'` (propriedades CSS para arredondar o stroke)
-- Ajustar o loop de auto-ajuste para considerar o novo lineHeight (o `scrollHeight` sera naturalmente maior, entao o loop continuara funcionando corretamente)
+```text
+function generateStrokeShadow(radius, color, steps):
+  for i = 0 to steps:
+    angle = (2 * PI * i) / steps
+    x = cos(angle) * radius
+    y = sin(angle) * radius
+    shadows.push(`${x}px ${y}px 0 ${color}`)
+  return shadows.join(', ')
+```
+
+Isso gera ~32 sombras posicionadas em circulo, criando um contorno uniforme e arredondado sem cantos pontiagudos.
+
+### Propriedades do texto atualizadas:
+- `overflow`: `visible` -> `hidden`
+- `maxHeight`: `42%` -> `38%`
+- `lineHeight`: `1.15` -> `1.2`
+- `paddingTop`: `10px` -> `20px`
+- Remover: `WebkitTextStroke`, `paintOrder`, `strokeLinejoin`, `strokeLinecap`
+- Adicionar: `textShadow` com sombras circulares (raio ~15px, 32 pontos, cor `#0C0C20`)
 
