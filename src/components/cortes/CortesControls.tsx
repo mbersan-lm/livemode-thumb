@@ -30,6 +30,7 @@ interface CortesControlsProps {
   pipTransform: TransformState;
   personTransform: TransformState;
   pipFrame: PipFrameState;
+  pipBaseScale: number;
   onPipUpload: (file: File) => void;
   onPersonUpload: (file: File) => void;
   onTextChange: (text: string) => void;
@@ -48,6 +49,7 @@ export const CortesControls = ({
   pipTransform,
   personTransform,
   pipFrame,
+  pipBaseScale,
   onPipUpload,
   onPersonUpload,
   onTextChange,
@@ -147,7 +149,7 @@ export const CortesControls = ({
         <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
           <div className="flex items-center justify-between">
             <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste da imagem PIP</Label>
-            <button onClick={() => onPipTransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
+            <button onClick={() => onPipTransformChange({ x: 0, y: 0, scale: pipBaseScale, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
           </div>
