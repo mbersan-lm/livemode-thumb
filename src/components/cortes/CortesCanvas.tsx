@@ -146,9 +146,9 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
             ref={textRef}
             style={{
               position: 'absolute',
-              left: '5%',
+              left: '2%',
               bottom: '6%',
-              width: '90%',
+              width: '96%',
               maxHeight: '38%',
               overflow: 'hidden',
               zIndex: 5,
