@@ -8,8 +8,8 @@ import { toast } from 'sonner';
 const CANVAS_WIDTH = 1280;
 const CANVAS_HEIGHT = 720;
 
-const DEFAULT_PIP_TRANSFORM = { x: 0, y: 0, scale: 1 };
-const DEFAULT_PERSON_TRANSFORM = { x: 0, y: 0, scale: 1 };
+const DEFAULT_PIP_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
+const DEFAULT_PERSON_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
 const DEFAULT_PIP_FRAME = { x: 2.2, y: 7.8, width: 56.6, height: 64.3 };
 
 export const CortesThumbBuilder = () => {
