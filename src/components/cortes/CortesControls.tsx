@@ -4,7 +4,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Upload, Trash2, Download, Loader2, ChevronDown } from 'lucide-react';
+import { Upload, Trash2, Download, Loader2, ChevronDown, RotateCcw } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { toast } from 'sonner';
 
@@ -145,7 +145,12 @@ export const CortesControls = ({
       {/* PIP Image Transform */}
       {pipImage && (
         <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
-          <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste da imagem PIP</Label>
+          <div className="flex items-center justify-between">
+            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste da imagem PIP</Label>
+            <button onClick={() => onPipTransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
+              <RotateCcw className="w-3.5 h-3.5" />
+            </button>
+          </div>
           <div>
             <Label className="text-xs">Posição X: {pipTransform.x}px</Label>
             <Slider value={[pipTransform.x]} onValueChange={([x]) => onPipTransformChange({ x })} min={-500} max={500} step={1} className="mt-1" />
@@ -168,7 +173,12 @@ export const CortesControls = ({
       {/* PIP Frame Controls */}
       {pipImage && (
         <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
-          <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Moldura PIP</Label>
+          <div className="flex items-center justify-between">
+            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Moldura PIP</Label>
+            <button onClick={() => onPipFrameChange({ x: 3.0, y: 15.4, width: 56.6, height: 64.3 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
+              <RotateCcw className="w-3.5 h-3.5" />
+            </button>
+          </div>
           <div>
             <Label className="text-xs">Posição X: {pipFrame.x.toFixed(1)}%</Label>
             <Slider value={[pipFrame.x]} onValueChange={([x]) => onPipFrameChange({ x })} min={-20} max={60} step={0.1} className="mt-1" />
@@ -230,7 +240,12 @@ export const CortesControls = ({
       {/* Person Transform */}
       {personCutout && (
         <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
-          <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste da pessoa</Label>
+          <div className="flex items-center justify-between">
+            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste da pessoa</Label>
+            <button onClick={() => onPersonTransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
+              <RotateCcw className="w-3.5 h-3.5" />
+            </button>
+          </div>
           <div>
             <Label className="text-xs">Posição X: {personTransform.x}px</Label>
             <Slider value={[personTransform.x]} onValueChange={([x]) => onPersonTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" />
