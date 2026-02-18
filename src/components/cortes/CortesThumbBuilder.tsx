@@ -40,7 +40,22 @@ export const CortesThumbBuilder = () => {
 
   const handlePipUpload = (file: File) => {
     const reader = new FileReader();
-    reader.onload = (e) => setPipImage(e.target?.result as string);
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string;
+      setPipImage(dataUrl);
+
+      const img = new window.Image();
+      img.onload = () => {
+        const containerRatio = pipFrame.width / pipFrame.height;
+        const imageRatio = img.naturalWidth / img.naturalHeight;
+        const autoScale = Math.max(
+          containerRatio / imageRatio,
+          imageRatio / containerRatio
+        );
+        setPipTransform(prev => ({ ...prev, scale: autoScale }));
+      };
+      img.src = dataUrl;
+    };
     reader.readAsDataURL(file);
   };
 
