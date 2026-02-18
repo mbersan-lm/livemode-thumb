@@ -54,7 +54,7 @@ export const CortesThumbBuilder = () => {
         const autoScale = Math.max(
           containerRatio / imageRatio,
           imageRatio / containerRatio
-        ) + 0.5;
+        ) + 0.05;
         setPipBaseScale(autoScale);
         setPipTransform(prev => ({ ...prev, scale: autoScale }));
       };
