@@ -162,7 +162,8 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               textTransform: 'uppercase',
               transform: 'rotate(-2deg)',
               transformOrigin: 'center center',
-              paddingTop: '20px',
+              padding: '20px',
+              boxSizing: 'border-box',
             } as React.CSSProperties}
           >
             {thumbText}
