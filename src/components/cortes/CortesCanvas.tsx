@@ -69,24 +69,34 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               height: `${pipFrame.height}%`,
               border: '10px solid #D02046',
               transform: 'rotate(-1.2deg)',
-              overflow: 'hidden',
               zIndex: 2,
             }}
           >
-            <img
-              src={pipImage}
-              alt=""
+            <div
               style={{
                 position: 'absolute',
-                inset: 0,
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                objectPosition: `calc(50% + ${pipTransform.x}px) calc(50% + ${pipTransform.y}px)`,
-                transform: `scale(${pipTransform.scale}) rotate(${pipTransform.rotation}deg)`,
-                transformOrigin: 'center center',
+                inset: '-50%',
+                width: '200%',
+                height: '200%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden',
               }}
-            />
+            >
+              <img
+                src={pipImage}
+                alt=""
+                style={{
+                  minWidth: '100%',
+                  minHeight: '100%',
+                  objectFit: 'cover',
+                  objectPosition: `calc(50% + ${pipTransform.x}px) calc(50% + ${pipTransform.y}px)`,
+                  transform: `scale(${pipTransform.scale}) rotate(${pipTransform.rotation}deg)`,
+                  transformOrigin: 'center center',
+                }}
+              />
+            </div>
           </div>
         )}
 
@@ -141,9 +151,11 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               lineHeight: 0.95,
               textAlign: 'center',
               color: '#F1E8D5',
-              WebkitTextStroke: '10px #0C0C20',
+              WebkitTextStroke: '30px #0C0C20',
               paintOrder: 'stroke fill',
               textTransform: 'uppercase',
+              transform: 'rotate(-4deg)',
+              transformOrigin: 'center center',
             }}
           >
             {thumbText}
