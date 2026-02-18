@@ -19,6 +19,7 @@ interface CortesThumbBuilderProps {
   textColor?: string;
   strokeColor?: string;
   pipBorderColor?: string;
+  highlightColor?: string;
   customFontFamily?: string;
   backUrl?: string;
 }
@@ -30,6 +31,7 @@ export const CortesThumbBuilder = ({
   textColor,
   strokeColor,
   pipBorderColor,
+  highlightColor,
   customFontFamily,
   backUrl = '/',
 }: CortesThumbBuilderProps) => {
@@ -141,6 +143,7 @@ export const CortesThumbBuilder = ({
             textColor={textColor}
             strokeColor={strokeColor}
             pipBorderColor={pipBorderColor}
+            highlightColor={highlightColor}
             customFontFamily={customFontFamily}
           />
         </div>

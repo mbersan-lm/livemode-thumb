@@ -23,6 +23,7 @@ interface CortesCanvasProps {
   textColor?: string;
   strokeColor?: string;
   pipBorderColor?: string;
+  highlightColor?: string;
   customFontFamily?: string;
 }
 
@@ -30,7 +31,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
   ({ pipImage, personCutout, thumbText, pipTransform, personTransform, pipFrame,
      bgImage = '/cortes/bg-corte.png', logosImage = '/cortes/logos-corte.png',
      textColor = '#F1E8D5', strokeColor = '#0C0C20', pipBorderColor = '#D02046',
-     customFontFamily = "'Clash Grotesk', sans-serif" }, ref) => {
+     highlightColor = '#D02046', customFontFamily = "'Clash Grotesk', sans-serif" }, ref) => {
     const textRef = useRef<HTMLDivElement>(null);
     const [fontSize, setFontSize] = useState(200);
     const strokeShadow = useMemo(() => generateStrokeShadow(15, strokeColor, 32), [strokeColor]);
@@ -178,7 +179,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           >
             {thumbText.split(/(\*[^*]+\*)/g).map((part, i) =>
               part.startsWith('*') && part.endsWith('*')
-                ? <span key={i} style={{ color: pipBorderColor, marginLeft: '0.15em', marginRight: '0.15em' }}>{part.slice(1, -1)}</span>
+                ? <span key={i} style={{ color: highlightColor, marginLeft: '0.15em', marginRight: '0.15em' }}>{part.slice(1, -1)}</span>
                 : part
             )}
           </div>

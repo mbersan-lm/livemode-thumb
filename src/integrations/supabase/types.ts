@@ -20,6 +20,7 @@ export type Database = {
           created_at: string
           font_family: string | null
           font_url: string | null
+          highlight_color: string
           id: string
           logos_url: string | null
           name: string
@@ -33,6 +34,7 @@ export type Database = {
           created_at?: string
           font_family?: string | null
           font_url?: string | null
+          highlight_color?: string
           id?: string
           logos_url?: string | null
           name: string
@@ -46,6 +48,7 @@ export type Database = {
           created_at?: string
           font_family?: string | null
           font_url?: string | null
+          highlight_color?: string
           id?: string
           logos_url?: string | null
           name?: string

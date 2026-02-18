@@ -1,0 +1,1 @@
+ALTER TABLE public.cortes_programs ADD COLUMN highlight_color text NOT NULL DEFAULT '#D02046';

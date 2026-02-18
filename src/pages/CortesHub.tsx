@@ -18,6 +18,7 @@ export interface CortesProgram {
   text_color: string;
   stroke_color: string;
   pip_border_color: string;
+  highlight_color: string;
   created_at: string;
 }
 
