@@ -25,6 +25,7 @@ export const CortesThumbBuilder = () => {
   const [pipTransform, setPipTransform] = useState(DEFAULT_PIP_TRANSFORM);
   const [personTransform, setPersonTransform] = useState(DEFAULT_PERSON_TRANSFORM);
   const [pipFrame, setPipFrame] = useState(DEFAULT_PIP_FRAME);
+  const [pipBaseScale, setPipBaseScale] = useState(1);
 
   useEffect(() => {
     const updateScale = () => {
@@ -53,7 +54,8 @@ export const CortesThumbBuilder = () => {
         const autoScale = Math.max(
           containerRatio / imageRatio,
           imageRatio / containerRatio
-        );
+        ) + 0.5;
+        setPipBaseScale(autoScale);
         setPipTransform(prev => ({ ...prev, scale: autoScale }));
       };
       img.src = dataUrl;
@@ -94,6 +96,7 @@ export const CortesThumbBuilder = () => {
     setPipTransform(DEFAULT_PIP_TRANSFORM);
     setPersonTransform(DEFAULT_PERSON_TRANSFORM);
     setPipFrame(DEFAULT_PIP_FRAME);
+    setPipBaseScale(1);
   };
 
   const scaledHeight = CANVAS_HEIGHT * canvasScale;
@@ -137,6 +140,7 @@ export const CortesThumbBuilder = () => {
             pipTransform={pipTransform}
             personTransform={personTransform}
             pipFrame={pipFrame}
+            pipBaseScale={pipBaseScale}
             onPipUpload={handlePipUpload}
             onPersonUpload={handlePersonUpload}
             onTextChange={setThumbText}
