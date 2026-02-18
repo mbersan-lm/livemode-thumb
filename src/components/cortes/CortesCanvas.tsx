@@ -73,23 +73,22 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               zIndex: 2,
             }}
           >
-            {(() => {
-              // Calculate minimum scale to cover container when rotated
+          {(() => {
               const rad = Math.abs(pipTransform.rotation * Math.PI / 180);
               const coverScale = Math.abs(Math.cos(rad)) + Math.abs(Math.sin(rad));
-              const finalScale = Math.max(pipTransform.scale, pipTransform.scale * coverScale);
+              const finalScale = pipTransform.scale * coverScale;
               return (
                 <img
                   src={pipImage}
                   alt=""
                   style={{
                     position: 'absolute',
-                    inset: 0,
-                    width: '100%',
-                    height: '100%',
+                    left: '50%',
+                    top: '50%',
+                    width: '200%',
+                    height: '200%',
                     objectFit: 'cover',
-                    objectPosition: `calc(50% + ${pipTransform.x}px) calc(50% + ${pipTransform.y}px)`,
-                    transform: `scale(${finalScale}) rotate(${pipTransform.rotation}deg)`,
+                    transform: `translate(-50%, -50%) translate(${pipTransform.x}px, ${pipTransform.y}px) scale(${finalScale}) rotate(${pipTransform.rotation}deg)`,
                     transformOrigin: 'center center',
                   }}
                 />
