@@ -23,21 +23,21 @@ interface CortesCanvasProps {
 export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
   ({ pipImage, personCutout, thumbText, pipTransform, personTransform, pipFrame }, ref) => {
     const textRef = useRef<HTMLDivElement>(null);
-    const [fontSize, setFontSize] = useState(2500);
+    const [fontSize, setFontSize] = useState(200);
     const strokeShadow = useMemo(() => generateStrokeShadow(15, '#0C0C20', 32), []);
 
     useEffect(() => {
       if (!textRef.current || !thumbText) {
-        setFontSize(500);
+        setFontSize(200);
         return;
       }
 
-      let size = 2500;
+      let size = 200;
       const el = textRef.current;
       el.style.fontSize = `${size}px`;
 
-      while (el.scrollHeight > el.clientHeight && size > 120) {
-        size -= 10;
+      while (el.scrollHeight > el.clientHeight && size > 20) {
+        size -= 2;
         el.style.fontSize = `${size}px`;
       }
 
@@ -164,6 +164,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               transformOrigin: 'center center',
               padding: '20px',
               boxSizing: 'border-box',
+              wordBreak: 'break-word',
             } as React.CSSProperties}
           >
             {thumbText}
