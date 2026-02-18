@@ -12,7 +12,27 @@ const DEFAULT_PIP_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
 const DEFAULT_PERSON_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
 const DEFAULT_PIP_FRAME = { x: 3.0, y: 15.4, width: 56.6, height: 64.3 };
 
-export const CortesThumbBuilder = () => {
+interface CortesThumbBuilderProps {
+  programName?: string;
+  bgImage?: string;
+  logosImage?: string;
+  textColor?: string;
+  strokeColor?: string;
+  pipBorderColor?: string;
+  customFontFamily?: string;
+  backUrl?: string;
+}
+
+export const CortesThumbBuilder = ({
+  programName = 'Roda de Bobo',
+  bgImage,
+  logosImage,
+  textColor,
+  strokeColor,
+  pipBorderColor,
+  customFontFamily,
+  backUrl = '/',
+}: CortesThumbBuilderProps) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   const [canvasScale, setCanvasScale] = useState(0.5);
@@ -116,6 +136,12 @@ export const CortesThumbBuilder = () => {
             pipTransform={pipTransform}
             personTransform={personTransform}
             pipFrame={pipFrame}
+            bgImage={bgImage}
+            logosImage={logosImage}
+            textColor={textColor}
+            strokeColor={strokeColor}
+            pipBorderColor={pipBorderColor}
+            customFontFamily={customFontFamily}
           />
         </div>
       </div>
@@ -123,11 +149,11 @@ export const CortesThumbBuilder = () => {
       <div className="w-full md:w-[380px] bg-card border-t md:border-t-0 md:border-l border-border flex flex-col flex-1 md:flex-none overflow-hidden">
         <div className="p-4 md:p-6 pb-3 md:pb-4 border-b border-border flex items-center justify-between shrink-0">
           <div>
-            <h1 className="text-xl font-bold tracking-tight">Cortes</h1>
+          <h1 className="text-xl font-bold tracking-tight">{programName}</h1>
             <p className="text-xs text-muted-foreground mt-1">Thumbnail Generator</p>
           </div>
-          <a href="/" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-            ← Melhores Momentos
+          <a href={backUrl} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+            ← Voltar
           </a>
         </div>
 
