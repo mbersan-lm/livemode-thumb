@@ -1,45 +1,16 @@
 
 
-# Destaque Parcial de Texto em Cor Diferente
+# Ampliar Largura Horizontal do Texto na Thumb "Cortes"
 
-## Abordagem
+## Mudanca
 
-O usuario quer selecionar uma parte do texto para ficar em vermelho (#D02046) enquanto o resto permanece bege (#F1E8D5). A forma mais simples e pratica: usar um marcador de sintaxe no proprio textarea. O usuario envolve a parte desejada com asteriscos (ex: `*GOL DECISIVO*`) e o sistema renderiza essa parte em vermelho.
+### Arquivo: `src/components/cortes/CortesCanvas.tsx`
 
-## Mudancas
+Ajustar o container de texto (Layer 5, linhas 148-168) para ocupar mais largura horizontal:
 
-### 1. CortesControls.tsx -- Instrucao no campo de texto
-- Adicionar uma dica abaixo do textarea explicando: "Use *asteriscos* para destacar em vermelho"
+- `left: '5%'` → `left: '2%'` (mais proximo da borda esquerda)
+- `width: '90%'` → `width: '96%'` (ocupa 96% da largura total)
 
-### 2. CortesCanvas.tsx -- Renderizacao com cores
-- Criar uma funcao `renderColoredText(text)` que faz parse do texto buscando trechos entre `*...*`
-- Trechos normais: renderizados em `<span>` com cor `#F1E8D5`
-- Trechos entre asteriscos: renderizados em `<span style={{ color: '#D02046' }}>` (sem os asteriscos)
-- O `textShadow` (stroke) continua sendo herdado do container pai, entao o tracado permanece identico
-- Substituir `{thumbText}` por `{renderColoredText(thumbText)}`
+Isso deixa 2% de margem em cada lado (25.6px de cada lado no canvas de 1280px), que somado ao `padding: 20px` interno garante uma margem segura e bonita para o stroke de 15px.
 
-### 3. Auto-fit -- Sem mudancas
-- O loop de auto-ajuste de font-size continua funcionando normalmente, pois os `<span>` internos nao afetam `scrollHeight` vs `clientHeight`
-
-## Detalhes tecnicos
-
-Funcao de parse:
-
-```text
-function renderColoredText(text: string):
-  split text by regex /(\*[^*]+\*)/g
-  for each part:
-    if starts and ends with *:
-      return <span style={{ color: '#D02046' }}>{part without asterisks}</span>
-    else:
-      return part as-is
-```
-
-Exemplo de uso:
-- Input: `NEYMAR FAZ *GOL DECISIVO* NA FINAL`
-- Resultado: "NEYMAR FAZ " em bege, "GOL DECISIVO" em vermelho, " NA FINAL" em bege
-
-### Arquivos modificados:
-- `src/components/cortes/CortesCanvas.tsx` -- adicionar funcao de parse e renderizacao colorida
-- `src/components/cortes/CortesControls.tsx` -- adicionar dica visual abaixo do textarea
-
+Nenhuma outra mudanca necessaria -- o autofit e o stroke continuam funcionando normalmente.
