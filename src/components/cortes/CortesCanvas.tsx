@@ -137,13 +137,13 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               left: '5%',
               bottom: '6%',
               width: '90%',
-              maxHeight: '35%',
-              overflow: 'hidden',
+              maxHeight: '42%',
+              overflow: 'visible',
               zIndex: 5,
               fontFamily: "'Clash Grotesk', sans-serif",
               fontWeight: 800,
               fontSize: `${fontSize}px`,
-              lineHeight: 0.95,
+              lineHeight: 1.15,
               textAlign: 'center',
               color: '#F1E8D5',
               WebkitTextStroke: '30px #0C0C20',
@@ -151,7 +151,10 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               textTransform: 'uppercase',
               transform: 'rotate(-2deg)',
               transformOrigin: 'center center',
-            }}
+              paddingTop: '10px',
+              strokeLinejoin: 'round',
+              strokeLinecap: 'round',
+            } as React.CSSProperties}
           >
             {thumbText}
           </div>
