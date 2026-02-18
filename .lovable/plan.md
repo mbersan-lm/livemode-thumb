@@ -1,23 +1,37 @@
 
-# Fix PIP Image Zoom Clipping
 
-## Problem
-The PIP image is set to `width: 200%` and `height: 200%` to prevent rotation clipping, but this causes the image to appear cropped/zoomed-in even at the default scale of 1. The user sees a zoomed photo immediately after upload (as shown in the screenshot where Messi's head is cut off at the top).
+# Ajustes no Texto da Thumbnail de Cortes
 
-## Solution
-Change the PIP image sizing strategy: instead of using a fixed `200%` size, use `100%` as the base and only apply extra size via the user's scale control. The image should use `object-fit: contain` so the entire photo is visible by default within the PIP frame, fitting entirely inside without cropping.
+## Problemas Identificados
 
-## Technical Details
+1. **Traçado (stroke) com cantos pontiagudos** - O `WebkitTextStroke` usa `lineJoin: miter` por padrão, criando pontas afiadas nas letras.
+2. **Texto responsivo** - O sistema de auto-ajuste ja existe (loop que reduz de 2500px ate 120px), mas o `lineHeight: 0.95` muito apertado e o `overflow: hidden` podem estar impedindo o correto funcionamento.
+3. **Acentos cortados** - O `lineHeight: 0.95` comprime demais verticalmente e o `overflow: hidden` corta os acentos que ultrapassam a caixa do texto. A area precisa de mais espaco superior (padding-top) para acomodar acentos.
 
-**File: `src/components/cortes/CortesCanvas.tsx`** (Lines 79-91)
+## Solucao
 
-Change the PIP image styles:
-- Set `width: '100%'` and `height: '100%'` as base dimensions
-- Change `objectFit` from `'cover'` to `'contain'` so the full image is visible inside the frame
-- Keep the centering and transform logic for position/scale/rotation adjustments
-- The user can still zoom in using the scale slider, but the default view shows the entire image
+### Arquivo: `src/components/cortes/CortesCanvas.tsx`
 
-This means:
-- Default scale (1x): full image visible inside PIP frame
-- User zooms in via slider: image crops naturally as expected
-- Rotation still works since the image can be scaled up to compensate
+**1. Stroke arredondado:**
+- Adicionar `lineJoin: 'round'` e `strokeLinecap: 'round'` via propriedades CSS (`strokeLinejoin`, `strokeLinecap`)
+- Alternativa mais robusta: usar a tecnica de text-shadow com multiplas sombras para simular um stroke arredondado, porem isso pode impactar a exportacao. A abordagem mais simples e adicionar `WebkitTextStrokeWidth` + `paintOrder: stroke fill` que ja esta em uso, combinado com SVG-like properties.
+- A solucao mais eficaz para arredondar o stroke via CSS puro e aplicar `-webkit-text-stroke` junto com `paint-order: stroke fill` e adicionar `stroke-linejoin: round` e `stroke-linecap: round` como propriedades CSS no elemento.
+
+**2. Texto responsivo (ja funciona, ajuste fino):**
+- O loop de auto-ajuste ja existe e funciona. Nenhuma mudanca necessaria na logica, apenas nos parametros de layout para dar mais espaco ao texto.
+
+**3. Acentos cortados:**
+- Aumentar `lineHeight` de `0.95` para `1.15` para dar espaco vertical suficiente para acentos
+- Aumentar `maxHeight` de `35%` para `42%` para compensar o aumento do lineHeight
+- Adicionar `paddingTop: '10px'` para dar respiro extra no topo onde os acentos ficam
+- Remover `overflow: hidden` e usar `overflow: visible` para que acentos nao sejam cortados (o canvas pai ja tem `overflow: hidden` para conter tudo)
+
+### Resumo das alteracoes no Layer 5 (texto):
+
+- `lineHeight`: `0.95` → `1.15`
+- `maxHeight`: `35%` → `42%`
+- `overflow`: `hidden` → `visible`
+- Adicionar: `paddingTop: '10px'`
+- Adicionar: `strokeLinejoin: 'round'` e `strokeLinecap: 'round'` (propriedades CSS para arredondar o stroke)
+- Ajustar o loop de auto-ajuste para considerar o novo lineHeight (o `scrollHeight` sera naturalmente maior, entao o loop continuara funcionando corretamente)
+
