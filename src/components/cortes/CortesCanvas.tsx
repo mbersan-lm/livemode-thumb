@@ -97,7 +97,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
                     top: '50%',
                     width: '100%',
                     height: '100%',
-                    objectFit: 'contain',
+                    objectFit: 'cover',
                     transform: `translate(-50%, -50%) translate(${pipTransform.x}px, ${pipTransform.y}px) scale(${finalScale}) rotate(${pipTransform.rotation}deg)`,
                     transformOrigin: 'center center',
                   }}
@@ -169,7 +169,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           >
             {thumbText.split(/(\*[^*]+\*)/g).map((part, i) =>
               part.startsWith('*') && part.endsWith('*')
-                ? <span key={i} style={{ color: '#D02046' }}>{part.slice(1, -1)}</span>
+                ? <span key={i} style={{ color: '#D02046', marginLeft: '0.15em', marginRight: '0.15em' }}>{part.slice(1, -1)}</span>
                 : part
             )}
           </div>
