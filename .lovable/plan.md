@@ -1,36 +1,40 @@
 
 
-# Fix: Texto Cortado na Thumb "Cortes"
+# Fix: Texto Cortado e Truncado no Builder de Cortes
 
-## Problema
-O texto esta sendo cortado por dois motivos:
-1. O `text-shadow` de 15px de raio extrapola os limites do elemento, mas `overflow: hidden` corta tudo que sai da caixa
-2. O loop de auto-ajuste compara `scrollHeight` vs `clientHeight`, mas nao contabiliza o espaco extra necessario para o stroke (text-shadow) nem para o padding
+## Causa Raiz
+
+O loop de auto-ajuste comeca em `2500px` de font-size para um container de apenas ~274px de altura (38% de 720px). Isso causa:
+
+1. **Texto truncado**: Em tamanhos extremos (2500px), o navegador nao consegue renderizar todos os caracteres visivelmente, fazendo o texto "parar no meio"
+2. **Centenas de iteracoes**: O loop precisa rodar ~238 vezes (2500 -> 120, step 10) causando reflows massivos
+3. **scrollHeight impreciso**: Em font-sizes absurdos, a medicao de `scrollHeight` pode ser imprecisa
 
 ## Solucao
 
 ### Arquivo: `src/components/cortes/CortesCanvas.tsx`
 
-**1. Adicionar padding em todos os lados para acomodar o stroke:**
-- Trocar `paddingTop: '20px'` por `padding: '20px'` em todos os lados (o shadow de 15px precisa de pelo menos 15px de folga em cada direcao)
-- Isso garante que o stroke nao seja cortado pelo `overflow: hidden`
+**1. Iniciar o font-size em um valor razoavel:**
+- Mudar o tamanho inicial de `2500px` para `200px` (a caixa tem ~274px de altura, entao 200px e um maximo razoavel para uma linha)
+- Mudar o estado inicial de `useState(2500)` para `useState(200)`
 
-**2. Corrigir o loop de auto-ajuste:**
-- O loop atual compara `scrollHeight > clientHeight`, mas o `padding` ja faz parte do `clientHeight`. O problema e que o conteudo de texto pode ultrapassar o espaco disponivel
-- Adicionar uma margem de seguranca na comparacao: o texto deve caber considerando o padding
-- Reduzir o step de 10px para algo mais fino quando o tamanho ja esta pequeno, para evitar reducoes excessivas
+**2. Usar step menor para precisao:**
+- Reduzir o step de `10px` para `2px` para ajuste mais fino
+- Isso resulta em no maximo ~40 iteracoes (200 -> 120) em vez de ~238
 
-**3. Ajustar a area do texto:**
-- Usar `boxSizing: 'border-box'` para que o padding seja incluido nas dimensoes do elemento
-- Manter `overflow: hidden` no container do texto
-- O canvas pai ja tem `overflow: hidden`, entao o texto nunca sai da thumbnail
+**3. Garantir que o texto nunca e truncado:**
+- Adicionar `wordBreak: 'break-word'` no estilo para evitar que palavras muito longas saiam da caixa horizontalmente
+- Manter `overflow: 'hidden'` apenas como seguranca, mas o loop deve garantir que o texto cabe antes
 
-### Mudancas especificas no estilo do Layer 5 (texto):
-- `paddingTop: '20px'` mudara para `padding: '20px'` (todos os lados)
-- Adicionar `boxSizing: 'border-box'`
-- Manter `overflow: hidden` e `maxHeight: '38%'`
+### Mudancas especificas:
 
-### Mudancas no useEffect de auto-ajuste:
-- Manter a logica atual (scrollHeight > clientHeight), que ja funciona corretamente com padding + border-box
-- Isso garante que o texto sempre caiba 100% dentro da caixa visivel, incluindo espaco para o stroke
+```text
+Linha 26: useState(2500) -> useState(200)
+Linha 31: setFontSize(500) -> setFontSize(200)
+Linha 35: let size = 2500 -> let size = 200
+Linha 40: size -= 10 -> size -= 2
+Linha 39: size > 120 -> size > 20 (minimo menor para textos muito longos)
+Estilo: adicionar wordBreak: 'break-word'
+```
 
+Isso resolve ambos os problemas: o texto sempre aparece completo (100% do conteudo) e o font-size e reduzido automaticamente ate caber na caixa sem cortes.
