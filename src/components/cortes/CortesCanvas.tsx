@@ -1,4 +1,15 @@
-import { useEffect, useRef, useState, forwardRef } from 'react';
+import { useEffect, useRef, useState, forwardRef, useMemo } from 'react';
+
+function generateStrokeShadow(radius: number, color: string, steps = 32): string {
+  const shadows: string[] = [];
+  for (let i = 0; i < steps; i++) {
+    const angle = (2 * Math.PI * i) / steps;
+    const x = Math.cos(angle) * radius;
+    const y = Math.sin(angle) * radius;
+    shadows.push(`${x.toFixed(1)}px ${y.toFixed(1)}px 0 ${color}`);
+  }
+  return shadows.join(', ');
+}
 
 interface CortesCanvasProps {
   pipImage: string | null;
@@ -13,6 +24,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
   ({ pipImage, personCutout, thumbText, pipTransform, personTransform, pipFrame }, ref) => {
     const textRef = useRef<HTMLDivElement>(null);
     const [fontSize, setFontSize] = useState(2500);
+    const strokeShadow = useMemo(() => generateStrokeShadow(15, '#0C0C20', 32), []);
 
     useEffect(() => {
       if (!textRef.current || !thumbText) {
@@ -137,23 +149,20 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               left: '5%',
               bottom: '6%',
               width: '90%',
-              maxHeight: '42%',
-              overflow: 'visible',
+              maxHeight: '38%',
+              overflow: 'hidden',
               zIndex: 5,
               fontFamily: "'Clash Grotesk', sans-serif",
               fontWeight: 800,
               fontSize: `${fontSize}px`,
-              lineHeight: 1.15,
+              lineHeight: 1.2,
               textAlign: 'center',
               color: '#F1E8D5',
-              WebkitTextStroke: '30px #0C0C20',
-              paintOrder: 'stroke fill',
+              textShadow: strokeShadow,
               textTransform: 'uppercase',
               transform: 'rotate(-2deg)',
               transformOrigin: 'center center',
-              paddingTop: '10px',
-              strokeLinejoin: 'round',
-              strokeLinecap: 'round',
+              paddingTop: '20px',
             } as React.CSSProperties}
           >
             {thumbText}
