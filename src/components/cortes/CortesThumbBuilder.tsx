@@ -46,7 +46,9 @@ export const CortesThumbBuilder = () => {
 
       const img = new window.Image();
       img.onload = () => {
-        const containerRatio = pipFrame.width / pipFrame.height;
+        const containerPixelW = (pipFrame.width / 100) * CANVAS_WIDTH;
+        const containerPixelH = (pipFrame.height / 100) * CANVAS_HEIGHT;
+        const containerRatio = containerPixelW / containerPixelH;
         const imageRatio = img.naturalWidth / img.naturalHeight;
         const autoScale = Math.max(
           containerRatio / imageRatio,
