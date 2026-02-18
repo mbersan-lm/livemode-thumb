@@ -18,13 +18,22 @@ interface CortesCanvasProps {
   pipTransform: { x: number; y: number; scale: number; rotation: number };
   personTransform: { x: number; y: number; scale: number; rotation: number };
   pipFrame: { x: number; y: number; width: number; height: number };
+  bgImage?: string;
+  logosImage?: string;
+  textColor?: string;
+  strokeColor?: string;
+  pipBorderColor?: string;
+  customFontFamily?: string;
 }
 
 export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
-  ({ pipImage, personCutout, thumbText, pipTransform, personTransform, pipFrame }, ref) => {
+  ({ pipImage, personCutout, thumbText, pipTransform, personTransform, pipFrame,
+     bgImage = '/cortes/bg-corte.png', logosImage = '/cortes/logos-corte.png',
+     textColor = '#F1E8D5', strokeColor = '#0C0C20', pipBorderColor = '#D02046',
+     customFontFamily = "'Clash Grotesk', sans-serif" }, ref) => {
     const textRef = useRef<HTMLDivElement>(null);
     const [fontSize, setFontSize] = useState(200);
-    const strokeShadow = useMemo(() => generateStrokeShadow(15, '#0C0C20', 32), []);
+    const strokeShadow = useMemo(() => generateStrokeShadow(15, strokeColor, 32), [strokeColor]);
 
     useEffect(() => {
       if (!textRef.current || !thumbText) {
@@ -58,7 +67,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
       >
         {/* Layer 1: BG */}
         <img
-          src="/cortes/bg-corte.png"
+          src={bgImage}
           alt=""
           style={{
             position: 'absolute',
@@ -79,7 +88,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               top: `${pipFrame.y}%`,
               width: `${pipFrame.width}%`,
               height: `${pipFrame.height}%`,
-              border: '10px solid #D02046',
+              border: `10px solid ${pipBorderColor}`,
               transform: 'rotate(-1.2deg)',
               overflow: 'hidden',
               zIndex: 2,
@@ -127,7 +136,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
 
         {/* Layer 4: Logos */}
         <img
-          src="/cortes/logos-corte.png"
+          src={logosImage}
           alt=""
           style={{
             position: 'absolute',
@@ -152,12 +161,12 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               maxHeight: '38%',
               overflow: 'hidden',
               zIndex: 5,
-              fontFamily: "'Clash Grotesk', sans-serif",
+              fontFamily: customFontFamily.includes(',') ? customFontFamily : `'${customFontFamily}', sans-serif`,
               fontWeight: 800,
               fontSize: `${fontSize}px`,
               lineHeight: 1.2,
               textAlign: 'center',
-              color: '#F1E8D5',
+              color: textColor,
               textShadow: strokeShadow,
               textTransform: 'uppercase',
               transform: 'rotate(-2deg)',
@@ -169,7 +178,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           >
             {thumbText.split(/(\*[^*]+\*)/g).map((part, i) =>
               part.startsWith('*') && part.endsWith('*')
-                ? <span key={i} style={{ color: '#D02046', marginLeft: '0.15em', marginRight: '0.15em' }}>{part.slice(1, -1)}</span>
+                ? <span key={i} style={{ color: pipBorderColor, marginLeft: '0.15em', marginRight: '0.15em' }}>{part.slice(1, -1)}</span>
                 : part
             )}
           </div>

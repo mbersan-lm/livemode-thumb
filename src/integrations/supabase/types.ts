@@ -14,7 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      cortes_programs: {
+        Row: {
+          bg_url: string | null
+          created_at: string
+          font_family: string | null
+          font_url: string | null
+          id: string
+          logos_url: string | null
+          name: string
+          pip_border_color: string
+          stroke_color: string
+          text_color: string
+          thumb_type: string
+        }
+        Insert: {
+          bg_url?: string | null
+          created_at?: string
+          font_family?: string | null
+          font_url?: string | null
+          id?: string
+          logos_url?: string | null
+          name: string
+          pip_border_color?: string
+          stroke_color?: string
+          text_color?: string
+          thumb_type?: string
+        }
+        Update: {
+          bg_url?: string | null
+          created_at?: string
+          font_family?: string | null
+          font_url?: string | null
+          id?: string
+          logos_url?: string | null
+          name?: string
+          pip_border_color?: string
+          stroke_color?: string
+          text_color?: string
+          thumb_type?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
