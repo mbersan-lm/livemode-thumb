@@ -97,7 +97,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
                     top: '50%',
                     width: '100%',
                     height: '100%',
-                    objectFit: 'cover',
+                    objectFit: 'contain',
                     transform: `translate(-50%, -50%) translate(${pipTransform.x}px, ${pipTransform.y}px) scale(${finalScale}) rotate(${pipTransform.rotation}deg)`,
                     transformOrigin: 'center center',
                   }}
