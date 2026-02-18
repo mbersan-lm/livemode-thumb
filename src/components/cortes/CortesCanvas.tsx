@@ -74,9 +74,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
             }}
           >
           {(() => {
-              const rad = Math.abs(pipTransform.rotation * Math.PI / 180);
-              const coverScale = Math.abs(Math.cos(rad)) + Math.abs(Math.sin(rad));
-              const finalScale = pipTransform.scale * coverScale;
+              const finalScale = pipTransform.scale;
               return (
                 <img
                   src={pipImage}
