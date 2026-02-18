@@ -49,6 +49,7 @@ const CortesProgramBuilder = () => {
       textColor={program!.text_color}
       strokeColor={program!.stroke_color}
       pipBorderColor={program!.pip_border_color}
+      highlightColor={program!.highlight_color}
       customFontFamily={program!.font_family || undefined}
       backUrl="/cortes"
     />

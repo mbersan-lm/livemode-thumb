@@ -21,6 +21,7 @@ export const CreateProgramDialog = ({ open, onOpenChange, onCreated }: CreatePro
   const [textColor, setTextColor] = useState('#F1E8D5');
   const [strokeColor, setStrokeColor] = useState('#0C0C20');
   const [pipBorderColor, setPipBorderColor] = useState('#D02046');
+  const [highlightColor, setHighlightColor] = useState('#D02046');
   const [saving, setSaving] = useState(false);
 
   const uploadFile = async (file: File, folder: string): Promise<string | null> => {
@@ -62,6 +63,7 @@ export const CreateProgramDialog = ({ open, onOpenChange, onCreated }: CreatePro
         text_color: textColor,
         stroke_color: strokeColor,
         pip_border_color: pipBorderColor,
+        highlight_color: highlightColor,
       });
 
       if (error) throw error;
@@ -85,6 +87,7 @@ export const CreateProgramDialog = ({ open, onOpenChange, onCreated }: CreatePro
     setTextColor('#F1E8D5');
     setStrokeColor('#0C0C20');
     setPipBorderColor('#D02046');
+    setHighlightColor('#D02046');
   };
 
   return (
@@ -127,10 +130,11 @@ export const CreateProgramDialog = ({ open, onOpenChange, onCreated }: CreatePro
           </div>
 
           {/* Colors */}
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <ColorPicker label="Cor do texto" value={textColor} onChange={setTextColor} />
             <ColorPicker label="Cor do traçado" value={strokeColor} onChange={setStrokeColor} />
             <ColorPicker label="Borda PIP" value={pipBorderColor} onChange={setPipBorderColor} />
+            <ColorPicker label="Texto destaque" value={highlightColor} onChange={setHighlightColor} />
           </div>
         </div>
 
