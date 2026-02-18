@@ -4,25 +4,28 @@ interface CortesCanvasProps {
   pipImage: string | null;
   personCutout: string | null;
   thumbText: string;
+  pipTransform: { x: number; y: number; scale: number };
+  personTransform: { x: number; y: number; scale: number };
+  pipFrame: { x: number; y: number; width: number; height: number };
 }
 
 export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
-  ({ pipImage, personCutout, thumbText }, ref) => {
+  ({ pipImage, personCutout, thumbText, pipTransform, personTransform, pipFrame }, ref) => {
     const textRef = useRef<HTMLDivElement>(null);
-    const [fontSize, setFontSize] = useState(100);
+    const [fontSize, setFontSize] = useState(500);
 
     useEffect(() => {
       if (!textRef.current || !thumbText) {
-        setFontSize(100);
+        setFontSize(500);
         return;
       }
 
-      let size = 100;
+      let size = 500;
       const el = textRef.current;
       el.style.fontSize = `${size}px`;
 
-      while (el.scrollHeight > el.clientHeight && size > 30) {
-        size -= 2;
+      while (el.scrollHeight > el.clientHeight && size > 60) {
+        size -= 4;
         el.style.fontSize = `${size}px`;
       }
 
@@ -60,10 +63,10 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           <div
             style={{
               position: 'absolute',
-              left: '2.2%',
-              top: '7.8%',
-              width: '56.6%',
-              height: '64.3%',
+              left: `${pipFrame.x}%`,
+              top: `${pipFrame.y}%`,
+              width: `${pipFrame.width}%`,
+              height: `${pipFrame.height}%`,
               border: '10px solid #D02046',
               transform: 'rotate(-1.2deg)',
               overflow: 'hidden',
@@ -73,7 +76,12 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
             <img
               src={pipImage}
               alt=""
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                transform: `translate(${pipTransform.x}px, ${pipTransform.y}px) scale(${pipTransform.scale})`,
+              }}
             />
           </div>
         )}
@@ -90,6 +98,8 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               height: '108%',
               width: 'auto',
               zIndex: 3,
+              transform: `translate(${personTransform.x}px, ${personTransform.y}px) scale(${personTransform.scale})`,
+              transformOrigin: 'center center',
             }}
           />
         )}

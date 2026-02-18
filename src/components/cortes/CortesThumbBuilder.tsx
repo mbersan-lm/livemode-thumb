@@ -8,6 +8,10 @@ import { toast } from 'sonner';
 const CANVAS_WIDTH = 1280;
 const CANVAS_HEIGHT = 720;
 
+const DEFAULT_PIP_TRANSFORM = { x: 0, y: 0, scale: 1 };
+const DEFAULT_PERSON_TRANSFORM = { x: 0, y: 0, scale: 1 };
+const DEFAULT_PIP_FRAME = { x: 2.2, y: 7.8, width: 56.6, height: 64.3 };
+
 export const CortesThumbBuilder = () => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
@@ -17,6 +21,10 @@ export const CortesThumbBuilder = () => {
   const [personCutout, setPersonCutout] = useState<string | null>(null);
   const [thumbText, setThumbText] = useState('');
   const [isRemovingBg, setIsRemovingBg] = useState(false);
+
+  const [pipTransform, setPipTransform] = useState(DEFAULT_PIP_TRANSFORM);
+  const [personTransform, setPersonTransform] = useState(DEFAULT_PERSON_TRANSFORM);
+  const [pipFrame, setPipFrame] = useState(DEFAULT_PIP_FRAME);
 
   useEffect(() => {
     const updateScale = () => {
@@ -66,13 +74,15 @@ export const CortesThumbBuilder = () => {
     setPipImage(null);
     setPersonCutout(null);
     setThumbText('');
+    setPipTransform(DEFAULT_PIP_TRANSFORM);
+    setPersonTransform(DEFAULT_PERSON_TRANSFORM);
+    setPipFrame(DEFAULT_PIP_FRAME);
   };
 
   const scaledHeight = CANVAS_HEIGHT * canvasScale;
 
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row">
-      {/* Canvas Area */}
       <div
         className={`flex items-center justify-center overflow-hidden bg-[hsl(240_10%_6%)] ${isMobile ? '' : 'flex-1'}`}
         style={isMobile ? { height: scaledHeight + 8, minHeight: scaledHeight + 8 } : undefined}
@@ -83,11 +93,13 @@ export const CortesThumbBuilder = () => {
             pipImage={pipImage}
             personCutout={personCutout}
             thumbText={thumbText}
+            pipTransform={pipTransform}
+            personTransform={personTransform}
+            pipFrame={pipFrame}
           />
         </div>
       </div>
 
-      {/* Controls */}
       <div className="w-full md:w-[380px] bg-card border-t md:border-t-0 md:border-l border-border overflow-y-auto flex flex-col flex-1 md:flex-none">
         <div className="p-4 md:p-6 pb-3 md:pb-4 border-b border-border flex items-center justify-between">
           <div>
@@ -105,9 +117,15 @@ export const CortesThumbBuilder = () => {
             personCutout={personCutout}
             thumbText={thumbText}
             isRemovingBg={isRemovingBg}
+            pipTransform={pipTransform}
+            personTransform={personTransform}
+            pipFrame={pipFrame}
             onPipUpload={handlePipUpload}
             onPersonUpload={handlePersonUpload}
             onTextChange={setThumbText}
+            onPipTransformChange={(t) => setPipTransform((prev) => ({ ...prev, ...t }))}
+            onPersonTransformChange={(t) => setPersonTransform((prev) => ({ ...prev, ...t }))}
+            onPipFrameChange={(f) => setPipFrame((prev) => ({ ...prev, ...f }))}
             onClear={handleClear}
             canvasRef={canvasRef}
           />
