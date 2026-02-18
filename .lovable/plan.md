@@ -1,30 +1,39 @@
 
-# Fix: Auto-zoom do PIP usando dimensoes reais em pixels
+# Ajustes no auto-zoom do PIP
 
-## Problema
+## Mudancas
 
-O calculo do auto-zoom usa os valores percentuais do frame diretamente como ratio:
-- `containerRatio = 56.6 / 64.3 = 0.88` (ERRADO)
+### 1. Adicionar +0.5x ao zoom calculado no upload
 
-Mas os percentuais sao relativos a dimensoes diferentes (1280 x 720), entao o ratio real em pixels e:
-- `(56.6% * 1280) / (64.3% * 720) = 724.48 / 462.96 = 1.565` (CORRETO)
+**Arquivo: `src/components/cortes/CortesThumbBuilder.tsx`**
 
-Isso faz com que o zoom calculado seja muito menor do que o necessario para preencher o frame.
-
-## Mudanca
-
-### Arquivo: `src/components/cortes/CortesThumbBuilder.tsx`
-
-Alterar o calculo do `containerRatio` na funcao `handlePipUpload` (linhas 49-54) para converter percentuais em pixels reais antes de calcular o ratio:
+Na funcao `handlePipUpload`, apos calcular o `autoScale`, adicionar 0.5 antes de aplicar:
 
 ```
-// DE:
-const containerRatio = pipFrame.width / pipFrame.height;
-
-// PARA:
-const containerPixelW = (pipFrame.width / 100) * 1280;
-const containerPixelH = (pipFrame.height / 100) * 720;
-const containerRatio = containerPixelW / containerPixelH;
+const autoScale = Math.max(...) + 0.5;
 ```
 
-O resto da logica permanece identico. Isso garante que o ratio reflete as dimensoes reais do frame PIP em pixels, resultando num zoom que preenche corretamente o frame.
+### 2. Guardar o zoom calculado para uso no reset
+
+Criar um novo state `pipBaseScale` que armazena o valor calculado (com o +0.5). Quando o botao "Redefinir" for clicado, ele volta para esse valor ao inves de `scale: 1`.
+
+**Arquivo: `src/components/cortes/CortesThumbBuilder.tsx`**
+
+- Adicionar state: `const [pipBaseScale, setPipBaseScale] = useState(1);`
+- No `handlePipUpload`, apos calcular `autoScale + 0.5`, salvar em `pipBaseScale`
+- Passar `pipBaseScale` como nova prop para `CortesControls`
+
+**Arquivo: `src/components/cortes/CortesControls.tsx`**
+
+- Receber nova prop `pipBaseScale: number`
+- No botao de reset do PIP transform (linha 150), trocar `scale: 1` por `scale: pipBaseScale`
+
+### 3. Reset geral (Limpar tudo)
+
+No `handleClear`, o `pipBaseScale` volta para `1` ja que nao ha imagem carregada.
+
+## Resultado
+
+- Upload PIP: zoom = calculo automatico + 0.5x
+- Botao "Redefinir" do PIP: volta para o zoom calculado + 0.5x (nao para 1x)
+- "Limpar tudo": reseta tudo para os valores padrao
