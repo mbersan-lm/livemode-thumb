@@ -274,6 +274,7 @@ export const CortesControls = ({
           placeholder="Digite o texto..."
           className="min-h-[80px]"
         />
+        <p className="text-xs text-muted-foreground">Use <code className="bg-muted px-1 rounded">*asteriscos*</code> para destacar em vermelho</p>
       </div>
 
       {/* Actions */}

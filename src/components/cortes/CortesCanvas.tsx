@@ -167,7 +167,11 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               wordBreak: 'break-word',
             } as React.CSSProperties}
           >
-            {thumbText}
+            {thumbText.split(/(\*[^*]+\*)/g).map((part, i) =>
+              part.startsWith('*') && part.endsWith('*')
+                ? <span key={i} style={{ color: '#D02046' }}>{part.slice(1, -1)}</span>
+                : part
+            )}
           </div>
         )}
       </div>
