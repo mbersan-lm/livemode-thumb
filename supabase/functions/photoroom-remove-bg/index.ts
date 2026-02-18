@@ -55,8 +55,14 @@ serve(async (req) => {
       });
     }
 
-    const resultBuffer = await response.arrayBuffer();
-    const resultBase64 = btoa(String.fromCharCode(...new Uint8Array(resultBuffer)));
+    const resultBuffer = new Uint8Array(await response.arrayBuffer());
+    // Chunk to avoid call stack overflow
+    let binary = '';
+    const chunkSize = 8192;
+    for (let i = 0; i < resultBuffer.length; i += chunkSize) {
+      binary += String.fromCharCode(...resultBuffer.subarray(i, i + chunkSize));
+    }
+    const resultBase64 = btoa(binary);
 
     return new Response(JSON.stringify({ result_base64: `data:image/png;base64,${resultBase64}` }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
