@@ -51,7 +51,7 @@ const CortesProgramBuilder = () => {
       pipBorderColor={program!.pip_border_color}
       highlightColor={program!.highlight_color}
       customFontFamily={program!.font_family || undefined}
-      allowAllModels={program!.name === 'Geral CazéTv'}
+      allowAllModels={program!.name === 'Geral CazéTv' || program!.name === 'Geral CazéTv Brasil'}
       backUrl="/cortes"
     />
   );
