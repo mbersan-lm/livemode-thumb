@@ -224,17 +224,18 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           />
         )}
 
-        {/* Layer 2d: Meio a meio — center divider line */}
+        {/* Layer 2d: Meio a meio — PNG divider (above images, below gradient) */}
         {showMeioAMeio && (
-          <div
+          <img
+            src="/cortes/divisoria-geral.png"
+            alt=""
             style={{
               position: 'absolute',
               left: '50%',
               top: 0,
-              width: 6,
-              height: '100%',
               transform: 'translateX(-50%)',
-              background: pipBorderColor,
+              height: '100%',
+              width: 'auto',
               zIndex: 3,
               pointerEvents: 'none',
             }}

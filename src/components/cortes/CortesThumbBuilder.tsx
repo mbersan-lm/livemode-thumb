@@ -153,6 +153,18 @@ export const CortesThumbBuilder = ({
     }
   };
 
+  const handlePersonDirectUpload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => setPersonCutout(e.target?.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const handlePerson2DirectUpload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => setPerson2Cutout(e.target?.result as string);
+    reader.readAsDataURL(file);
+  };
+
   const handleClear = () => {
     setPipImage(null);
     setPersonCutout(null);
@@ -232,6 +244,8 @@ export const CortesThumbBuilder = ({
             onPipUpload={handlePipUpload}
             onPersonUpload={handlePersonUpload}
             onPerson2Upload={handlePerson2Upload}
+            onPersonDirectUpload={handlePersonDirectUpload}
+            onPerson2DirectUpload={handlePerson2DirectUpload}
             onTextChange={setThumbText}
             onTextLeftChange={setThumbTextLeft}
             onTextRightChange={setThumbTextRight}
