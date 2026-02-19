@@ -238,6 +238,7 @@ interface PipFrameState {
 interface CurrentCanvasProps {
   thumbModel: ThumbModel;
   pipImage: string | null;
+  pip2Image?: string | null;
   personCutout: string | null;
   person2Cutout: string | null;
   person3Cutout?: string | null;
@@ -245,10 +246,12 @@ interface CurrentCanvasProps {
   thumbTextLeft: string;
   thumbTextRight: string;
   pipTransform: TransformState;
+  pip2Transform?: TransformState;
   personTransform: TransformState;
   person2Transform: TransformState;
   person3Transform?: TransformState;
   pipFrame: PipFrameState;
+  pip2Frame?: PipFrameState;
   bgImage?: string;
   logosImage?: string;
   textColor?: string;
@@ -264,6 +267,7 @@ interface CortesControlsProps {
   allowAllModels?: boolean;
   allowJogoV1?: boolean;
   pipImage: string | null;
+  pip2Image?: string | null;
   personCutout: string | null;
   person2Cutout: string | null;
   person3Cutout?: string | null;
@@ -274,12 +278,16 @@ interface CortesControlsProps {
   isRemovingBg2: boolean;
   isRemovingBg3?: boolean;
   pipTransform: TransformState;
+  pip2Transform?: TransformState;
   personTransform: TransformState;
   person2Transform: TransformState;
   person3Transform?: TransformState;
   pipFrame: PipFrameState;
+  pip2Frame?: PipFrameState;
   pipBaseScale: number;
+  pip2BaseScale?: number;
   onPipUpload: (file: File) => void;
+  onPip2Upload?: (file: File) => void;
   onPersonUpload: (file: File) => void;
   onPerson2Upload: (file: File) => void;
   onPerson3Upload?: (file: File) => void;
@@ -289,10 +297,12 @@ interface CortesControlsProps {
   onTextLeftChange: (text: string) => void;
   onTextRightChange: (text: string) => void;
   onPipTransformChange: (t: Partial<TransformState>) => void;
+  onPip2TransformChange?: (t: Partial<TransformState>) => void;
   onPersonTransformChange: (t: Partial<TransformState>) => void;
   onPerson2TransformChange: (t: Partial<TransformState>) => void;
   onPerson3TransformChange?: (t: Partial<TransformState>) => void;
   onPipFrameChange: (f: Partial<PipFrameState>) => void;
+  onPip2FrameChange?: (f: Partial<PipFrameState>) => void;
   onClear: () => void;
   customBgImage: string | null;
   onBgUpload: (file: File) => void;
@@ -306,6 +316,7 @@ export const CortesControls = ({
   allowAllModels = false,
   allowJogoV1 = false,
   pipImage,
+  pip2Image = null,
   personCutout,
   person2Cutout,
   person3Cutout = null,
@@ -316,12 +327,16 @@ export const CortesControls = ({
   isRemovingBg2,
   isRemovingBg3 = false,
   pipTransform,
+  pip2Transform = { x: 0, y: 0, scale: 1, rotation: 0 },
   personTransform,
   person2Transform,
   person3Transform = { x: 0, y: 0, scale: 1, rotation: 0 },
   pipFrame,
+  pip2Frame = { x: 67, y: 15.4, width: 30, height: 55 },
   pipBaseScale,
+  pip2BaseScale = 1,
   onPipUpload,
+  onPip2Upload,
   onPersonUpload,
   onPerson2Upload,
   onPerson3Upload,
@@ -331,10 +346,12 @@ export const CortesControls = ({
   onTextLeftChange,
   onTextRightChange,
   onPipTransformChange,
+  onPip2TransformChange,
   onPersonTransformChange,
   onPerson2TransformChange,
   onPerson3TransformChange,
   onPipFrameChange,
+  onPip2FrameChange,
   onClear,
   customBgImage,
   onBgUpload,
@@ -342,10 +359,12 @@ export const CortesControls = ({
   currentCanvasProps,
 }: CortesControlsProps) => {
   const pipInputRef = useRef<HTMLInputElement>(null);
+  const pip2InputRef = useRef<HTMLInputElement>(null);
   const personInputRef = useRef<HTMLInputElement>(null);
   const person2InputRef = useRef<HTMLInputElement>(null);
   const person3InputRef = useRef<HTMLInputElement>(null);
   const bgInputRef = useRef<HTMLInputElement>(null);
+
 
   const handleExport = async () => {
     const toastId = toast.loading('Gerando JPG...');
@@ -356,10 +375,11 @@ export const CortesControls = ({
       // 1. Aguardar fontes e pré-carregar imagens em paralelo
       await document.fonts.ready;
 
-      const [bgImg, logosImg, pipImg, personImg, person2Img, person3Img, divisoriaImg] = await Promise.all([
+      const [bgImg, logosImg, pipImg, pip2Img, personImg, person2Img, person3Img, divisoriaImg] = await Promise.all([
         loadImage(props.bgImage || '/cortes/bg-corte.png'),
         loadImage(props.logosImage || '/cortes/logos-corte.png'),
         props.pipImage ? loadImage(props.pipImage) : Promise.resolve(null),
+        props.pip2Image ? loadImage(props.pip2Image) : Promise.resolve(null),
         props.personCutout ? loadImage(props.personCutout) : Promise.resolve(null),
         props.person2Cutout ? loadImage(props.person2Cutout) : Promise.resolve(null),
         props.person3Cutout ? loadImage(props.person3Cutout) : Promise.resolve(null),
@@ -378,6 +398,7 @@ export const CortesControls = ({
       const showMeioAMeio = thumbModel === 'meio-a-meio';
       const showSoLettering = thumbModel === 'so-lettering';
       const showJogoV1 = thumbModel === 'jogo-v1';
+      const showJogoPipDuplo = thumbModel === 'jogo-pip-duplo';
 
       // ── Layer 1: Background ─────────────────────────────────────────────
       ctx.drawImage(bgImg, 0, 0, W, H);
@@ -451,14 +472,12 @@ export const CortesControls = ({
       }
 
       // ── Layer 3: Person cutout (pip / duas-pessoas) ─────────────────────
-      if (!showMeioAMeio && !showSoLettering && personImg) {
+      if (!showMeioAMeio && !showSoLettering && !showJogoV1 && !showJogoPipDuplo && personImg) {
         const t = props.personTransform;
-        // Posição base: right: -6% (pip) ou -2% (duas-pessoas), top: -2%, height: 108%
         const baseRight = showPerson2 ? -0.02 * W : -0.06 * W;
         const baseH = H * 1.08;
         const aspectRatio = personImg.naturalWidth / personImg.naturalHeight;
         const baseW = baseH * aspectRatio;
-        // âncora no canto direito
         const baseX = W - baseRight - baseW;
         const baseY = -0.02 * H;
         const centerX = baseX + baseW / 2;
@@ -472,7 +491,7 @@ export const CortesControls = ({
       }
 
       // Layer 3b: Person2 (esquerda, duas-pessoas)
-      if (showPerson2 && person2Img) {
+      if (showPerson2 && !showJogoV1 && !showJogoPipDuplo && person2Img) {
         const t = props.person2Transform;
         const baseH = H * 1.08;
         const aspectRatio = person2Img.naturalWidth / person2Img.naturalHeight;
@@ -489,8 +508,8 @@ export const CortesControls = ({
         ctx.restore();
       }
 
-      // ── Layer 3c: Jogo v1 — 3 cutouts (left, center elevated, right) ────
-      if (showJogoV1) {
+      // ── Layer 3c: Jogo v1 & jogo-pip-duplo — 3 cutouts ──────────────────
+      if (showJogoV1 || showJogoPipDuplo) {
         const drawJogoCutout = (
           img: HTMLImageElement,
           anchorX: number,
@@ -519,6 +538,58 @@ export const CortesControls = ({
         if (person2Img) drawJogoCutout(person2Img, W * 0.50, -H * 0.05, 1.05, p2t);
         if (person3Img) drawJogoCutout(person3Img, W * 0.83, H * 0.05, 0.90, p3t);
       }
+
+      // ── Layer 3d: jogo-pip-duplo — 2 PIP frames (drawn below/above persons depending on z-order) ─
+      if (showJogoPipDuplo) {
+        const drawPipFrame = (
+          img: HTMLImageElement | null,
+          frame: PipFrameState,
+          transform: TransformState,
+          rotDeg: number
+        ) => {
+          if (!img) return;
+          const fx = (frame.x / 100) * W;
+          const fy = (frame.y / 100) * H;
+          const fw = (frame.width / 100) * W;
+          const fh = (frame.height / 100) * H;
+          const cx = fx + fw / 2;
+          const cy = fy + fh / 2;
+          ctx.save();
+          ctx.translate(cx, cy);
+          ctx.rotate((rotDeg * Math.PI) / 180);
+          ctx.beginPath();
+          ctx.rect(-fw / 2, -fh / 2, fw, fh);
+          ctx.clip();
+          const imgRatio = img.naturalWidth / img.naturalHeight;
+          const contRatio = fw / fh;
+          let drawW: number, drawH: number;
+          if (imgRatio > contRatio) { drawW = fw; drawH = fw / imgRatio; }
+          else { drawH = fh; drawW = fh * imgRatio; }
+          ctx.translate(transform.x, transform.y);
+          ctx.rotate((transform.rotation * Math.PI) / 180);
+          ctx.scale(transform.scale, transform.scale);
+          ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
+          ctx.restore();
+          // Borda
+          const borderW = 10;
+          ctx.save();
+          ctx.translate(cx, cy);
+          ctx.rotate((rotDeg * Math.PI) / 180);
+          ctx.strokeStyle = props.pipBorderColor || '#D02046';
+          ctx.lineWidth = borderW;
+          ctx.strokeRect(-fw / 2, -fh / 2, fw, fh);
+          ctx.restore();
+        };
+
+        const pip1Frame = props.pipFrame;
+        const pip2FrameVal = props.pip2Frame ?? { x: 67, y: 15.4, width: 30, height: 55 };
+        const pip1T = props.pipTransform;
+        const pip2T = props.pip2Transform ?? { x: 0, y: 0, scale: 1, rotation: 0 };
+
+        drawPipFrame(pipImg, pip1Frame, pip1T, -1.2);
+        drawPipFrame(pip2Img, pip2FrameVal, pip2T, 1.2);
+      }
+
 
       // ── Layer 4: Gradiente inferior ─────────────────────────────────────
       const grad = ctx.createLinearGradient(0, H * 0.55, 0, H);
@@ -621,7 +692,10 @@ export const CortesControls = ({
           <SelectContent>
             <SelectItem value="pip">Com PIP</SelectItem>
             {allowJogoV1 && (
-              <SelectItem value="jogo-v1">Jogo v1</SelectItem>
+              <>
+                <SelectItem value="jogo-v1">Jogo v1</SelectItem>
+                <SelectItem value="jogo-pip-duplo">3 fotos + PIP duplo</SelectItem>
+              </>
             )}
             {allowAllModels && (
               <>
@@ -800,8 +874,137 @@ export const CortesControls = ({
         </>
       )}
 
+      {/* jogo-pip-duplo — 3 fotos + 2 PIPs */}
+      {thumbModel === 'jogo-pip-duplo' && (
+        <>
+          {/* Pessoa 1 — esquerda */}
+          <div className="space-y-2">
+            <Label className="font-semibold">Foto 1 (esquerda)</Label>
+            <input ref={personInputRef} type="file" accept="image/*" className="hidden"
+              onChange={(e) => e.target.files?.[0] && onPersonUpload(e.target.files[0])} />
+            <Button variant={personCutout ? 'secondary' : 'outline'} className="w-full"
+              disabled={isRemovingBg} onClick={() => personInputRef.current?.click()}>
+              {isRemovingBg ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Removendo fundo...</>
+                : <><Upload className="w-4 h-4 mr-2" />{personCutout ? 'Trocar foto 1' : 'Upload foto 1'}</>}
+            </Button>
+          </div>
+          {personCutout && (
+            <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste foto 1</Label>
+                <button onClick={() => onPersonTransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+              </div>
+              <div><Label className="text-xs">Posição X: {personTransform.x}px</Label><Slider value={[personTransform.x]} onValueChange={([x]) => onPersonTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Posição Y: {personTransform.y}px</Label><Slider value={[personTransform.y]} onValueChange={([y]) => onPersonTransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Zoom: {personTransform.scale.toFixed(2)}x</Label><Slider value={[personTransform.scale]} onValueChange={([scale]) => onPersonTransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
+              <div><Label className="text-xs">Rotação: {personTransform.rotation}°</Label><Slider value={[personTransform.rotation]} onValueChange={([rotation]) => onPersonTransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
+            </div>
+          )}
+
+          {/* Pessoa 2 — centro */}
+          <div className="space-y-2">
+            <Label className="font-semibold">Foto 2 (centro — acima)</Label>
+            <input ref={person2InputRef} type="file" accept="image/*" className="hidden"
+              onChange={(e) => e.target.files?.[0] && onPerson2Upload(e.target.files[0])} />
+            <Button variant={person2Cutout ? 'secondary' : 'outline'} className="w-full"
+              disabled={isRemovingBg2} onClick={() => person2InputRef.current?.click()}>
+              {isRemovingBg2 ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Removendo fundo...</>
+                : <><Upload className="w-4 h-4 mr-2" />{person2Cutout ? 'Trocar foto 2' : 'Upload foto 2'}</>}
+            </Button>
+          </div>
+          {person2Cutout && (
+            <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste foto 2</Label>
+                <button onClick={() => onPerson2TransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+              </div>
+              <div><Label className="text-xs">Posição X: {person2Transform.x}px</Label><Slider value={[person2Transform.x]} onValueChange={([x]) => onPerson2TransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Posição Y: {person2Transform.y}px</Label><Slider value={[person2Transform.y]} onValueChange={([y]) => onPerson2TransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Zoom: {person2Transform.scale.toFixed(2)}x</Label><Slider value={[person2Transform.scale]} onValueChange={([scale]) => onPerson2TransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
+              <div><Label className="text-xs">Rotação: {person2Transform.rotation}°</Label><Slider value={[person2Transform.rotation]} onValueChange={([rotation]) => onPerson2TransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
+            </div>
+          )}
+
+          {/* Pessoa 3 — direita */}
+          <div className="space-y-2">
+            <Label className="font-semibold">Foto 3 (direita)</Label>
+            <input ref={person3InputRef} type="file" accept="image/*" className="hidden"
+              onChange={(e) => e.target.files?.[0] && onPerson3Upload?.(e.target.files[0])} />
+            <Button variant={person3Cutout ? 'secondary' : 'outline'} className="w-full"
+              disabled={isRemovingBg3} onClick={() => person3InputRef.current?.click()}>
+              {isRemovingBg3 ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Removendo fundo...</>
+                : <><Upload className="w-4 h-4 mr-2" />{person3Cutout ? 'Trocar foto 3' : 'Upload foto 3'}</>}
+            </Button>
+          </div>
+          {person3Cutout && (
+            <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste foto 3</Label>
+                <button onClick={() => onPerson3TransformChange?.({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+              </div>
+              <div><Label className="text-xs">Posição X: {person3Transform.x}px</Label><Slider value={[person3Transform.x]} onValueChange={([x]) => onPerson3TransformChange?.({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Posição Y: {person3Transform.y}px</Label><Slider value={[person3Transform.y]} onValueChange={([y]) => onPerson3TransformChange?.({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Zoom: {person3Transform.scale.toFixed(2)}x</Label><Slider value={[person3Transform.scale]} onValueChange={([scale]) => onPerson3TransformChange?.({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
+              <div><Label className="text-xs">Rotação: {person3Transform.rotation}°</Label><Slider value={[person3Transform.rotation]} onValueChange={([rotation]) => onPerson3TransformChange?.({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
+            </div>
+          )}
+
+          {/* PIP 1 — esquerda */}
+          <div className="space-y-2">
+            <Label className="font-semibold">PIP esquerdo</Label>
+            <input ref={pipInputRef} type="file" accept="image/*" className="hidden"
+              onChange={(e) => e.target.files?.[0] && onPipUpload(e.target.files[0])} />
+            <Button variant={pipImage ? 'secondary' : 'outline'} className="w-full"
+              onClick={() => pipInputRef.current?.click()}>
+              <Upload className="w-4 h-4 mr-2" />{pipImage ? 'Trocar PIP esquerdo' : 'Upload PIP esquerdo'}
+            </Button>
+          </div>
+          {pipImage && (
+            <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste PIP esquerdo</Label>
+                <button onClick={() => onPipTransformChange({ x: 0, y: 0, scale: pipBaseScale, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+              </div>
+              <div><Label className="text-xs">Posição X: {pipTransform.x}px</Label><Slider value={[pipTransform.x]} onValueChange={([x]) => onPipTransformChange({ x })} min={-500} max={500} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Posição Y: {pipTransform.y}px</Label><Slider value={[pipTransform.y]} onValueChange={([y]) => onPipTransformChange({ y })} min={-500} max={500} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Zoom: {pipTransform.scale.toFixed(2)}x</Label><Slider value={[pipTransform.scale]} onValueChange={([scale]) => onPipTransformChange({ scale })} min={0.5} max={3} step={0.01} className="mt-1" /></div>
+              <div><Label className="text-xs">Frame X: {pipFrame.x.toFixed(1)}%</Label><Slider value={[pipFrame.x]} onValueChange={([x]) => onPipFrameChange({ x })} min={-20} max={60} step={0.1} className="mt-1" /></div>
+              <div><Label className="text-xs">Frame Y: {pipFrame.y.toFixed(1)}%</Label><Slider value={[pipFrame.y]} onValueChange={([y]) => onPipFrameChange({ y })} min={-20} max={80} step={0.1} className="mt-1" /></div>
+              <div><Label className="text-xs">Largura: {pipFrame.width.toFixed(1)}%</Label><Slider value={[pipFrame.width]} onValueChange={([width]) => onPipFrameChange({ width })} min={10} max={60} step={0.1} className="mt-1" /></div>
+              <div><Label className="text-xs">Altura: {pipFrame.height.toFixed(1)}%</Label><Slider value={[pipFrame.height]} onValueChange={([height]) => onPipFrameChange({ height })} min={10} max={90} step={0.1} className="mt-1" /></div>
+            </div>
+          )}
+
+          {/* PIP 2 — direita */}
+          <div className="space-y-2">
+            <Label className="font-semibold">PIP direito</Label>
+            <input ref={pip2InputRef} type="file" accept="image/*" className="hidden"
+              onChange={(e) => e.target.files?.[0] && onPip2Upload?.(e.target.files[0])} />
+            <Button variant={pip2Image ? 'secondary' : 'outline'} className="w-full"
+              onClick={() => pip2InputRef.current?.click()}>
+              <Upload className="w-4 h-4 mr-2" />{pip2Image ? 'Trocar PIP direito' : 'Upload PIP direito'}
+            </Button>
+          </div>
+          {pip2Image && (
+            <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste PIP direito</Label>
+                <button onClick={() => onPip2TransformChange?.({ x: 0, y: 0, scale: pip2BaseScale, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+              </div>
+              <div><Label className="text-xs">Posição X: {pip2Transform.x}px</Label><Slider value={[pip2Transform.x]} onValueChange={([x]) => onPip2TransformChange?.({ x })} min={-500} max={500} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Posição Y: {pip2Transform.y}px</Label><Slider value={[pip2Transform.y]} onValueChange={([y]) => onPip2TransformChange?.({ y })} min={-500} max={500} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Zoom: {pip2Transform.scale.toFixed(2)}x</Label><Slider value={[pip2Transform.scale]} onValueChange={([scale]) => onPip2TransformChange?.({ scale })} min={0.5} max={3} step={0.01} className="mt-1" /></div>
+              <div><Label className="text-xs">Frame X: {pip2Frame.x.toFixed(1)}%</Label><Slider value={[pip2Frame.x]} onValueChange={([x]) => onPip2FrameChange?.({ x })} min={30} max={100} step={0.1} className="mt-1" /></div>
+              <div><Label className="text-xs">Frame Y: {pip2Frame.y.toFixed(1)}%</Label><Slider value={[pip2Frame.y]} onValueChange={([y]) => onPip2FrameChange?.({ y })} min={-20} max={80} step={0.1} className="mt-1" /></div>
+              <div><Label className="text-xs">Largura: {pip2Frame.width.toFixed(1)}%</Label><Slider value={[pip2Frame.width]} onValueChange={([width]) => onPip2FrameChange?.({ width })} min={10} max={60} step={0.1} className="mt-1" /></div>
+              <div><Label className="text-xs">Altura: {pip2Frame.height.toFixed(1)}%</Label><Slider value={[pip2Frame.height]} onValueChange={([height]) => onPip2FrameChange?.({ height })} min={10} max={90} step={0.1} className="mt-1" /></div>
+            </div>
+          )}
+        </>
+      )}
+
       {/* Person Upload (right side / single person) — pip & duas-pessoas */}
-      {thumbModel !== 'meio-a-meio' && thumbModel !== 'so-lettering' && thumbModel !== 'jogo-v1' && (
+      {thumbModel !== 'meio-a-meio' && thumbModel !== 'so-lettering' && thumbModel !== 'jogo-v1' && thumbModel !== 'jogo-pip-duplo' && (
         <>
           <div className="space-y-2">
             <Label className="font-semibold">{thumbModel === 'duas-pessoas' ? 'Pessoa (direita)' : 'Foto da pessoa'}</Label>

@@ -16,6 +16,7 @@ import type { ThumbModel } from './CortesThumbBuilder';
 interface CortesCanvasProps {
   thumbModel?: ThumbModel;
   pipImage: string | null;
+  pip2Image?: string | null;
   personCutout: string | null;
   person2Cutout: string | null;
   person3Cutout?: string | null;
@@ -23,10 +24,12 @@ interface CortesCanvasProps {
   thumbTextLeft?: string;
   thumbTextRight?: string;
   pipTransform: { x: number; y: number; scale: number; rotation: number };
+  pip2Transform?: { x: number; y: number; scale: number; rotation: number };
   personTransform: { x: number; y: number; scale: number; rotation: number };
   person2Transform: { x: number; y: number; scale: number; rotation: number };
   person3Transform?: { x: number; y: number; scale: number; rotation: number };
   pipFrame: { x: number; y: number; width: number; height: number };
+  pip2Frame?: { x: number; y: number; width: number; height: number };
   bgImage?: string;
   logosImage?: string;
   textColor?: string;
@@ -37,17 +40,19 @@ interface CortesCanvasProps {
 }
 
 export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
-  ({ thumbModel = 'pip', pipImage, personCutout, person2Cutout, person3Cutout = null,
+  ({ thumbModel = 'pip', pipImage, pip2Image = null, personCutout, person2Cutout, person3Cutout = null,
      thumbText, thumbTextLeft = '', thumbTextRight = '',
-     pipTransform, personTransform, person2Transform,
+     pipTransform, pip2Transform = { x: 0, y: 0, scale: 1, rotation: 0 },
+     personTransform, person2Transform,
      person3Transform = { x: 0, y: 0, scale: 1, rotation: 0 },
-     pipFrame,
+     pipFrame, pip2Frame = { x: 67, y: 15.4, width: 30, height: 55 },
      bgImage = '/cortes/bg-corte.png', logosImage = '/cortes/logos-corte.png',
      textColor = '#F1E8D5', strokeColor = '#0C0C20', pipBorderColor = '#D02046',
      highlightColor = '#D02046', customFontFamily = "'Clash Grotesk', sans-serif" }, ref) => {
   const showPip = thumbModel === 'pip';
   const showPerson2 = thumbModel === 'duas-pessoas';
   const showJogoV1 = thumbModel === 'jogo-v1';
+  const showJogoPipDuplo = thumbModel === 'jogo-pip-duplo';
     const showMeioAMeio = thumbModel === 'meio-a-meio';
     const showSoLettering = thumbModel === 'so-lettering';
     const textRef = useRef<HTMLDivElement>(null);
@@ -155,7 +160,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
         )}
 
         {/* Layer 3: Person cutout (right side) — pip & duas-pessoas models */}
-        {!showMeioAMeio && !showSoLettering && !showJogoV1 && personCutout && (
+        {!showMeioAMeio && !showSoLettering && !showJogoV1 && !showJogoPipDuplo && personCutout && (
           <img
             src={personCutout}
             alt=""
@@ -173,7 +178,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
         )}
 
         {/* Layer 3b: Person 2 cutout (left side) — duas-pessoas model */}
-        {showPerson2 && !showSoLettering && !showJogoV1 && person2Cutout && (
+        {showPerson2 && !showSoLettering && !showJogoV1 && !showJogoPipDuplo && person2Cutout && (
           <img
             src={person2Cutout}
             alt=""
@@ -270,8 +275,56 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           />
         )}
 
-        {/* Layer 3e: Jogo v1 — 3 cutouts */}
-        {showJogoV1 && personCutout && (
+        {/* Layer 2b: PIP duplo — left frame (jogo-pip-duplo) */}
+        {showJogoPipDuplo && pipImage && (
+          <div
+            style={{
+              position: 'absolute',
+              left: `${pipFrame.x}%`,
+              top: `${pipFrame.y}%`,
+              width: `${pipFrame.width}%`,
+              height: `${pipFrame.height}%`,
+              border: `10px solid ${pipBorderColor}`,
+              transform: 'rotate(-1.2deg)',
+              overflow: 'hidden',
+              zIndex: 2,
+            }}
+          >
+            <img src={pipImage} alt="" style={{
+              position: 'absolute', left: '50%', top: '50%',
+              width: '100%', height: '100%', objectFit: 'contain',
+              transform: `translate(-50%, -50%) translate(${pipTransform.x}px, ${pipTransform.y}px) scale(${pipTransform.scale}) rotate(${pipTransform.rotation}deg)`,
+              transformOrigin: 'center center',
+            }} />
+          </div>
+        )}
+
+        {/* Layer 2c: PIP duplo — right frame (jogo-pip-duplo) */}
+        {showJogoPipDuplo && pip2Image && (
+          <div
+            style={{
+              position: 'absolute',
+              left: `${pip2Frame.x}%`,
+              top: `${pip2Frame.y}%`,
+              width: `${pip2Frame.width}%`,
+              height: `${pip2Frame.height}%`,
+              border: `10px solid ${pipBorderColor}`,
+              transform: 'rotate(1.2deg)',
+              overflow: 'hidden',
+              zIndex: 2,
+            }}
+          >
+            <img src={pip2Image} alt="" style={{
+              position: 'absolute', left: '50%', top: '50%',
+              width: '100%', height: '100%', objectFit: 'contain',
+              transform: `translate(-50%, -50%) translate(${pip2Transform.x}px, ${pip2Transform.y}px) scale(${pip2Transform.scale}) rotate(${pip2Transform.rotation}deg)`,
+              transformOrigin: 'center center',
+            }} />
+          </div>
+        )}
+
+        {/* Layer 3e: Jogo v1 & jogo-pip-duplo — 3 cutouts */}
+        {(showJogoV1 || showJogoPipDuplo) && personCutout && (
           <img
             src={personCutout}
             alt=""
@@ -287,7 +340,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
             }}
           />
         )}
-        {showJogoV1 && person2Cutout && (
+        {(showJogoV1 || showJogoPipDuplo) && person2Cutout && (
           <img
             src={person2Cutout}
             alt=""
@@ -303,7 +356,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
             }}
           />
         )}
-        {showJogoV1 && person3Cutout && (
+        {(showJogoV1 || showJogoPipDuplo) && person3Cutout && (
           <img
             src={person3Cutout}
             alt=""
