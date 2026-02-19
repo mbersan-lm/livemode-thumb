@@ -257,6 +257,26 @@ export const CortesThumbBuilder = ({
             onBgUpload={handleBgUpload}
             onClear={handleClear}
             canvasRef={canvasRef}
+            currentCanvasProps={{
+              thumbModel,
+              pipImage,
+              personCutout,
+              person2Cutout,
+              thumbText,
+              thumbTextLeft,
+              thumbTextRight,
+              pipTransform,
+              personTransform,
+              person2Transform,
+              pipFrame,
+              bgImage: customBgImage || bgImage,
+              logosImage,
+              textColor,
+              strokeColor,
+              pipBorderColor,
+              highlightColor,
+              customFontFamily,
+            }}
           />
         </div>
       </div>
