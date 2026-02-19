@@ -31,6 +31,8 @@ interface CortesControlsProps {
   personCutout: string | null;
   person2Cutout: string | null;
   thumbText: string;
+  thumbTextLeft: string;
+  thumbTextRight: string;
   isRemovingBg: boolean;
   isRemovingBg2: boolean;
   pipTransform: TransformState;
@@ -42,6 +44,8 @@ interface CortesControlsProps {
   onPersonUpload: (file: File) => void;
   onPerson2Upload: (file: File) => void;
   onTextChange: (text: string) => void;
+  onTextLeftChange: (text: string) => void;
+  onTextRightChange: (text: string) => void;
   onPipTransformChange: (t: Partial<TransformState>) => void;
   onPersonTransformChange: (t: Partial<TransformState>) => void;
   onPerson2TransformChange: (t: Partial<TransformState>) => void;
@@ -59,6 +63,8 @@ export const CortesControls = ({
   personCutout,
   person2Cutout,
   thumbText,
+  thumbTextLeft,
+  thumbTextRight,
   isRemovingBg,
   isRemovingBg2,
   pipTransform,
@@ -70,6 +76,8 @@ export const CortesControls = ({
   onPersonUpload,
   onPerson2Upload,
   onTextChange,
+  onTextLeftChange,
+  onTextRightChange,
   onPipTransformChange,
   onPersonTransformChange,
   onPerson2TransformChange,
@@ -156,6 +164,7 @@ export const CortesControls = ({
           <SelectContent>
             <SelectItem value="pip">Com PIP</SelectItem>
             <SelectItem value="duas-pessoas">Duas pessoas</SelectItem>
+            <SelectItem value="meio-a-meio">Meio a meio</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -249,62 +258,66 @@ export const CortesControls = ({
         </>
       )}
 
-      {/* Person Upload (right side / single person) */}
-      <div className="space-y-2">
-        <Label className="font-semibold">{thumbModel === 'duas-pessoas' ? 'Pessoa (direita)' : 'Foto da pessoa'}</Label>
-        <input
-          ref={personInputRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={(e) => e.target.files?.[0] && onPersonUpload(e.target.files[0])}
-        />
-        <Button
-          variant={personCutout ? 'secondary' : 'outline'}
-          className="w-full"
-          disabled={isRemovingBg}
-          onClick={() => personInputRef.current?.click()}
-        >
-          {isRemovingBg ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Removendo fundo...
-            </>
-          ) : (
-            <>
-              <Upload className="w-4 h-4 mr-2" />
-              {personCutout ? 'Trocar pessoa' : 'Upload pessoa'}
-            </>
-          )}
-        </Button>
-      </div>
+      {/* Person Upload (right side / single person) — pip & duas-pessoas */}
+      {thumbModel !== 'meio-a-meio' && (
+        <>
+          <div className="space-y-2">
+            <Label className="font-semibold">{thumbModel === 'duas-pessoas' ? 'Pessoa (direita)' : 'Foto da pessoa'}</Label>
+            <input
+              ref={personInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => e.target.files?.[0] && onPersonUpload(e.target.files[0])}
+            />
+            <Button
+              variant={personCutout ? 'secondary' : 'outline'}
+              className="w-full"
+              disabled={isRemovingBg}
+              onClick={() => personInputRef.current?.click()}
+            >
+              {isRemovingBg ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Removendo fundo...
+                </>
+              ) : (
+                <>
+                  <Upload className="w-4 h-4 mr-2" />
+                  {personCutout ? 'Trocar pessoa' : 'Upload pessoa'}
+                </>
+              )}
+            </Button>
+          </div>
 
-      {/* Person Transform */}
-      {personCutout && (
-        <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
-          <div className="flex items-center justify-between">
-            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{thumbModel === 'duas-pessoas' ? 'Ajuste pessoa (direita)' : 'Ajuste da pessoa'}</Label>
-            <button onClick={() => onPersonTransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
-              <RotateCcw className="w-3.5 h-3.5" />
-            </button>
-          </div>
-          <div>
-            <Label className="text-xs">Posição X: {personTransform.x}px</Label>
-            <Slider value={[personTransform.x]} onValueChange={([x]) => onPersonTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" />
-          </div>
-          <div>
-            <Label className="text-xs">Posição Y: {personTransform.y}px</Label>
-            <Slider value={[personTransform.y]} onValueChange={([y]) => onPersonTransformChange({ y })} min={-800} max={800} step={1} className="mt-1" />
-          </div>
-          <div>
-            <Label className="text-xs">Zoom: {personTransform.scale.toFixed(2)}x</Label>
-            <Slider value={[personTransform.scale]} onValueChange={([scale]) => onPersonTransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" />
-          </div>
-          <div>
-            <Label className="text-xs">Rotação: {personTransform.rotation}°</Label>
-            <Slider value={[personTransform.rotation]} onValueChange={([rotation]) => onPersonTransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" />
-          </div>
-        </div>
+          {/* Person Transform */}
+          {personCutout && (
+            <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{thumbModel === 'duas-pessoas' ? 'Ajuste pessoa (direita)' : 'Ajuste da pessoa'}</Label>
+                <button onClick={() => onPersonTransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
+                  <RotateCcw className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <div>
+                <Label className="text-xs">Posição X: {personTransform.x}px</Label>
+                <Slider value={[personTransform.x]} onValueChange={([x]) => onPersonTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" />
+              </div>
+              <div>
+                <Label className="text-xs">Posição Y: {personTransform.y}px</Label>
+                <Slider value={[personTransform.y]} onValueChange={([y]) => onPersonTransformChange({ y })} min={-800} max={800} step={1} className="mt-1" />
+              </div>
+              <div>
+                <Label className="text-xs">Zoom: {personTransform.scale.toFixed(2)}x</Label>
+                <Slider value={[personTransform.scale]} onValueChange={([scale]) => onPersonTransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" />
+              </div>
+              <div>
+                <Label className="text-xs">Rotação: {personTransform.rotation}°</Label>
+                <Slider value={[personTransform.rotation]} onValueChange={([rotation]) => onPersonTransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" />
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* Person 2 Upload — only for duas-pessoas model */}
@@ -389,17 +402,152 @@ export const CortesControls = ({
         </>
       )}
 
-      {/* Text */}
-      <div className="space-y-2">
-        <Label className="font-semibold">Texto da thumbnail</Label>
-        <Textarea
-          value={thumbText}
-          onChange={(e) => onTextChange(e.target.value)}
-          placeholder="Digite o texto..."
-          className="min-h-[80px]"
-        />
-        <p className="text-xs text-muted-foreground">Use <code className="bg-muted px-1 rounded">*asteriscos*</code> para destacar em vermelho</p>
-      </div>
+      {/* Meio a meio — two image uploads with transforms */}
+      {thumbModel === 'meio-a-meio' && (
+        <>
+          {/* Left image */}
+          <div className="space-y-2">
+            <Label className="font-semibold">Imagem esquerda</Label>
+            <input
+              ref={personInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => e.target.files?.[0] && onPersonUpload(e.target.files[0])}
+            />
+            <Button
+              variant={personCutout ? 'secondary' : 'outline'}
+              className="w-full"
+              disabled={isRemovingBg}
+              onClick={() => personInputRef.current?.click()}
+            >
+              {isRemovingBg ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Removendo fundo...
+                </>
+              ) : (
+                <>
+                  <Upload className="w-4 h-4 mr-2" />
+                  {personCutout ? 'Trocar imagem esquerda' : 'Upload imagem esquerda'}
+                </>
+              )}
+            </Button>
+          </div>
+
+          {personCutout && (
+            <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste imagem esquerda</Label>
+                <button onClick={() => onPersonTransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
+                  <RotateCcw className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <div>
+                <Label className="text-xs">Posição X: {personTransform.x}px</Label>
+                <Slider value={[personTransform.x]} onValueChange={([x]) => onPersonTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" />
+              </div>
+              <div>
+                <Label className="text-xs">Posição Y: {personTransform.y}px</Label>
+                <Slider value={[personTransform.y]} onValueChange={([y]) => onPersonTransformChange({ y })} min={-800} max={800} step={1} className="mt-1" />
+              </div>
+              <div>
+                <Label className="text-xs">Zoom: {personTransform.scale.toFixed(2)}x</Label>
+                <Slider value={[personTransform.scale]} onValueChange={([scale]) => onPersonTransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" />
+              </div>
+            </div>
+          )}
+
+          {/* Right image */}
+          <div className="space-y-2">
+            <Label className="font-semibold">Imagem direita</Label>
+            <input
+              ref={person2InputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => e.target.files?.[0] && onPerson2Upload(e.target.files[0])}
+            />
+            <Button
+              variant={person2Cutout ? 'secondary' : 'outline'}
+              className="w-full"
+              disabled={isRemovingBg2}
+              onClick={() => person2InputRef.current?.click()}
+            >
+              {isRemovingBg2 ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Removendo fundo...
+                </>
+              ) : (
+                <>
+                  <Upload className="w-4 h-4 mr-2" />
+                  {person2Cutout ? 'Trocar imagem direita' : 'Upload imagem direita'}
+                </>
+              )}
+            </Button>
+          </div>
+
+          {person2Cutout && (
+            <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste imagem direita</Label>
+                <button onClick={() => onPerson2TransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
+                  <RotateCcw className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <div>
+                <Label className="text-xs">Posição X: {person2Transform.x}px</Label>
+                <Slider value={[person2Transform.x]} onValueChange={([x]) => onPerson2TransformChange({ x })} min={-800} max={800} step={1} className="mt-1" />
+              </div>
+              <div>
+                <Label className="text-xs">Posição Y: {person2Transform.y}px</Label>
+                <Slider value={[person2Transform.y]} onValueChange={([y]) => onPerson2TransformChange({ y })} min={-800} max={800} step={1} className="mt-1" />
+              </div>
+              <div>
+                <Label className="text-xs">Zoom: {person2Transform.scale.toFixed(2)}x</Label>
+                <Slider value={[person2Transform.scale]} onValueChange={([scale]) => onPerson2TransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" />
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Text — single (pip / duas-pessoas) or dual (meio-a-meio) */}
+      {thumbModel === 'meio-a-meio' ? (
+        <div className="space-y-3">
+          <div className="space-y-2">
+            <Label className="font-semibold">Texto esquerda</Label>
+            <Textarea
+              value={thumbTextLeft}
+              onChange={(e) => onTextLeftChange(e.target.value)}
+              placeholder="Digite o texto esquerdo..."
+              className="min-h-[72px]"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label className="font-semibold">Texto direita</Label>
+            <Textarea
+              value={thumbTextRight}
+              onChange={(e) => onTextRightChange(e.target.value)}
+              placeholder="Digite o texto direito..."
+              className="min-h-[72px]"
+            />
+          </div>
+          <p className="text-xs text-muted-foreground">Use <code className="bg-muted px-1 rounded">*asteriscos*</code> para destacar</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <Label className="font-semibold">Texto da thumbnail</Label>
+          <Textarea
+            value={thumbText}
+            onChange={(e) => onTextChange(e.target.value)}
+            placeholder="Digite o texto..."
+            className="min-h-[80px]"
+          />
+          <p className="text-xs text-muted-foreground">Use <code className="bg-muted px-1 rounded">*asteriscos*</code> para destacar em vermelho</p>
+        </div>
+      )}
 
       {/* Actions */}
       <div className="space-y-2 pt-2">
