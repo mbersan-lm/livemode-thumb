@@ -13,8 +13,10 @@ const DEFAULT_PERSON_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
 const DEFAULT_PERSON2_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
 const DEFAULT_PERSON3_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
 const DEFAULT_PIP_FRAME = { x: 3.0, y: 15.4, width: 56.6, height: 64.3 };
+const DEFAULT_PIP2_FRAME = { x: 67.0, y: 15.4, width: 30.0, height: 55.0 };
+const DEFAULT_PIP1_DUPLO_FRAME = { x: 3.0, y: 15.4, width: 30.0, height: 55.0 };
 
-export type ThumbModel = 'pip' | 'duas-pessoas' | 'meio-a-meio' | 'so-lettering' | 'jogo-v1';
+export type ThumbModel = 'pip' | 'duas-pessoas' | 'meio-a-meio' | 'so-lettering' | 'jogo-v1' | 'jogo-pip-duplo';
 
 interface CortesThumbBuilderProps {
   programName?: string;
@@ -65,6 +67,10 @@ export const CortesThumbBuilder = ({
   const [person3Transform, setPerson3Transform] = useState(DEFAULT_PERSON3_TRANSFORM);
   const [pipFrame, setPipFrame] = useState(DEFAULT_PIP_FRAME);
   const [pipBaseScale, setPipBaseScale] = useState(1);
+  const [pip2Image, setPip2Image] = useState<string | null>(null);
+  const [pip2Transform, setPip2Transform] = useState(DEFAULT_PIP_TRANSFORM);
+  const [pip2Frame, setPip2Frame] = useState(DEFAULT_PIP2_FRAME);
+  const [pip2BaseScale, setPip2BaseScale] = useState(1);
   const [customBgImage, setCustomBgImage] = useState<string | null>(null);
 
   const handleBgUpload = (file: File) => {
@@ -171,8 +177,29 @@ export const CortesThumbBuilder = ({
     reader.readAsDataURL(file);
   };
 
+  const handlePip2Upload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string;
+      setPip2Image(dataUrl);
+      const img = new window.Image();
+      img.onload = () => {
+        const containerPixelW = (pip2Frame.width / 100) * CANVAS_WIDTH;
+        const containerPixelH = (pip2Frame.height / 100) * CANVAS_HEIGHT;
+        const containerRatio = containerPixelW / containerPixelH;
+        const imageRatio = img.naturalWidth / img.naturalHeight;
+        const autoScale = Math.max(containerRatio / imageRatio, imageRatio / containerRatio) + 0.05;
+        setPip2BaseScale(autoScale);
+        setPip2Transform(prev => ({ ...prev, scale: autoScale }));
+      };
+      img.src = dataUrl;
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleClear = () => {
     setPipImage(null);
+    setPip2Image(null);
     setPersonCutout(null);
     setPerson2Cutout(null);
     setPerson3Cutout(null);
@@ -180,11 +207,14 @@ export const CortesThumbBuilder = ({
     setThumbTextLeft('');
     setThumbTextRight('');
     setPipTransform(DEFAULT_PIP_TRANSFORM);
+    setPip2Transform(DEFAULT_PIP_TRANSFORM);
     setPersonTransform(DEFAULT_PERSON_TRANSFORM);
     setPerson2Transform(DEFAULT_PERSON2_TRANSFORM);
     setPerson3Transform(DEFAULT_PERSON3_TRANSFORM);
     setPipFrame(DEFAULT_PIP_FRAME);
+    setPip2Frame(DEFAULT_PIP2_FRAME);
     setPipBaseScale(1);
+    setPip2BaseScale(1);
     setCustomBgImage(null);
   };
 
@@ -197,10 +227,11 @@ export const CortesThumbBuilder = ({
         style={isMobile ? { height: scaledHeight + 8, minHeight: scaledHeight + 8 } : undefined}
       >
         <div style={{ transform: `scale(${canvasScale})`, transformOrigin: 'center' }}>
-          <CortesCanvas
+           <CortesCanvas
             ref={canvasRef}
             thumbModel={thumbModel}
             pipImage={pipImage}
+            pip2Image={pip2Image}
             personCutout={personCutout}
             person2Cutout={person2Cutout}
             person3Cutout={person3Cutout}
@@ -208,10 +239,12 @@ export const CortesThumbBuilder = ({
             thumbTextLeft={thumbTextLeft}
             thumbTextRight={thumbTextRight}
             pipTransform={pipTransform}
+            pip2Transform={pip2Transform}
             personTransform={personTransform}
             person2Transform={person2Transform}
             person3Transform={person3Transform}
             pipFrame={pipFrame}
+            pip2Frame={pip2Frame}
             bgImage={customBgImage || bgImage}
             logosImage={logosImage}
             textColor={textColor}
@@ -241,6 +274,7 @@ export const CortesThumbBuilder = ({
             allowAllModels={allowAllModels}
             allowJogoV1={allowJogoV1}
             pipImage={pipImage}
+            pip2Image={pip2Image}
             personCutout={personCutout}
             person2Cutout={person2Cutout}
             person3Cutout={person3Cutout}
@@ -251,12 +285,16 @@ export const CortesThumbBuilder = ({
             isRemovingBg2={isRemovingBg2}
             isRemovingBg3={isRemovingBg3}
             pipTransform={pipTransform}
+            pip2Transform={pip2Transform}
             personTransform={personTransform}
             person2Transform={person2Transform}
             person3Transform={person3Transform}
             pipFrame={pipFrame}
+            pip2Frame={pip2Frame}
             pipBaseScale={pipBaseScale}
+            pip2BaseScale={pip2BaseScale}
             onPipUpload={handlePipUpload}
+            onPip2Upload={handlePip2Upload}
             onPersonUpload={handlePersonUpload}
             onPerson2Upload={handlePerson2Upload}
             onPerson3Upload={handlePerson3Upload}
@@ -266,10 +304,12 @@ export const CortesThumbBuilder = ({
             onTextLeftChange={setThumbTextLeft}
             onTextRightChange={setThumbTextRight}
             onPipTransformChange={(t) => setPipTransform((prev) => ({ ...prev, ...t }))}
+            onPip2TransformChange={(t) => setPip2Transform((prev) => ({ ...prev, ...t }))}
             onPersonTransformChange={(t) => setPersonTransform((prev) => ({ ...prev, ...t }))}
             onPerson2TransformChange={(t) => setPerson2Transform((prev) => ({ ...prev, ...t }))}
             onPerson3TransformChange={(t) => setPerson3Transform((prev) => ({ ...prev, ...t }))}
             onPipFrameChange={(f) => setPipFrame((prev) => ({ ...prev, ...f }))}
+            onPip2FrameChange={(f) => setPip2Frame((prev) => ({ ...prev, ...f }))}
             customBgImage={customBgImage}
             onBgUpload={handleBgUpload}
             onClear={handleClear}
@@ -277,6 +317,7 @@ export const CortesThumbBuilder = ({
             currentCanvasProps={{
               thumbModel,
               pipImage,
+              pip2Image,
               personCutout,
               person2Cutout,
               person3Cutout,
@@ -284,10 +325,12 @@ export const CortesThumbBuilder = ({
               thumbTextLeft,
               thumbTextRight,
               pipTransform,
+              pip2Transform,
               personTransform,
               person2Transform,
               person3Transform,
               pipFrame,
+              pip2Frame,
               bgImage: customBgImage || bgImage,
               logosImage,
               textColor,
