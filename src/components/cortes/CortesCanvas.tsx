@@ -184,44 +184,66 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           />
         )}
 
-        {/* Layer 2b: Meio a meio — left image */}
+        {/* Layer 2b: Meio a meio — left image (clipped to left half) */}
         {showMeioAMeio && personCutout && (
-          <img
-            src={personCutout}
-            alt=""
+          <div
             style={{
               position: 'absolute',
               left: 0,
               top: 0,
               width: '50%',
               height: '100%',
-              objectFit: 'cover',
-              objectPosition: 'center top',
+              overflow: 'hidden',
               zIndex: 2,
-              transform: `translate(${personTransform.x}px, ${personTransform.y}px) scale(${personTransform.scale}) rotate(${personTransform.rotation}deg)`,
-              transformOrigin: 'center center',
             }}
-          />
+          >
+            <img
+              src={personCutout}
+              alt=""
+              style={{
+                position: 'absolute',
+                left: '50%',
+                top: '50%',
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                objectPosition: 'center top',
+                transform: `translate(-50%, -50%) translate(${personTransform.x}px, ${personTransform.y}px) scale(${personTransform.scale}) rotate(${personTransform.rotation}deg)`,
+                transformOrigin: 'center center',
+              }}
+            />
+          </div>
         )}
 
-        {/* Layer 2c: Meio a meio — right image */}
+        {/* Layer 2c: Meio a meio — right image (clipped to right half) */}
         {showMeioAMeio && person2Cutout && (
-          <img
-            src={person2Cutout}
-            alt=""
+          <div
             style={{
               position: 'absolute',
               right: 0,
               top: 0,
               width: '50%',
               height: '100%',
-              objectFit: 'cover',
-              objectPosition: 'center top',
+              overflow: 'hidden',
               zIndex: 2,
-              transform: `translate(${person2Transform.x}px, ${person2Transform.y}px) scale(${person2Transform.scale}) rotate(${person2Transform.rotation}deg)`,
-              transformOrigin: 'center center',
             }}
-          />
+          >
+            <img
+              src={person2Cutout}
+              alt=""
+              style={{
+                position: 'absolute',
+                left: '50%',
+                top: '50%',
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                objectPosition: 'center top',
+                transform: `translate(-50%, -50%) translate(${person2Transform.x}px, ${person2Transform.y}px) scale(${person2Transform.scale}) rotate(${person2Transform.rotation}deg)`,
+                transformOrigin: 'center center',
+              }}
+            />
+          </div>
         )}
 
         {/* Layer 2d: Meio a meio — PNG divider (above images, below gradient) */}
