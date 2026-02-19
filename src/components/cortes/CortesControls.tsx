@@ -695,6 +695,7 @@ export const CortesControls = ({
               <>
                 <SelectItem value="jogo-v1">Jogo v1</SelectItem>
                 <SelectItem value="jogo-pip-duplo">3 fotos + PIP duplo</SelectItem>
+                <SelectItem value="so-lettering">Lettering simples</SelectItem>
               </>
             )}
             {allowAllModels && (
