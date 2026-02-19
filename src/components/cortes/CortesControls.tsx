@@ -683,6 +683,16 @@ export const CortesControls = ({
 
   return (
     <div className="space-y-5">
+      {/* Reset button */}
+      <Button
+        variant="outline"
+        className="w-full border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
+        onClick={onClear}
+      >
+        <RotateCcw className="w-4 h-4 mr-2" />
+        Reverter todas as alterações
+      </Button>
+
       {/* Model selector */}
       <div className="space-y-2">
         <Label className="font-semibold">Modelo</Label>
@@ -1312,15 +1322,11 @@ export const CortesControls = ({
             {customBgImage ? 'Trocar fundo' : 'Upload fundo'}
           </Button>
         </div>
-      )}
+      </div>
 
       {/* Actions */}
-      <div className="flex gap-2 pt-2">
-        <Button variant="outline" className="flex-1" onClick={onClear}>
-          <Trash2 className="w-4 h-4 mr-2" />
-          Limpar
-        </Button>
-        <Button className="flex-1" onClick={handleExport}>
+      <div className="pt-2">
+        <Button className="w-full" onClick={handleExport}>
           <Download className="w-4 h-4 mr-2" />
           Exportar JPG
         </Button>
