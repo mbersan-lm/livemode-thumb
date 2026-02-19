@@ -11,12 +11,17 @@ function generateStrokeShadow(radius: number, color: string, steps = 32): string
   return shadows.join(', ');
 }
 
+import type { ThumbModel } from './CortesThumbBuilder';
+
 interface CortesCanvasProps {
+  thumbModel?: ThumbModel;
   pipImage: string | null;
   personCutout: string | null;
+  person2Cutout: string | null;
   thumbText: string;
   pipTransform: { x: number; y: number; scale: number; rotation: number };
   personTransform: { x: number; y: number; scale: number; rotation: number };
+  person2Transform: { x: number; y: number; scale: number; rotation: number };
   pipFrame: { x: number; y: number; width: number; height: number };
   bgImage?: string;
   logosImage?: string;
@@ -28,10 +33,12 @@ interface CortesCanvasProps {
 }
 
 export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
-  ({ pipImage, personCutout, thumbText, pipTransform, personTransform, pipFrame,
+  ({ thumbModel = 'pip', pipImage, personCutout, person2Cutout, thumbText, pipTransform, personTransform, person2Transform, pipFrame,
      bgImage = '/cortes/bg-corte.png', logosImage = '/cortes/logos-corte.png',
      textColor = '#F1E8D5', strokeColor = '#0C0C20', pipBorderColor = '#D02046',
      highlightColor = '#D02046', customFontFamily = "'Clash Grotesk', sans-serif" }, ref) => {
+    const showPip = thumbModel === 'pip';
+    const showPerson2 = thumbModel === 'duas-pessoas';
     const textRef = useRef<HTMLDivElement>(null);
     const [fontSize, setFontSize] = useState(200);
     const strokeShadow = useMemo(() => generateStrokeShadow(15, strokeColor, 32), [strokeColor]);
@@ -81,7 +88,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
         />
 
         {/* Layer 2: PIP */}
-        {pipImage && (
+        {showPip && pipImage && (
           <div
             style={{
               position: 'absolute',
@@ -117,19 +124,37 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           </div>
         )}
 
-        {/* Layer 3: Person cutout */}
+        {/* Layer 3: Person cutout (right side) */}
         {personCutout && (
           <img
             src={personCutout}
             alt=""
             style={{
               position: 'absolute',
-              right: '-6%',
+              right: showPerson2 ? '-2%' : '-6%',
               top: '-2%',
               height: '108%',
               width: 'auto',
               zIndex: 3,
               transform: `translate(${personTransform.x}px, ${personTransform.y}px) scale(${personTransform.scale}) rotate(${personTransform.rotation}deg)`,
+              transformOrigin: 'center center',
+            }}
+          />
+        )}
+
+        {/* Layer 3b: Person 2 cutout (left side) */}
+        {showPerson2 && person2Cutout && (
+          <img
+            src={person2Cutout}
+            alt=""
+            style={{
+              position: 'absolute',
+              left: '-2%',
+              top: '-2%',
+              height: '108%',
+              width: 'auto',
+              zIndex: 3,
+              transform: `scaleX(-1) translate(${person2Transform.x}px, ${person2Transform.y}px) scale(${person2Transform.scale}) rotate(${person2Transform.rotation}deg)`,
               transformOrigin: 'center center',
             }}
           />

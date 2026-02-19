@@ -10,7 +10,10 @@ const CANVAS_HEIGHT = 720;
 
 const DEFAULT_PIP_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
 const DEFAULT_PERSON_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
+const DEFAULT_PERSON2_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
 const DEFAULT_PIP_FRAME = { x: 3.0, y: 15.4, width: 56.6, height: 64.3 };
+
+export type ThumbModel = 'pip' | 'duas-pessoas';
 
 interface CortesThumbBuilderProps {
   programName?: string;
@@ -39,13 +42,17 @@ export const CortesThumbBuilder = ({
   const isMobile = useIsMobile();
   const [canvasScale, setCanvasScale] = useState(0.5);
 
+  const [thumbModel, setThumbModel] = useState<ThumbModel>('pip');
   const [pipImage, setPipImage] = useState<string | null>(null);
   const [personCutout, setPersonCutout] = useState<string | null>(null);
+  const [person2Cutout, setPerson2Cutout] = useState<string | null>(null);
   const [thumbText, setThumbText] = useState('');
   const [isRemovingBg, setIsRemovingBg] = useState(false);
+  const [isRemovingBg2, setIsRemovingBg2] = useState(false);
 
   const [pipTransform, setPipTransform] = useState(DEFAULT_PIP_TRANSFORM);
   const [personTransform, setPersonTransform] = useState(DEFAULT_PERSON_TRANSFORM);
+  const [person2Transform, setPerson2Transform] = useState(DEFAULT_PERSON2_TRANSFORM);
   const [pipFrame, setPipFrame] = useState(DEFAULT_PIP_FRAME);
   const [pipBaseScale, setPipBaseScale] = useState(1);
 
@@ -111,12 +118,40 @@ export const CortesThumbBuilder = ({
     }
   };
 
+  const handlePerson2Upload = async (file: File) => {
+    setIsRemovingBg2(true);
+    try {
+      const reader = new FileReader();
+      const base64 = await new Promise<string>((resolve) => {
+        reader.onload = (e) => resolve(e.target?.result as string);
+        reader.readAsDataURL(file);
+      });
+
+      const { data, error } = await supabase.functions.invoke('photoroom-remove-bg', {
+        body: { image_base64: base64 },
+      });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      setPerson2Cutout(data.result_base64);
+      toast.success('Fundo removido (pessoa 2)!');
+    } catch (err: any) {
+      console.error('Remove BG error:', err);
+      toast.error(err.message || 'Erro ao remover fundo');
+    } finally {
+      setIsRemovingBg2(false);
+    }
+  };
+
   const handleClear = () => {
     setPipImage(null);
     setPersonCutout(null);
+    setPerson2Cutout(null);
     setThumbText('');
     setPipTransform(DEFAULT_PIP_TRANSFORM);
     setPersonTransform(DEFAULT_PERSON_TRANSFORM);
+    setPerson2Transform(DEFAULT_PERSON2_TRANSFORM);
     setPipFrame(DEFAULT_PIP_FRAME);
     setPipBaseScale(1);
   };
@@ -132,11 +167,14 @@ export const CortesThumbBuilder = ({
         <div style={{ transform: `scale(${canvasScale})`, transformOrigin: 'center' }}>
           <CortesCanvas
             ref={canvasRef}
+            thumbModel={thumbModel}
             pipImage={pipImage}
             personCutout={personCutout}
+            person2Cutout={person2Cutout}
             thumbText={thumbText}
             pipTransform={pipTransform}
             personTransform={personTransform}
+            person2Transform={person2Transform}
             pipFrame={pipFrame}
             bgImage={bgImage}
             logosImage={logosImage}
@@ -162,19 +200,26 @@ export const CortesThumbBuilder = ({
 
         <div className="p-3 md:p-5 flex-1 overflow-y-auto">
           <CortesControls
+            thumbModel={thumbModel}
+            onThumbModelChange={setThumbModel}
             pipImage={pipImage}
             personCutout={personCutout}
+            person2Cutout={person2Cutout}
             thumbText={thumbText}
             isRemovingBg={isRemovingBg}
+            isRemovingBg2={isRemovingBg2}
             pipTransform={pipTransform}
             personTransform={personTransform}
+            person2Transform={person2Transform}
             pipFrame={pipFrame}
             pipBaseScale={pipBaseScale}
             onPipUpload={handlePipUpload}
             onPersonUpload={handlePersonUpload}
+            onPerson2Upload={handlePerson2Upload}
             onTextChange={setThumbText}
             onPipTransformChange={(t) => setPipTransform((prev) => ({ ...prev, ...t }))}
             onPersonTransformChange={(t) => setPersonTransform((prev) => ({ ...prev, ...t }))}
+            onPerson2TransformChange={(t) => setPerson2Transform((prev) => ({ ...prev, ...t }))}
             onPipFrameChange={(f) => setPipFrame((prev) => ({ ...prev, ...f }))}
             onClear={handleClear}
             canvasRef={canvasRef}
