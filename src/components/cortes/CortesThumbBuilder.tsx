@@ -13,7 +13,7 @@ const DEFAULT_PERSON_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
 const DEFAULT_PERSON2_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
 const DEFAULT_PIP_FRAME = { x: 3.0, y: 15.4, width: 56.6, height: 64.3 };
 
-export type ThumbModel = 'pip' | 'duas-pessoas' | 'meio-a-meio';
+export type ThumbModel = 'pip' | 'duas-pessoas' | 'meio-a-meio' | 'so-lettering';
 
 interface CortesThumbBuilderProps {
   programName?: string;

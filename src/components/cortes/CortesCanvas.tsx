@@ -44,6 +44,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
     const showPip = thumbModel === 'pip';
     const showPerson2 = thumbModel === 'duas-pessoas';
     const showMeioAMeio = thumbModel === 'meio-a-meio';
+    const showSoLettering = thumbModel === 'so-lettering';
     const textRef = useRef<HTMLDivElement>(null);
     const textLeftRef = useRef<HTMLDivElement>(null);
     const textRightRef = useRef<HTMLDivElement>(null);
@@ -149,7 +150,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
         )}
 
         {/* Layer 3: Person cutout (right side) — pip & duas-pessoas models */}
-        {!showMeioAMeio && personCutout && (
+        {!showMeioAMeio && !showSoLettering && personCutout && (
           <img
             src={personCutout}
             alt=""
@@ -167,7 +168,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
         )}
 
         {/* Layer 3b: Person 2 cutout (left side) — duas-pessoas model */}
-        {showPerson2 && person2Cutout && (
+        {showPerson2 && !showSoLettering && person2Cutout && (
           <img
             src={person2Cutout}
             alt=""
@@ -293,7 +294,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           }}
         />
 
-        {/* Layer 5: Text — single (pip/duas-pessoas) */}
+        {/* Layer 5: Text — single (pip/duas-pessoas/so-lettering) */}
         {!showMeioAMeio && thumbText && (
           <div
             ref={textRef}
