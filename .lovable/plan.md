@@ -1,46 +1,57 @@
 
+# Corrigir Export JPG dos Cortes
 
-# Adicionar cor do texto destacado (*asteriscos*)
+## Diagnóstico do Problema
 
-## Resumo
+O `html2canvas` captura o elemento `CANVAS_CORTES` (que tem 1280×720px em CSS), mas ele está envolto num container com `transform: scale(${canvasScale})` (tipicamente ~0.5). Embora o `onclone` remova o transform dos ancestrais, a posição do elemento clonado no documento ainda não é `(0,0)` — o html2canvas calcula as coordenadas de captura baseado na posição visual renderizada do elemento, que está deslocada/escalada.
 
-Adicionar um novo campo de cor para o texto destacado entre `*asteriscos*`, que atualmente usa a mesma cor da borda do PIP. Com essa mudanca, o usuario podera definir essa cor separadamente ao criar um programa.
+Isso causa a distorção: o conteúdo aparece "maior" porque o html2canvas está capturando a partir de uma posição errada, resultando num crop incorreto do canvas real.
 
-## Mudancas
+**Por que funciona no Melhores Momentos?** O layout do `Index.tsx` é diferente do `CortesThumbBuilder.tsx` — o overflow e estrutura flex do cortes interfere diferente.
 
-### 1. Banco de dados
+## Solução
 
-Adicionar coluna `highlight_color` (text, NOT NULL, default `'#D02046'`) na tabela `cortes_programs`.
+A abordagem mais confiável é usar a estratégia de **renderização offscreen**: no `onclone`, além de remover transforms dos pais, também reposicionamos o próprio elemento `CANVAS_CORTES` para `position: fixed; top: 0; left: 0; transform: none; z-index: 99999`, garantindo que o html2canvas sempre o encontre exatamente em `(0, 0)` do viewport.
 
-### 2. Formulario de criacao (`CreateProgramDialog.tsx`)
+Também corrigimos o `scrollX` e `scrollY` para usar os valores reais da janela negados (`-window.scrollX`, `-window.scrollY`).
 
-- Novo state `highlightColor` com default `'#D02046'`
-- Novo `ColorPicker` no grid de cores com label "Texto destaque"
-- Incluir `highlight_color` no insert
-- Grid de cores passa de 3 para 4 colunas (ou 2x2)
+## Mudanças Técnicas
 
-### 3. Canvas (`CortesCanvas.tsx`)
+### `src/components/cortes/CortesControls.tsx`
 
-- Nova prop `highlightColor?: string` (default: `'#D02046'`)
-- No render do texto, trocar a cor do `<span>` de destaque de `pipBorderColor` para `highlightColor`
+Atualizar a função `handleExport` para reposicionar o elemento clonado de forma absoluta:
 
-### 4. Builder do programa (`CortesThumbBuilder.tsx`)
+```typescript
+onclone: (clonedDoc) => {
+  const el = clonedDoc.getElementById('CANVAS_CORTES');
+  if (!el) return;
 
-- Passar a nova prop `highlightColor` para o `CortesCanvas`
+  // Neutraliza transforms de todos os ancestrais
+  let parent = el.parentElement;
+  while (parent && parent !== clonedDoc.body) {
+    parent.style.transform = 'none';
+    parent.style.position = 'static';
+    (parent.style as any).zoom = '1';
+    parent = parent.parentElement;
+  }
 
-### 5. Builder dinamico (`CortesProgramBuilder.tsx`)
+  // Força o canvas clonado para a posição exata (0,0)
+  el.style.position = 'fixed';
+  el.style.top = '0';
+  el.style.left = '0';
+  el.style.transform = 'none';
+  el.style.zIndex = '99999';
+  el.style.margin = '0';
+},
+```
 
-- Ler `highlight_color` do programa e passar como prop
+E ajustar o `scrollX`/`scrollY` para compensar scroll real:
 
-### 6. Hub (`CortesHub.tsx`)
+```typescript
+scrollX: -window.scrollX,
+scrollY: -window.scrollY,
+```
 
-- Incluir `highlight_color` na interface `CortesProgram`
+## Arquivos a modificar
 
-### 7. Types (`types.ts`)
-
-- Sera atualizado automaticamente apos a migration
-
-## Resultado
-
-- "Roda de Bobo" continua usando o default `#D02046` para destaque (sem alteracao visual)
-- Novos programas podem definir cor de destaque independente da borda do PIP
+- `src/components/cortes/CortesControls.tsx` — apenas a função `handleExport` (linhas 99–157)
