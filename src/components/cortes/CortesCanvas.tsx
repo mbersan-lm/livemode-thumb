@@ -155,7 +155,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
         )}
 
         {/* Layer 3: Person cutout (right side) — pip & duas-pessoas models */}
-        {!showMeioAMeio && !showSoLettering && personCutout && (
+        {!showMeioAMeio && !showSoLettering && !showJogoV1 && personCutout && (
           <img
             src={personCutout}
             alt=""
@@ -173,7 +173,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
         )}
 
         {/* Layer 3b: Person 2 cutout (left side) — duas-pessoas model */}
-        {showPerson2 && !showSoLettering && person2Cutout && (
+        {showPerson2 && !showSoLettering && !showJogoV1 && person2Cutout && (
           <img
             src={person2Cutout}
             alt=""
