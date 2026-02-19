@@ -1,110 +1,72 @@
 
-# Corrigir Export JPG — Renderização Offscreen Real
+# Corrigir Export JPG — Aguardar Carregamento Real das Imagens
 
-## Diagnóstico do Problema Atual
+## Diagnóstico Definitivo
 
-O `onclone` que força `position: fixed; top: 0; left: 0` no elemento clonado ainda não é suficiente. O `html2canvas` opera sobre um clone do documento inteiro e calcula o viewport de captura baseado no **elemento original** no documento real — não no clonado. Como o elemento original está dentro de um `div` com `transform: scale(0.5)`, o `html2canvas` ainda usa as coordenadas erradas.
+O container offscreen é criado corretamente, o `CortesCanvas` é renderizado lá — mas a captura acontece antes das imagens (base64/PNG) terminarem de carregar no DOM. O `document.fonts.ready` só aguarda fontes, não imagens.
 
-**Por que funciona no Melhores Momentos (`Index.tsx`)?** O layout lá não usa `transform: scale()` no container do canvas, então as coordenadas coincidem.
+Observe no JPG exportado: a estrutura está correta (logos, layout, texto), mas as fotos (PIP e pessoa) não aparecem — exatamente o comportamento de imagens que ainda não carregaram quando o `html2canvas` fez a captura.
 
-## Solução: Renderização Offscreen Real
+Além disso, os `useEffect` que calculam o `fontSize` do texto dentro do `CortesCanvas` são assíncronos — se o canvas renderiza e o html2canvas captura antes desses effects rodarem, o texto aparece em tamanho errado.
 
-A abordagem correta é:
+## Solução
 
-1. Criar um `div` container **fora do fluxo visual** (`position: fixed; left: -9999px; top: 0; width: 1280px; height: 720px; overflow: hidden; z-index: -1`) e anexá-lo ao `document.body`
-2. Usar `ReactDOM.render` / `createRoot` para renderizar uma cópia do `CortesCanvas` nesse container, com as mesmas props atuais
-3. Aguardar fonts e imagens carregarem (via `document.fonts.ready`)
-4. Rodar `html2canvas` **nesse container offscreen** (que nunca teve scale nem transform)
-5. Remover o container após captura
+Após o `root.render`, ao invés de aguardar apenas um `setTimeout` fixo de 600ms:
 
-Isso garante que o `html2canvas` sempre veja o canvas em `(0,0)` sem nenhuma transformação, produzindo um JPG idêntico ao preview.
-
-## Implementação
-
-### Mudanças em `src/components/cortes/CortesThumbBuilder.tsx`
-
-Exportar as props do estado atual e passar uma função `onExport` para `CortesControls`, que faz a renderização offscreen via `createRoot`.
-
-### Mudanças em `src/components/cortes/CortesControls.tsx`
-
-Substituir o `handleExport` por uma função que:
+1. **Aguardar todas as imagens** do container offscreen terminarem de carregar com `Promise.all` sobre os eventos `load` de cada `<img>` cujo `complete` ainda é falso.
+2. **Aumentar o delay mínimo** para 1000ms para garantir que os `useEffect` de auto-fit de fonte rodem.
+3. **Aguardar `document.fonts.ready`** antes do delay (não depois).
 
 ```typescript
-const handleExport = async () => {
-  toast.loading('Gerando JPG...');
-  await document.fonts.ready;
+// Após root.render — aguarda fontes + imagens
+await document.fonts.ready;
 
-  // Cria container offscreen
-  const offscreen = document.createElement('div');
-  offscreen.style.cssText = `
-    position: fixed;
-    left: -9999px;
-    top: 0;
-    width: 1280px;
-    height: 720px;
-    overflow: hidden;
-    z-index: -1;
-  `;
-  document.body.appendChild(offscreen);
+// Aguarda um ciclo de render dos useEffects
+await new Promise(resolve => setTimeout(resolve, 1000));
 
-  // Renderiza CortesCanvas no container offscreen com as props atuais
-  const root = createRoot(offscreen);
-  root.render(<CortesCanvas {...currentProps} />);
-
-  // Aguarda render
-  await new Promise(resolve => setTimeout(resolve, 300));
-
-  try {
-    const canvas = await html2canvas(offscreen, {
-      width: 1280,
-      height: 720,
-      scale: 1,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: '#0C0C20',
-      logging: false,
-      x: 0,
-      y: 0,
-      scrollX: 0,
-      scrollY: 0,
-    });
-    // download...
-  } finally {
-    root.unmount();
-    document.body.removeChild(offscreen);
-  }
-};
-```
-
-### Interface de Props
-
-Para isso funcionar, `CortesControls` precisará receber as props do canvas atual para passá-las ao `CortesCanvas` no container offscreen:
-
-```typescript
-// Novas props em CortesControlsProps
-currentCanvasProps: {
-  thumbModel: ThumbModel;
-  pipImage: string | null;
-  personCutout: string | null;
-  person2Cutout: string | null;
-  thumbText: string;
-  thumbTextLeft: string;
-  thumbTextRight: string;
-  pipTransform: TransformState;
-  personTransform: TransformState;
-  person2Transform: TransformState;
-  pipFrame: PipFrameState;
-  bgImage?: string;
-  logosImage?: string;
-  textColor?: string;
-  strokeColor?: string;
-  pipBorderColor?: string;
-  highlightColor?: string;
-  customFontFamily?: string;
-}
+// Aguarda todas as imagens no container offscreen
+const images = Array.from(offscreen.querySelectorAll('img'));
+await Promise.all(
+  images.map(
+    (img) =>
+      img.complete
+        ? Promise.resolve()
+        : new Promise<void>((res) => {
+            img.onload = () => res();
+            img.onerror = () => res(); // resolve mesmo em erro para não travar
+          })
+  )
+);
 ```
 
 ## Arquivos a Modificar
 
-- `src/components/cortes/CortesControls.tsx` — substituir `handleExport` por renderização offscreen com `createRoot`
-- `src/components/cortes/CortesThumbBuilder.tsx` — passar prop `currentCanvasProps` para `CortesControls` com o estado atual
+- `src/components/cortes/CortesControls.tsx` — apenas a função `handleExport`, substituindo a lógica de espera atual (linhas 124–213)
+
+## Mudança específica
+
+Substituir:
+```typescript
+await new Promise<void>((resolve) => {
+  root.render(<CortesCanvas ... />);
+  setTimeout(resolve, 600);
+});
+await document.fonts.ready;
+```
+
+Por:
+```typescript
+root.render(<CortesCanvas ... />);
+await document.fonts.ready;
+await new Promise(resolve => setTimeout(resolve, 1000));
+
+// Aguarda carregamento real de todas as imagens
+const imgs = Array.from(offscreen.querySelectorAll('img'));
+await Promise.all(
+  imgs.map(img =>
+    img.complete
+      ? Promise.resolve()
+      : new Promise<void>(res => { img.onload = res; img.onerror = res; })
+  )
+);
+```
