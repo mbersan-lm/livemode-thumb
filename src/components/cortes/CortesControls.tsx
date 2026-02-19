@@ -358,6 +358,7 @@ export const CortesControls = ({
       const showPip = thumbModel === 'pip';
       const showPerson2 = thumbModel === 'duas-pessoas';
       const showMeioAMeio = thumbModel === 'meio-a-meio';
+      const showSoLettering = thumbModel === 'so-lettering';
 
       // ── Layer 1: Background ─────────────────────────────────────────────
       ctx.drawImage(bgImg, 0, 0, W, H);
@@ -431,7 +432,7 @@ export const CortesControls = ({
       }
 
       // ── Layer 3: Person cutout (pip / duas-pessoas) ─────────────────────
-      if (!showMeioAMeio && personImg) {
+      if (!showMeioAMeio && !showSoLettering && personImg) {
         const t = props.personTransform;
         // Posição base: right: -6% (pip) ou -2% (duas-pessoas), top: -2%, height: 108%
         const baseRight = showPerson2 ? -0.02 * W : -0.06 * W;
@@ -578,6 +579,7 @@ export const CortesControls = ({
             <SelectItem value="pip">Com PIP</SelectItem>
             <SelectItem value="duas-pessoas">Duas pessoas</SelectItem>
             <SelectItem value="meio-a-meio">Meio a meio</SelectItem>
+            <SelectItem value="so-lettering">Só lettering</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -672,7 +674,7 @@ export const CortesControls = ({
       )}
 
       {/* Person Upload (right side / single person) — pip & duas-pessoas */}
-      {thumbModel !== 'meio-a-meio' && (
+      {thumbModel !== 'meio-a-meio' && thumbModel !== 'so-lettering' && (
         <>
           <div className="space-y-2">
             <Label className="font-semibold">{thumbModel === 'duas-pessoas' ? 'Pessoa (direita)' : 'Foto da pessoa'}</Label>
@@ -930,7 +932,7 @@ export const CortesControls = ({
         </>
       )}
 
-      {/* Single text field — pip & duas-pessoas */}
+      {/* Single text field — pip, duas-pessoas & so-lettering */}
       {thumbModel !== 'meio-a-meio' && (
         <div className="space-y-2">
           <Label className="font-semibold">Texto da thumbnail</Label>
@@ -945,10 +947,12 @@ export const CortesControls = ({
         </div>
       )}
 
-      {/* Background upload for pip/single model */}
+      {/* Background upload — pip, meio-a-meio, so-lettering */}
       {thumbModel !== 'duas-pessoas' && (
         <div className="space-y-2">
-          <Label className="font-semibold">Foto de fundo (opcional)</Label>
+          <Label className="font-semibold">
+            Foto de fundo{thumbModel === 'so-lettering' ? '' : ' (opcional)'}
+          </Label>
           <input
             ref={bgInputRef}
             type="file"
