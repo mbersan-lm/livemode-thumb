@@ -114,21 +114,31 @@ export const CortesControls = ({
         allowTaint: true,
         backgroundColor: '#0C0C20',
         logging: false,
-        scrollX: 0,
-        scrollY: 0,
+        scrollX: -window.scrollX,
+        scrollY: -window.scrollY,
         x: 0,
         y: 0,
         foreignObjectRendering: false,
         onclone: (clonedDoc) => {
           const el = clonedDoc.getElementById('CANVAS_CORTES');
           if (!el) return;
+
+          // Neutraliza transforms de todos os ancestrais
           let parent = el.parentElement;
-          while (parent) {
+          while (parent && parent !== clonedDoc.body) {
             parent.style.transform = 'none';
+            parent.style.position = 'static';
             (parent.style as any).zoom = '1';
-            (parent.style as any).scale = '1';
             parent = parent.parentElement;
           }
+
+          // Força o canvas clonado para a posição exata (0,0)
+          el.style.position = 'fixed';
+          el.style.top = '0';
+          el.style.left = '0';
+          el.style.transform = 'none';
+          el.style.zIndex = '99999';
+          el.style.margin = '0';
         },
       });
 
