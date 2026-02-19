@@ -142,34 +142,47 @@ export const CortesControls = ({
 
     try {
       // Render a fresh CortesCanvas with current props into the offscreen div
-      await new Promise<void>((resolve) => {
-        root.render(
-          <CortesCanvas
-            thumbModel={currentCanvasProps.thumbModel}
-            pipImage={currentCanvasProps.pipImage}
-            personCutout={currentCanvasProps.personCutout}
-            person2Cutout={currentCanvasProps.person2Cutout}
-            thumbText={currentCanvasProps.thumbText}
-            thumbTextLeft={currentCanvasProps.thumbTextLeft}
-            thumbTextRight={currentCanvasProps.thumbTextRight}
-            pipTransform={currentCanvasProps.pipTransform}
-            personTransform={currentCanvasProps.personTransform}
-            person2Transform={currentCanvasProps.person2Transform}
-            pipFrame={currentCanvasProps.pipFrame}
-            bgImage={currentCanvasProps.bgImage}
-            logosImage={currentCanvasProps.logosImage}
-            textColor={currentCanvasProps.textColor}
-            strokeColor={currentCanvasProps.strokeColor}
-            pipBorderColor={currentCanvasProps.pipBorderColor}
-            highlightColor={currentCanvasProps.highlightColor}
-            customFontFamily={currentCanvasProps.customFontFamily}
-          />
-        );
-        // Give React + fonts + images time to settle
-        setTimeout(resolve, 600);
-      });
+      root.render(
+        <CortesCanvas
+          thumbModel={currentCanvasProps.thumbModel}
+          pipImage={currentCanvasProps.pipImage}
+          personCutout={currentCanvasProps.personCutout}
+          person2Cutout={currentCanvasProps.person2Cutout}
+          thumbText={currentCanvasProps.thumbText}
+          thumbTextLeft={currentCanvasProps.thumbTextLeft}
+          thumbTextRight={currentCanvasProps.thumbTextRight}
+          pipTransform={currentCanvasProps.pipTransform}
+          personTransform={currentCanvasProps.personTransform}
+          person2Transform={currentCanvasProps.person2Transform}
+          pipFrame={currentCanvasProps.pipFrame}
+          bgImage={currentCanvasProps.bgImage}
+          logosImage={currentCanvasProps.logosImage}
+          textColor={currentCanvasProps.textColor}
+          strokeColor={currentCanvasProps.strokeColor}
+          pipBorderColor={currentCanvasProps.pipBorderColor}
+          highlightColor={currentCanvasProps.highlightColor}
+          customFontFamily={currentCanvasProps.customFontFamily}
+        />
+      );
 
+      // 1. Aguarda fontes carregarem
       await document.fonts.ready;
+
+      // 2. Aguarda useEffects de auto-fit de fonte rodarem (1000ms)
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // 3. Aguarda todas as imagens no container offscreen terminarem de carregar
+      const imgs = Array.from(offscreen.querySelectorAll('img'));
+      await Promise.all(
+        imgs.map((img) =>
+          img.complete
+            ? Promise.resolve()
+            : new Promise<void>((res) => {
+                img.onload = () => res();
+                img.onerror = () => res();
+              })
+        )
+      );
 
       const canvas = await html2canvas(offscreen, {
         width: 1280,
