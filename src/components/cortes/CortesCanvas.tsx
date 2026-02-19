@@ -18,12 +18,14 @@ interface CortesCanvasProps {
   pipImage: string | null;
   personCutout: string | null;
   person2Cutout: string | null;
+  person3Cutout?: string | null;
   thumbText: string;
   thumbTextLeft?: string;
   thumbTextRight?: string;
   pipTransform: { x: number; y: number; scale: number; rotation: number };
   personTransform: { x: number; y: number; scale: number; rotation: number };
   person2Transform: { x: number; y: number; scale: number; rotation: number };
+  person3Transform?: { x: number; y: number; scale: number; rotation: number };
   pipFrame: { x: number; y: number; width: number; height: number };
   bgImage?: string;
   logosImage?: string;
@@ -35,14 +37,17 @@ interface CortesCanvasProps {
 }
 
 export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
-  ({ thumbModel = 'pip', pipImage, personCutout, person2Cutout,
+  ({ thumbModel = 'pip', pipImage, personCutout, person2Cutout, person3Cutout = null,
      thumbText, thumbTextLeft = '', thumbTextRight = '',
-     pipTransform, personTransform, person2Transform, pipFrame,
+     pipTransform, personTransform, person2Transform,
+     person3Transform = { x: 0, y: 0, scale: 1, rotation: 0 },
+     pipFrame,
      bgImage = '/cortes/bg-corte.png', logosImage = '/cortes/logos-corte.png',
      textColor = '#F1E8D5', strokeColor = '#0C0C20', pipBorderColor = '#D02046',
      highlightColor = '#D02046', customFontFamily = "'Clash Grotesk', sans-serif" }, ref) => {
-    const showPip = thumbModel === 'pip';
-    const showPerson2 = thumbModel === 'duas-pessoas';
+  const showPip = thumbModel === 'pip';
+  const showPerson2 = thumbModel === 'duas-pessoas';
+  const showJogoV1 = thumbModel === 'jogo-v1';
     const showMeioAMeio = thumbModel === 'meio-a-meio';
     const showSoLettering = thumbModel === 'so-lettering';
     const textRef = useRef<HTMLDivElement>(null);
@@ -261,6 +266,56 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               width: 'auto',
               zIndex: 3,
               pointerEvents: 'none',
+            }}
+          />
+        )}
+
+        {/* Layer 3e: Jogo v1 — 3 cutouts */}
+        {showJogoV1 && personCutout && (
+          <img
+            src={personCutout}
+            alt=""
+            style={{
+              position: 'absolute',
+              left: '0%',
+              top: '5%',
+              height: '90%',
+              width: 'auto',
+              zIndex: 3,
+              transform: `translate(${personTransform.x}px, ${personTransform.y}px) scale(${personTransform.scale}) rotate(${personTransform.rotation}deg)`,
+              transformOrigin: 'center center',
+            }}
+          />
+        )}
+        {showJogoV1 && person2Cutout && (
+          <img
+            src={person2Cutout}
+            alt=""
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: '-5%',
+              height: '105%',
+              width: 'auto',
+              zIndex: 4,
+              transform: `translate(-50%, 0) translate(${person2Transform.x}px, ${person2Transform.y}px) scale(${person2Transform.scale}) rotate(${person2Transform.rotation}deg)`,
+              transformOrigin: 'center center',
+            }}
+          />
+        )}
+        {showJogoV1 && person3Cutout && (
+          <img
+            src={person3Cutout}
+            alt=""
+            style={{
+              position: 'absolute',
+              right: '0%',
+              top: '5%',
+              height: '90%',
+              width: 'auto',
+              zIndex: 3,
+              transform: `translate(${person3Transform!.x}px, ${person3Transform!.y}px) scale(${person3Transform!.scale}) rotate(${person3Transform!.rotation}deg)`,
+              transformOrigin: 'center center',
             }}
           />
         )}

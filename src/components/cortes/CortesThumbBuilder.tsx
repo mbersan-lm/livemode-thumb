@@ -11,9 +11,10 @@ const CANVAS_HEIGHT = 720;
 const DEFAULT_PIP_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
 const DEFAULT_PERSON_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
 const DEFAULT_PERSON2_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
+const DEFAULT_PERSON3_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
 const DEFAULT_PIP_FRAME = { x: 3.0, y: 15.4, width: 56.6, height: 64.3 };
 
-export type ThumbModel = 'pip' | 'duas-pessoas' | 'meio-a-meio' | 'so-lettering';
+export type ThumbModel = 'pip' | 'duas-pessoas' | 'meio-a-meio' | 'so-lettering' | 'jogo-v1';
 
 interface CortesThumbBuilderProps {
   programName?: string;
@@ -26,6 +27,7 @@ interface CortesThumbBuilderProps {
   customFontFamily?: string;
   backUrl?: string;
   allowAllModels?: boolean;
+  allowJogoV1?: boolean;
 }
 
 export const CortesThumbBuilder = ({
@@ -39,6 +41,7 @@ export const CortesThumbBuilder = ({
   customFontFamily,
   backUrl = '/',
   allowAllModels = false,
+  allowJogoV1 = false,
 }: CortesThumbBuilderProps) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
@@ -48,15 +51,18 @@ export const CortesThumbBuilder = ({
   const [pipImage, setPipImage] = useState<string | null>(null);
   const [personCutout, setPersonCutout] = useState<string | null>(null);
   const [person2Cutout, setPerson2Cutout] = useState<string | null>(null);
+  const [person3Cutout, setPerson3Cutout] = useState<string | null>(null);
   const [thumbText, setThumbText] = useState('');
   const [thumbTextLeft, setThumbTextLeft] = useState('');
   const [thumbTextRight, setThumbTextRight] = useState('');
   const [isRemovingBg, setIsRemovingBg] = useState(false);
   const [isRemovingBg2, setIsRemovingBg2] = useState(false);
+  const [isRemovingBg3, setIsRemovingBg3] = useState(false);
 
   const [pipTransform, setPipTransform] = useState(DEFAULT_PIP_TRANSFORM);
   const [personTransform, setPersonTransform] = useState(DEFAULT_PERSON_TRANSFORM);
   const [person2Transform, setPerson2Transform] = useState(DEFAULT_PERSON2_TRANSFORM);
+  const [person3Transform, setPerson3Transform] = useState(DEFAULT_PERSON3_TRANSFORM);
   const [pipFrame, setPipFrame] = useState(DEFAULT_PIP_FRAME);
   const [pipBaseScale, setPipBaseScale] = useState(1);
   const [customBgImage, setCustomBgImage] = useState<string | null>(null);
@@ -103,26 +109,26 @@ export const CortesThumbBuilder = ({
     reader.readAsDataURL(file);
   };
 
+  const removeBg = async (file: File): Promise<string> => {
+    const reader = new FileReader();
+    const base64 = await new Promise<string>((resolve) => {
+      reader.onload = (e) => resolve(e.target?.result as string);
+      reader.readAsDataURL(file);
+    });
+    const { data, error } = await supabase.functions.invoke('photoroom-remove-bg', {
+      body: { image_base64: base64 },
+    });
+    if (error) throw error;
+    if (data?.error) throw new Error(data.error);
+    return data.result_base64;
+  };
+
   const handlePersonUpload = async (file: File) => {
     setIsRemovingBg(true);
     try {
-      const reader = new FileReader();
-      const base64 = await new Promise<string>((resolve) => {
-        reader.onload = (e) => resolve(e.target?.result as string);
-        reader.readAsDataURL(file);
-      });
-
-      const { data, error } = await supabase.functions.invoke('photoroom-remove-bg', {
-        body: { image_base64: base64 },
-      });
-
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-
-      setPersonCutout(data.result_base64);
+      setPersonCutout(await removeBg(file));
       toast.success('Fundo removido!');
     } catch (err: any) {
-      console.error('Remove BG error:', err);
       toast.error(err.message || 'Erro ao remover fundo');
     } finally {
       setIsRemovingBg(false);
@@ -132,26 +138,24 @@ export const CortesThumbBuilder = ({
   const handlePerson2Upload = async (file: File) => {
     setIsRemovingBg2(true);
     try {
-      const reader = new FileReader();
-      const base64 = await new Promise<string>((resolve) => {
-        reader.onload = (e) => resolve(e.target?.result as string);
-        reader.readAsDataURL(file);
-      });
-
-      const { data, error } = await supabase.functions.invoke('photoroom-remove-bg', {
-        body: { image_base64: base64 },
-      });
-
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-
-      setPerson2Cutout(data.result_base64);
+      setPerson2Cutout(await removeBg(file));
       toast.success('Fundo removido (pessoa 2)!');
     } catch (err: any) {
-      console.error('Remove BG error:', err);
       toast.error(err.message || 'Erro ao remover fundo');
     } finally {
       setIsRemovingBg2(false);
+    }
+  };
+
+  const handlePerson3Upload = async (file: File) => {
+    setIsRemovingBg3(true);
+    try {
+      setPerson3Cutout(await removeBg(file));
+      toast.success('Fundo removido (pessoa 3)!');
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao remover fundo');
+    } finally {
+      setIsRemovingBg3(false);
     }
   };
 
@@ -171,12 +175,14 @@ export const CortesThumbBuilder = ({
     setPipImage(null);
     setPersonCutout(null);
     setPerson2Cutout(null);
+    setPerson3Cutout(null);
     setThumbText('');
     setThumbTextLeft('');
     setThumbTextRight('');
     setPipTransform(DEFAULT_PIP_TRANSFORM);
     setPersonTransform(DEFAULT_PERSON_TRANSFORM);
     setPerson2Transform(DEFAULT_PERSON2_TRANSFORM);
+    setPerson3Transform(DEFAULT_PERSON3_TRANSFORM);
     setPipFrame(DEFAULT_PIP_FRAME);
     setPipBaseScale(1);
     setCustomBgImage(null);
@@ -197,12 +203,14 @@ export const CortesThumbBuilder = ({
             pipImage={pipImage}
             personCutout={personCutout}
             person2Cutout={person2Cutout}
+            person3Cutout={person3Cutout}
             thumbText={thumbText}
             thumbTextLeft={thumbTextLeft}
             thumbTextRight={thumbTextRight}
             pipTransform={pipTransform}
             personTransform={personTransform}
             person2Transform={person2Transform}
+            person3Transform={person3Transform}
             pipFrame={pipFrame}
             bgImage={customBgImage || bgImage}
             logosImage={logosImage}
@@ -231,22 +239,27 @@ export const CortesThumbBuilder = ({
             thumbModel={thumbModel}
             onThumbModelChange={setThumbModel}
             allowAllModels={allowAllModels}
+            allowJogoV1={allowJogoV1}
             pipImage={pipImage}
             personCutout={personCutout}
             person2Cutout={person2Cutout}
+            person3Cutout={person3Cutout}
             thumbText={thumbText}
             thumbTextLeft={thumbTextLeft}
             thumbTextRight={thumbTextRight}
             isRemovingBg={isRemovingBg}
             isRemovingBg2={isRemovingBg2}
+            isRemovingBg3={isRemovingBg3}
             pipTransform={pipTransform}
             personTransform={personTransform}
             person2Transform={person2Transform}
+            person3Transform={person3Transform}
             pipFrame={pipFrame}
             pipBaseScale={pipBaseScale}
             onPipUpload={handlePipUpload}
             onPersonUpload={handlePersonUpload}
             onPerson2Upload={handlePerson2Upload}
+            onPerson3Upload={handlePerson3Upload}
             onPersonDirectUpload={handlePersonDirectUpload}
             onPerson2DirectUpload={handlePerson2DirectUpload}
             onTextChange={setThumbText}
@@ -255,6 +268,7 @@ export const CortesThumbBuilder = ({
             onPipTransformChange={(t) => setPipTransform((prev) => ({ ...prev, ...t }))}
             onPersonTransformChange={(t) => setPersonTransform((prev) => ({ ...prev, ...t }))}
             onPerson2TransformChange={(t) => setPerson2Transform((prev) => ({ ...prev, ...t }))}
+            onPerson3TransformChange={(t) => setPerson3Transform((prev) => ({ ...prev, ...t }))}
             onPipFrameChange={(f) => setPipFrame((prev) => ({ ...prev, ...f }))}
             customBgImage={customBgImage}
             onBgUpload={handleBgUpload}
@@ -265,12 +279,14 @@ export const CortesThumbBuilder = ({
               pipImage,
               personCutout,
               person2Cutout,
+              person3Cutout,
               thumbText,
               thumbTextLeft,
               thumbTextRight,
               pipTransform,
               personTransform,
               person2Transform,
+              person3Transform,
               pipFrame,
               bgImage: customBgImage || bgImage,
               logosImage,
