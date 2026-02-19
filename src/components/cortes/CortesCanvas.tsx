@@ -19,6 +19,8 @@ interface CortesCanvasProps {
   personCutout: string | null;
   person2Cutout: string | null;
   thumbText: string;
+  thumbTextLeft?: string;
+  thumbTextRight?: string;
   pipTransform: { x: number; y: number; scale: number; rotation: number };
   personTransform: { x: number; y: number; scale: number; rotation: number };
   person2Transform: { x: number; y: number; scale: number; rotation: number };
@@ -33,14 +35,21 @@ interface CortesCanvasProps {
 }
 
 export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
-  ({ thumbModel = 'pip', pipImage, personCutout, person2Cutout, thumbText, pipTransform, personTransform, person2Transform, pipFrame,
+  ({ thumbModel = 'pip', pipImage, personCutout, person2Cutout,
+     thumbText, thumbTextLeft = '', thumbTextRight = '',
+     pipTransform, personTransform, person2Transform, pipFrame,
      bgImage = '/cortes/bg-corte.png', logosImage = '/cortes/logos-corte.png',
      textColor = '#F1E8D5', strokeColor = '#0C0C20', pipBorderColor = '#D02046',
      highlightColor = '#D02046', customFontFamily = "'Clash Grotesk', sans-serif" }, ref) => {
     const showPip = thumbModel === 'pip';
     const showPerson2 = thumbModel === 'duas-pessoas';
+    const showMeioAMeio = thumbModel === 'meio-a-meio';
     const textRef = useRef<HTMLDivElement>(null);
+    const textLeftRef = useRef<HTMLDivElement>(null);
+    const textRightRef = useRef<HTMLDivElement>(null);
     const [fontSize, setFontSize] = useState(200);
+    const [fontSizeLeft, setFontSizeLeft] = useState(160);
+    const [fontSizeRight, setFontSizeRight] = useState(160);
     const strokeShadow = useMemo(() => generateStrokeShadow(15, strokeColor, 32), [strokeColor]);
 
     useEffect(() => {
@@ -48,18 +57,33 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
         setFontSize(200);
         return;
       }
-
       let size = 200;
       const el = textRef.current;
       el.style.fontSize = `${size}px`;
-
       while (el.scrollHeight > el.clientHeight && size > 20) {
         size -= 2;
         el.style.fontSize = `${size}px`;
       }
-
       setFontSize(size);
     }, [thumbText]);
+
+    useEffect(() => {
+      if (!textLeftRef.current || !thumbTextLeft) { setFontSizeLeft(160); return; }
+      let size = 160;
+      const el = textLeftRef.current;
+      el.style.fontSize = `${size}px`;
+      while (el.scrollHeight > el.clientHeight && size > 20) { size -= 2; el.style.fontSize = `${size}px`; }
+      setFontSizeLeft(size);
+    }, [thumbTextLeft]);
+
+    useEffect(() => {
+      if (!textRightRef.current || !thumbTextRight) { setFontSizeRight(160); return; }
+      let size = 160;
+      const el = textRightRef.current;
+      el.style.fontSize = `${size}px`;
+      while (el.scrollHeight > el.clientHeight && size > 20) { size -= 2; el.style.fontSize = `${size}px`; }
+      setFontSizeRight(size);
+    }, [thumbTextRight]);
 
     return (
       <div
@@ -124,8 +148,8 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           </div>
         )}
 
-        {/* Layer 3: Person cutout (right side) */}
-        {personCutout && (
+        {/* Layer 3: Person cutout (right side) — pip & duas-pessoas models */}
+        {!showMeioAMeio && personCutout && (
           <img
             src={personCutout}
             alt=""
@@ -142,7 +166,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           />
         )}
 
-        {/* Layer 3b: Person 2 cutout (left side) */}
+        {/* Layer 3b: Person 2 cutout (left side) — duas-pessoas model */}
         {showPerson2 && person2Cutout && (
           <img
             src={person2Cutout}
@@ -156,6 +180,63 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               zIndex: 3,
               transform: `translate(${person2Transform.x}px, ${person2Transform.y}px) scale(${person2Transform.scale}) rotate(${person2Transform.rotation}deg)`,
               transformOrigin: 'center center',
+            }}
+          />
+        )}
+
+        {/* Layer 2b: Meio a meio — left image */}
+        {showMeioAMeio && personCutout && (
+          <img
+            src={personCutout}
+            alt=""
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              width: '50%',
+              height: '100%',
+              objectFit: 'cover',
+              objectPosition: 'center top',
+              zIndex: 2,
+              transform: `translate(${personTransform.x}px, ${personTransform.y}px) scale(${personTransform.scale}) rotate(${personTransform.rotation}deg)`,
+              transformOrigin: 'center center',
+            }}
+          />
+        )}
+
+        {/* Layer 2c: Meio a meio — right image */}
+        {showMeioAMeio && person2Cutout && (
+          <img
+            src={person2Cutout}
+            alt=""
+            style={{
+              position: 'absolute',
+              right: 0,
+              top: 0,
+              width: '50%',
+              height: '100%',
+              objectFit: 'cover',
+              objectPosition: 'center top',
+              zIndex: 2,
+              transform: `translate(${person2Transform.x}px, ${person2Transform.y}px) scale(${person2Transform.scale}) rotate(${person2Transform.rotation}deg)`,
+              transformOrigin: 'center center',
+            }}
+          />
+        )}
+
+        {/* Layer 2d: Meio a meio — center divider line */}
+        {showMeioAMeio && (
+          <div
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: 0,
+              width: 6,
+              height: '100%',
+              transform: 'translateX(-50%)',
+              background: pipBorderColor,
+              zIndex: 3,
+              pointerEvents: 'none',
             }}
           />
         )}
@@ -189,8 +270,8 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           }}
         />
 
-        {/* Layer 5: Text */}
-        {thumbText && (
+        {/* Layer 5: Text — single (pip/duas-pessoas) */}
+        {!showMeioAMeio && thumbText && (
           <div
             ref={textRef}
             style={{
@@ -217,6 +298,76 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
             } as React.CSSProperties}
           >
             {thumbText.split(/(\*[^*]+\*)/g).map((part, i) =>
+              part.startsWith('*') && part.endsWith('*')
+                ? <span key={i} style={{ color: highlightColor, marginLeft: '0.15em', marginRight: '0.15em' }}>{part.slice(1, -1)}</span>
+                : part
+            )}
+          </div>
+        )}
+
+        {/* Layer 5b: Meio a meio — left text */}
+        {showMeioAMeio && thumbTextLeft && (
+          <div
+            ref={textLeftRef}
+            style={{
+              position: 'absolute',
+              left: '1%',
+              bottom: '6%',
+              width: '47%',
+              maxHeight: '40%',
+              overflow: 'hidden',
+              zIndex: 6,
+              fontFamily: customFontFamily.includes(',') ? customFontFamily : `'${customFontFamily}', sans-serif`,
+              fontWeight: 800,
+              fontSize: `${fontSizeLeft}px`,
+              lineHeight: 1.2,
+              textAlign: 'center',
+              color: textColor,
+              textShadow: strokeShadow,
+              textTransform: 'uppercase',
+              transform: 'rotate(-2deg)',
+              transformOrigin: 'center center',
+              padding: '14px',
+              boxSizing: 'border-box',
+              wordBreak: 'break-word',
+            } as React.CSSProperties}
+          >
+            {thumbTextLeft.split(/(\*[^*]+\*)/g).map((part, i) =>
+              part.startsWith('*') && part.endsWith('*')
+                ? <span key={i} style={{ color: highlightColor, marginLeft: '0.15em', marginRight: '0.15em' }}>{part.slice(1, -1)}</span>
+                : part
+            )}
+          </div>
+        )}
+
+        {/* Layer 5c: Meio a meio — right text */}
+        {showMeioAMeio && thumbTextRight && (
+          <div
+            ref={textRightRef}
+            style={{
+              position: 'absolute',
+              right: '1%',
+              bottom: '6%',
+              width: '47%',
+              maxHeight: '40%',
+              overflow: 'hidden',
+              zIndex: 6,
+              fontFamily: customFontFamily.includes(',') ? customFontFamily : `'${customFontFamily}', sans-serif`,
+              fontWeight: 800,
+              fontSize: `${fontSizeRight}px`,
+              lineHeight: 1.2,
+              textAlign: 'center',
+              color: textColor,
+              textShadow: strokeShadow,
+              textTransform: 'uppercase',
+              transform: 'rotate(-2deg)',
+              transformOrigin: 'center center',
+              padding: '14px',
+              boxSizing: 'border-box',
+              wordBreak: 'break-word',
+            } as React.CSSProperties}
+          >
+            {thumbTextRight.split(/(\*[^*]+\*)/g).map((part, i) =>
               part.startsWith('*') && part.endsWith('*')
                 ? <span key={i} style={{ color: highlightColor, marginLeft: '0.15em', marginRight: '0.15em' }}>{part.slice(1, -1)}</span>
                 : part

@@ -13,7 +13,7 @@ const DEFAULT_PERSON_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
 const DEFAULT_PERSON2_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
 const DEFAULT_PIP_FRAME = { x: 3.0, y: 15.4, width: 56.6, height: 64.3 };
 
-export type ThumbModel = 'pip' | 'duas-pessoas';
+export type ThumbModel = 'pip' | 'duas-pessoas' | 'meio-a-meio';
 
 interface CortesThumbBuilderProps {
   programName?: string;
@@ -47,6 +47,8 @@ export const CortesThumbBuilder = ({
   const [personCutout, setPersonCutout] = useState<string | null>(null);
   const [person2Cutout, setPerson2Cutout] = useState<string | null>(null);
   const [thumbText, setThumbText] = useState('');
+  const [thumbTextLeft, setThumbTextLeft] = useState('');
+  const [thumbTextRight, setThumbTextRight] = useState('');
   const [isRemovingBg, setIsRemovingBg] = useState(false);
   const [isRemovingBg2, setIsRemovingBg2] = useState(false);
 
@@ -156,6 +158,8 @@ export const CortesThumbBuilder = ({
     setPersonCutout(null);
     setPerson2Cutout(null);
     setThumbText('');
+    setThumbTextLeft('');
+    setThumbTextRight('');
     setPipTransform(DEFAULT_PIP_TRANSFORM);
     setPersonTransform(DEFAULT_PERSON_TRANSFORM);
     setPerson2Transform(DEFAULT_PERSON2_TRANSFORM);
@@ -180,6 +184,8 @@ export const CortesThumbBuilder = ({
             personCutout={personCutout}
             person2Cutout={person2Cutout}
             thumbText={thumbText}
+            thumbTextLeft={thumbTextLeft}
+            thumbTextRight={thumbTextRight}
             pipTransform={pipTransform}
             personTransform={personTransform}
             person2Transform={person2Transform}
@@ -214,6 +220,8 @@ export const CortesThumbBuilder = ({
             personCutout={personCutout}
             person2Cutout={person2Cutout}
             thumbText={thumbText}
+            thumbTextLeft={thumbTextLeft}
+            thumbTextRight={thumbTextRight}
             isRemovingBg={isRemovingBg}
             isRemovingBg2={isRemovingBg2}
             pipTransform={pipTransform}
@@ -225,6 +233,8 @@ export const CortesThumbBuilder = ({
             onPersonUpload={handlePersonUpload}
             onPerson2Upload={handlePerson2Upload}
             onTextChange={setThumbText}
+            onTextLeftChange={setThumbTextLeft}
+            onTextRightChange={setThumbTextRight}
             onPipTransformChange={(t) => setPipTransform((prev) => ({ ...prev, ...t }))}
             onPersonTransformChange={(t) => setPersonTransform((prev) => ({ ...prev, ...t }))}
             onPerson2TransformChange={(t) => setPerson2Transform((prev) => ({ ...prev, ...t }))}
