@@ -969,12 +969,27 @@ export const CortesControls = ({
               <div><Label className="text-xs">Posição X: {pipTransform.x}px</Label><Slider value={[pipTransform.x]} onValueChange={([x]) => onPipTransformChange({ x })} min={-500} max={500} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Posição Y: {pipTransform.y}px</Label><Slider value={[pipTransform.y]} onValueChange={([y]) => onPipTransformChange({ y })} min={-500} max={500} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Zoom: {pipTransform.scale.toFixed(2)}x</Label><Slider value={[pipTransform.scale]} onValueChange={([scale]) => onPipTransformChange({ scale })} min={0.5} max={3} step={0.01} className="mt-1" /></div>
-              <div><Label className="text-xs">Frame X: {pipFrame.x.toFixed(1)}%</Label><Slider value={[pipFrame.x]} onValueChange={([x]) => onPipFrameChange({ x })} min={-20} max={60} step={0.1} className="mt-1" /></div>
-              <div><Label className="text-xs">Frame Y: {pipFrame.y.toFixed(1)}%</Label><Slider value={[pipFrame.y]} onValueChange={([y]) => onPipFrameChange({ y })} min={-20} max={80} step={0.1} className="mt-1" /></div>
-              <div><Label className="text-xs">Largura: {pipFrame.width.toFixed(1)}%</Label><Slider value={[pipFrame.width]} onValueChange={([width]) => onPipFrameChange({ width })} min={10} max={60} step={0.1} className="mt-1" /></div>
+            </div>
+          )}
+
+          {/* Moldura compartilhada — proporcional e igual para os dois PIPs */}
+          {(pipImage || pip2Image) && (
+            <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Moldura dos PIPs (proporcional)</Label>
+                <button
+                  onClick={() => onPipFrameChange({ x: 3.0, y: 15.4, width: 27.0, height: 55.0 })}
+                  className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
+                  <RotateCcw className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <div><Label className="text-xs">Posição X (esquerdo): {pipFrame.x.toFixed(1)}%</Label><Slider value={[pipFrame.x]} onValueChange={([x]) => onPipFrameChange({ x })} min={0} max={30} step={0.1} className="mt-1" /></div>
+              <div><Label className="text-xs">Posição Y: {pipFrame.y.toFixed(1)}%</Label><Slider value={[pipFrame.y]} onValueChange={([y]) => onPipFrameChange({ y })} min={-20} max={80} step={0.1} className="mt-1" /></div>
+              <div><Label className="text-xs">Largura: {pipFrame.width.toFixed(1)}%</Label><Slider value={[pipFrame.width]} onValueChange={([width]) => onPipFrameChange({ width })} min={10} max={45} step={0.1} className="mt-1" /></div>
               <div><Label className="text-xs">Altura: {pipFrame.height.toFixed(1)}%</Label><Slider value={[pipFrame.height]} onValueChange={([height]) => onPipFrameChange({ height })} min={10} max={90} step={0.1} className="mt-1" /></div>
             </div>
           )}
+
 
           {/* PIP 2 — direita */}
           <div className="space-y-2">
@@ -995,10 +1010,6 @@ export const CortesControls = ({
               <div><Label className="text-xs">Posição X: {pip2Transform.x}px</Label><Slider value={[pip2Transform.x]} onValueChange={([x]) => onPip2TransformChange?.({ x })} min={-500} max={500} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Posição Y: {pip2Transform.y}px</Label><Slider value={[pip2Transform.y]} onValueChange={([y]) => onPip2TransformChange?.({ y })} min={-500} max={500} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Zoom: {pip2Transform.scale.toFixed(2)}x</Label><Slider value={[pip2Transform.scale]} onValueChange={([scale]) => onPip2TransformChange?.({ scale })} min={0.5} max={3} step={0.01} className="mt-1" /></div>
-              <div><Label className="text-xs">Frame X: {pip2Frame.x.toFixed(1)}%</Label><Slider value={[pip2Frame.x]} onValueChange={([x]) => onPip2FrameChange?.({ x })} min={30} max={100} step={0.1} className="mt-1" /></div>
-              <div><Label className="text-xs">Frame Y: {pip2Frame.y.toFixed(1)}%</Label><Slider value={[pip2Frame.y]} onValueChange={([y]) => onPip2FrameChange?.({ y })} min={-20} max={80} step={0.1} className="mt-1" /></div>
-              <div><Label className="text-xs">Largura: {pip2Frame.width.toFixed(1)}%</Label><Slider value={[pip2Frame.width]} onValueChange={([width]) => onPip2FrameChange?.({ width })} min={10} max={60} step={0.1} className="mt-1" /></div>
-              <div><Label className="text-xs">Altura: {pip2Frame.height.toFixed(1)}%</Label><Slider value={[pip2Frame.height]} onValueChange={([height]) => onPip2FrameChange?.({ height })} min={10} max={90} step={0.1} className="mt-1" /></div>
             </div>
           )}
         </>

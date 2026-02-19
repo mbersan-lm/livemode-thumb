@@ -13,8 +13,13 @@ const DEFAULT_PERSON_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
 const DEFAULT_PERSON2_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
 const DEFAULT_PERSON3_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
 const DEFAULT_PIP_FRAME = { x: 3.0, y: 15.4, width: 56.6, height: 64.3 };
-const DEFAULT_PIP2_FRAME = { x: 67.0, y: 15.4, width: 30.0, height: 55.0 };
-const DEFAULT_PIP1_DUPLO_FRAME = { x: 3.0, y: 15.4, width: 30.0, height: 55.0 };
+// Para jogo-pip-duplo: ambos os PIPs compartilham width, height e y. pip2.x é calculado automaticamente.
+const DEFAULT_DUPLO_PIP_X = 3.0;
+const DEFAULT_DUPLO_PIP_Y = 15.4;
+const DEFAULT_DUPLO_PIP_WIDTH = 27.0;
+const DEFAULT_DUPLO_PIP_HEIGHT = 55.0;
+const DEFAULT_PIP1_DUPLO_FRAME = { x: DEFAULT_DUPLO_PIP_X, y: DEFAULT_DUPLO_PIP_Y, width: DEFAULT_DUPLO_PIP_WIDTH, height: DEFAULT_DUPLO_PIP_HEIGHT };
+const DEFAULT_PIP2_FRAME = { x: 100 - DEFAULT_DUPLO_PIP_X - DEFAULT_DUPLO_PIP_WIDTH, y: DEFAULT_DUPLO_PIP_Y, width: DEFAULT_DUPLO_PIP_WIDTH, height: DEFAULT_DUPLO_PIP_HEIGHT };
 
 export type ThumbModel = 'pip' | 'duas-pessoas' | 'meio-a-meio' | 'so-lettering' | 'jogo-v1' | 'jogo-pip-duplo';
 
@@ -308,7 +313,25 @@ export const CortesThumbBuilder = ({
             onPersonTransformChange={(t) => setPersonTransform((prev) => ({ ...prev, ...t }))}
             onPerson2TransformChange={(t) => setPerson2Transform((prev) => ({ ...prev, ...t }))}
             onPerson3TransformChange={(t) => setPerson3Transform((prev) => ({ ...prev, ...t }))}
-            onPipFrameChange={(f) => setPipFrame((prev) => ({ ...prev, ...f }))}
+            onPipFrameChange={(f) => {
+              if (thumbModel === 'jogo-pip-duplo') {
+                // Sincroniza width, height, y; pip2.x é sempre espelhado
+                setPipFrame((pip1Prev) => {
+                  const pip1Next = { ...pip1Prev, ...f };
+                  setPip2Frame((pip2Prev) => {
+                    const pip2Next = { ...pip2Prev };
+                    if (f.width !== undefined) pip2Next.width = pip1Next.width;
+                    if (f.height !== undefined) pip2Next.height = pip1Next.height;
+                    if (f.y !== undefined) pip2Next.y = pip1Next.y;
+                    pip2Next.x = 100 - pip1Next.x - pip1Next.width;
+                    return pip2Next;
+                  });
+                  return pip1Next;
+                });
+              } else {
+                setPipFrame((prev) => ({ ...prev, ...f }));
+              }
+            }}
             onPip2FrameChange={(f) => setPip2Frame((prev) => ({ ...prev, ...f }))}
             customBgImage={customBgImage}
             onBgUpload={handleBgUpload}
