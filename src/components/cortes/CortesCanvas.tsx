@@ -387,6 +387,20 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           }}
         />
 
+        {/* Layer 3.8: Top-right corner gradient (behind logos) */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            width: '40%',
+            height: '35%',
+            background: 'radial-gradient(ellipse at top right, #086932 0%, transparent 70%)',
+            zIndex: 4,
+            pointerEvents: 'none',
+          }}
+        />
+
         {/* Layer 4: Logos */}
         <img
           src={logosImage}
