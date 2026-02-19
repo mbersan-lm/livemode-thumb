@@ -483,7 +483,7 @@ export const CortesControls = ({
 
       // ── Layer 6: Texto ──────────────────────────────────────────────────
       const fontFamily = (props.customFontFamily || "'Clash Grotesk', sans-serif")
-        .replace(/^'|'$/g, '').split(',')[0].trim();
+        .split(',')[0].trim().replace(/'/g, '');
       const textColor = props.textColor || '#F1E8D5';
       const strokeColor = props.strokeColor || '#0C0C20';
       const highlightColor = props.highlightColor || '#D02046';
