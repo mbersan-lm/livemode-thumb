@@ -167,16 +167,17 @@ function drawAutoFitText(
   const lines = wrapText(ctx, text, innerW);
   const totalH = lines.length * lineHeight;
 
-  // Centro da área de texto (igual ao CSS: bottom:6%, width:96%, maxHeight:38%)
+  // Ancorado pelo bottom, idêntico ao CSS: bottom:6%, maxHeight:38%
   const centerX = areaX + areaW / 2;
-  const centerY = areaY + areaH / 2;
+
+  // startY: baseline da primeira linha ancorada no fundo da área (como CSS bottom)
+  const startY = areaY + areaH - paddingPx - (totalH - fontSize * 0.8);
 
   ctx.save();
-  ctx.translate(centerX, centerY);
+  ctx.translate(centerX, startY);
   ctx.rotate((rotationDeg * Math.PI) / 180);
 
-  // Posição Y da primeira linha (centralizado verticalmente no bloco total)
-  let lineY = -totalH / 2 + fontSize * 0.8;
+  let lineY = 0;
 
   for (const line of lines) {
     // Medir linha completa para centrar X
@@ -196,14 +197,18 @@ function drawAutoFitText(
 
       if (seg.highlight) segX += extra;
 
-      // Stroke simulado via shadowBlur circular
-      ctx.shadowColor = strokeColor;
-      ctx.shadowBlur = strokeRadius;
-      ctx.fillStyle = seg.highlight ? highlightColor : textColor;
-      ctx.fillText(seg.text, segX, lineY);
-      // Segunda passagem sem shadow para cor limpa sobre o stroke
-      ctx.shadowBlur = 0;
-      ctx.shadowColor = 'transparent';
+      // Stroke circular idêntico ao preview (32 text-shadows a 15px de raio)
+      const strokeSteps = 32;
+      const strokeRad = 15;
+      ctx.fillStyle = strokeColor;
+      for (let i = 0; i < strokeSteps; i++) {
+        const angle = (2 * Math.PI * i) / strokeSteps;
+        const ox = Math.cos(angle) * strokeRad;
+        const oy = Math.sin(angle) * strokeRad;
+        ctx.fillText(seg.text, segX + ox, lineY + oy);
+      }
+
+      // Texto principal por cima
       ctx.fillStyle = seg.highlight ? highlightColor : textColor;
       ctx.fillText(seg.text, segX, lineY);
 
