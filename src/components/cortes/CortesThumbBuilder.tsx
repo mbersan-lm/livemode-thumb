@@ -27,6 +27,7 @@ interface CortesThumbBuilderProps {
   programName?: string;
   bgImage?: string;
   logosImage?: string;
+  divisoriaImage?: string;
   textColor?: string;
   strokeColor?: string;
   pipBorderColor?: string;
@@ -41,6 +42,7 @@ export const CortesThumbBuilder = ({
   programName = 'Roda de Bobo',
   bgImage,
   logosImage,
+  divisoriaImage,
   textColor,
   strokeColor,
   pipBorderColor,
@@ -252,6 +254,7 @@ export const CortesThumbBuilder = ({
             pip2Frame={pip2Frame}
             bgImage={customBgImage || bgImage}
             logosImage={logosImage}
+            divisoriaImage={divisoriaImage}
             textColor={textColor}
             strokeColor={strokeColor}
             pipBorderColor={pipBorderColor}
@@ -356,6 +359,7 @@ export const CortesThumbBuilder = ({
               pip2Frame,
               bgImage: customBgImage || bgImage,
               logosImage,
+              divisoriaImage,
               textColor,
               strokeColor,
               pipBorderColor,

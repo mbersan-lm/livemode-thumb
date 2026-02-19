@@ -46,6 +46,7 @@ const CortesProgramBuilder = () => {
       programName={program!.name}
       bgImage={program!.bg_url || undefined}
       logosImage={program!.logos_url || undefined}
+      divisoriaImage={program!.name === 'Geral CazéTv Brasil' ? '/cortes/divisoria-brasil.png' : undefined}
       textColor={program!.text_color}
       strokeColor={program!.stroke_color}
       pipBorderColor={program!.pip_border_color}

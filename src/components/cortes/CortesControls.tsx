@@ -259,6 +259,7 @@ interface CurrentCanvasProps {
   pipBorderColor?: string;
   highlightColor?: string;
   customFontFamily?: string;
+  divisoriaImage?: string;
 }
 
 interface CortesControlsProps {
@@ -383,7 +384,7 @@ export const CortesControls = ({
         props.personCutout ? loadImage(props.personCutout) : Promise.resolve(null),
         props.person2Cutout ? loadImage(props.person2Cutout) : Promise.resolve(null),
         props.person3Cutout ? loadImage(props.person3Cutout) : Promise.resolve(null),
-        props.thumbModel === 'meio-a-meio' ? loadImage('/cortes/divisoria-geral.png') : Promise.resolve(null),
+        props.thumbModel === 'meio-a-meio' ? loadImage(props.divisoriaImage || '/cortes/divisoria-geral.png') : Promise.resolve(null),
       ]);
 
       // 2. Criar canvas 1280×720
