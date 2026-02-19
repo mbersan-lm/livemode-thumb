@@ -614,12 +614,12 @@ export const CortesControls = ({
       const strokeColor = props.strokeColor || '#0C0C20';
       const highlightColor = props.highlightColor || '#D02046';
 
-      const tbH = (props.textBoxHeight ?? 38) / 100;
+      const bottomFrac = (props.textBoxHeight ?? 6) / 100;
 
       if (!showMeioAMeio && props.thumbText) {
         const areaX = W * 0.02;
-        const areaH = H * tbH;
-        const areaY = H - H * 0.06 - areaH;
+        const areaH = H * 0.38;
+        const areaY = H - H * bottomFrac - areaH;
         const areaW = W * 0.96;
         drawAutoFitText(
           ctx, props.thumbText,
@@ -633,8 +633,8 @@ export const CortesControls = ({
       if (showMeioAMeio) {
         if (props.thumbTextLeft) {
           const areaX = W * 0.01;
-          const areaH = H * tbH;
-          const areaY = H - H * 0.06 - areaH;
+          const areaH = H * 0.40;
+          const areaY = H - H * bottomFrac - areaH;
           const areaW = W * 0.47;
           drawAutoFitText(
             ctx, props.thumbTextLeft,
@@ -646,8 +646,8 @@ export const CortesControls = ({
         }
         if (props.thumbTextRight) {
           const areaX = W * 0.52;
-          const areaH = H * tbH;
-          const areaY = H - H * 0.06 - areaH;
+          const areaH = H * 0.40;
+          const areaY = H - H * bottomFrac - areaH;
           const areaW = W * 0.47;
           drawAutoFitText(
             ctx, props.thumbTextRight,
@@ -1304,17 +1304,17 @@ export const CortesControls = ({
         </div>
       )}
 
-      {/* Text box height slider — all models */}
+      {/* Text box Y position slider — all models */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label className="font-semibold">Altura da caixa de texto</Label>
+          <Label className="font-semibold">Posição Y do texto</Label>
           <span className="text-xs text-muted-foreground">{textBoxHeight}%</span>
         </div>
         <Slider
           value={[textBoxHeight]}
           onValueChange={([h]) => onTextBoxHeightChange(h)}
-          min={10}
-          max={70}
+          min={0}
+          max={60}
           step={1}
           className="mt-1"
         />
