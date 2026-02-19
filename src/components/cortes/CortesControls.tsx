@@ -43,6 +43,8 @@ interface CortesControlsProps {
   onPipUpload: (file: File) => void;
   onPersonUpload: (file: File) => void;
   onPerson2Upload: (file: File) => void;
+  onPersonDirectUpload: (file: File) => void;
+  onPerson2DirectUpload: (file: File) => void;
   onTextChange: (text: string) => void;
   onTextLeftChange: (text: string) => void;
   onTextRightChange: (text: string) => void;
@@ -75,6 +77,8 @@ export const CortesControls = ({
   onPipUpload,
   onPersonUpload,
   onPerson2Upload,
+  onPersonDirectUpload,
+  onPerson2DirectUpload,
   onTextChange,
   onTextLeftChange,
   onTextRightChange,
@@ -402,7 +406,7 @@ export const CortesControls = ({
         </>
       )}
 
-      {/* Meio a meio — two image uploads with transforms */}
+      {/* Meio a meio — two direct image uploads (no bg removal) with transforms */}
       {thumbModel === 'meio-a-meio' && (
         <>
           {/* Left image */}
@@ -413,25 +417,15 @@ export const CortesControls = ({
               type="file"
               accept="image/*"
               className="hidden"
-              onChange={(e) => e.target.files?.[0] && onPersonUpload(e.target.files[0])}
+              onChange={(e) => e.target.files?.[0] && onPersonDirectUpload(e.target.files[0])}
             />
             <Button
               variant={personCutout ? 'secondary' : 'outline'}
               className="w-full"
-              disabled={isRemovingBg}
               onClick={() => personInputRef.current?.click()}
             >
-              {isRemovingBg ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Removendo fundo...
-                </>
-              ) : (
-                <>
-                  <Upload className="w-4 h-4 mr-2" />
-                  {personCutout ? 'Trocar imagem esquerda' : 'Upload imagem esquerda'}
-                </>
-              )}
+              <Upload className="w-4 h-4 mr-2" />
+              {personCutout ? 'Trocar imagem esquerda' : 'Upload imagem esquerda'}
             </Button>
           </div>
 
@@ -466,25 +460,15 @@ export const CortesControls = ({
               type="file"
               accept="image/*"
               className="hidden"
-              onChange={(e) => e.target.files?.[0] && onPerson2Upload(e.target.files[0])}
+              onChange={(e) => e.target.files?.[0] && onPerson2DirectUpload(e.target.files[0])}
             />
             <Button
               variant={person2Cutout ? 'secondary' : 'outline'}
               className="w-full"
-              disabled={isRemovingBg2}
               onClick={() => person2InputRef.current?.click()}
             >
-              {isRemovingBg2 ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Removendo fundo...
-                </>
-              ) : (
-                <>
-                  <Upload className="w-4 h-4 mr-2" />
-                  {person2Cutout ? 'Trocar imagem direita' : 'Upload imagem direita'}
-                </>
-              )}
+              <Upload className="w-4 h-4 mr-2" />
+              {person2Cutout ? 'Trocar imagem direita' : 'Upload imagem direita'}
             </Button>
           </div>
 
