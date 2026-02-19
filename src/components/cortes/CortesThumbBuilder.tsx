@@ -49,7 +49,6 @@ export const CortesThumbBuilder = ({
   const [thumbText, setThumbText] = useState('');
   const [isRemovingBg, setIsRemovingBg] = useState(false);
   const [isRemovingBg2, setIsRemovingBg2] = useState(false);
-  const [customBgImage, setCustomBgImage] = useState<string | null>(null);
 
   const [pipTransform, setPipTransform] = useState(DEFAULT_PIP_TRANSFORM);
   const [personTransform, setPersonTransform] = useState(DEFAULT_PERSON_TRANSFORM);
@@ -144,17 +143,11 @@ export const CortesThumbBuilder = ({
       setIsRemovingBg2(false);
     }
   };
-  const handleCustomBgUpload = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = (e) => setCustomBgImage(e.target?.result as string);
-    reader.readAsDataURL(file);
-  };
 
   const handleClear = () => {
     setPipImage(null);
     setPersonCutout(null);
     setPerson2Cutout(null);
-    setCustomBgImage(null);
     setThumbText('');
     setPipTransform(DEFAULT_PIP_TRANSFORM);
     setPersonTransform(DEFAULT_PERSON_TRANSFORM);
@@ -183,7 +176,7 @@ export const CortesThumbBuilder = ({
             personTransform={personTransform}
             person2Transform={person2Transform}
             pipFrame={pipFrame}
-            bgImage={customBgImage || bgImage}
+            bgImage={bgImage}
             logosImage={logosImage}
             textColor={textColor}
             strokeColor={strokeColor}
@@ -220,9 +213,6 @@ export const CortesThumbBuilder = ({
             person2Transform={person2Transform}
             pipFrame={pipFrame}
             pipBaseScale={pipBaseScale}
-            customBgImage={customBgImage}
-            onCustomBgUpload={handleCustomBgUpload}
-            onCustomBgClear={() => setCustomBgImage(null)}
             onPipUpload={handlePipUpload}
             onPersonUpload={handlePersonUpload}
             onPerson2Upload={handlePerson2Upload}

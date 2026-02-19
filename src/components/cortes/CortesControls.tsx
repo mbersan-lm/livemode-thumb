@@ -38,9 +38,6 @@ interface CortesControlsProps {
   person2Transform: TransformState;
   pipFrame: PipFrameState;
   pipBaseScale: number;
-  customBgImage: string | null;
-  onCustomBgUpload: (file: File) => void;
-  onCustomBgClear: () => void;
   onPipUpload: (file: File) => void;
   onPersonUpload: (file: File) => void;
   onPerson2Upload: (file: File) => void;
@@ -67,9 +64,6 @@ export const CortesControls = ({
   person2Transform,
   pipFrame,
   pipBaseScale,
-  customBgImage,
-  onCustomBgUpload,
-  onCustomBgClear,
   onPipUpload,
   onPersonUpload,
   onPerson2Upload,
@@ -84,7 +78,6 @@ export const CortesControls = ({
   const pipInputRef = useRef<HTMLInputElement>(null);
   const personInputRef = useRef<HTMLInputElement>(null);
   const person2InputRef = useRef<HTMLInputElement>(null);
-  const bgInputRef = useRef<HTMLInputElement>(null);
 
   const handleExport = async () => {
     if (!canvasRef.current) {
@@ -162,33 +155,7 @@ export const CortesControls = ({
         </Select>
       </div>
 
-      {/* Background Upload */}
-      <div className="space-y-2">
-        <Label className="font-semibold">Foto de fundo</Label>
-        <input
-          ref={bgInputRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={(e) => e.target.files?.[0] && onCustomBgUpload(e.target.files[0])}
-        />
-        <div className="flex gap-2">
-          <Button
-            variant={customBgImage ? 'secondary' : 'outline'}
-            className="flex-1"
-            onClick={() => bgInputRef.current?.click()}
-          >
-            <Upload className="w-4 h-4 mr-2" />
-            {customBgImage ? 'Trocar fundo' : 'Upload fundo'}
-          </Button>
-          {customBgImage && (
-            <Button variant="ghost" size="icon" onClick={onCustomBgClear} title="Remover fundo custom">
-              <Trash2 className="w-4 h-4" />
-            </Button>
-          )}
-        </div>
-      </div>
-
+      {/* PIP Upload — only for pip model */}
       {thumbModel === 'pip' && (
         <>
           <div className="space-y-2">
