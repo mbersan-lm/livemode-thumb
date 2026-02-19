@@ -579,7 +579,7 @@ export const CortesControls = ({
             <SelectItem value="pip">Com PIP</SelectItem>
             <SelectItem value="duas-pessoas">Duas pessoas</SelectItem>
             <SelectItem value="meio-a-meio">Meio a meio</SelectItem>
-            <SelectItem value="so-lettering">Só lettering</SelectItem>
+            <SelectItem value="so-lettering">Lettering simples</SelectItem>
           </SelectContent>
         </Select>
       </div>
