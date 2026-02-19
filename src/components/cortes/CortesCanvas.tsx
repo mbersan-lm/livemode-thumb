@@ -154,7 +154,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               height: '108%',
               width: 'auto',
               zIndex: 3,
-              transform: `scaleX(-1) translate(${person2Transform.x}px, ${person2Transform.y}px) scale(${person2Transform.scale}) rotate(${person2Transform.rotation}deg)`,
+              transform: `translate(${person2Transform.x}px, ${person2Transform.y}px) scale(${person2Transform.scale}) rotate(${person2Transform.rotation}deg)`,
               transformOrigin: 'center center',
             }}
           />
