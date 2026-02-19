@@ -32,6 +32,7 @@ interface CortesCanvasProps {
   pip2Frame?: { x: number; y: number; width: number; height: number };
   bgImage?: string;
   logosImage?: string;
+  divisoriaImage?: string;
   textColor?: string;
   strokeColor?: string;
   pipBorderColor?: string;
@@ -47,6 +48,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
      person3Transform = { x: 0, y: 0, scale: 1, rotation: 0 },
      pipFrame, pip2Frame = { x: 67, y: 15.4, width: 30, height: 55 },
      bgImage = '/cortes/bg-corte.png', logosImage = '/cortes/logos-corte.png',
+     divisoriaImage = '/cortes/divisoria-geral.png',
      textColor = '#F1E8D5', strokeColor = '#0C0C20', pipBorderColor = '#D02046',
      highlightColor = '#D02046', customFontFamily = "'Clash Grotesk', sans-serif" }, ref) => {
   const showPip = thumbModel === 'pip';
@@ -260,7 +262,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
         {/* Layer 2d: Meio a meio — PNG divider (above images, below gradient) */}
         {showMeioAMeio && (
           <img
-            src="/cortes/divisoria-geral.png"
+            src={divisoriaImage}
             alt=""
             style={{
               position: 'absolute',
