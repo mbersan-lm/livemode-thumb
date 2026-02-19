@@ -38,6 +38,7 @@ interface CortesCanvasProps {
   pipBorderColor?: string;
   highlightColor?: string;
   customFontFamily?: string;
+  textBoxHeight?: number;
 }
 
 export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
@@ -50,7 +51,8 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
      bgImage = '/cortes/bg-corte.png', logosImage = '/cortes/logos-corte.png',
      divisoriaImage = '/cortes/divisoria-geral.png',
      textColor = '#F1E8D5', strokeColor = '#0C0C20', pipBorderColor = '#D02046',
-     highlightColor = '#D02046', customFontFamily = "'Clash Grotesk', sans-serif" }, ref) => {
+     highlightColor = '#D02046', customFontFamily = "'Clash Grotesk', sans-serif",
+     textBoxHeight = 38 }, ref) => {
   const showPip = thumbModel === 'pip';
   const showPerson2 = thumbModel === 'duas-pessoas';
   const showJogoV1 = thumbModel === 'jogo-v1';
@@ -78,7 +80,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
         el.style.fontSize = `${size}px`;
       }
       setFontSize(size);
-    }, [thumbText]);
+    }, [thumbText, textBoxHeight]);
 
     useEffect(() => {
       if (!textLeftRef.current || !thumbTextLeft) { setFontSizeLeft(160); return; }
@@ -87,7 +89,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
       el.style.fontSize = `${size}px`;
       while (el.scrollHeight > el.clientHeight && size > 20) { size -= 2; el.style.fontSize = `${size}px`; }
       setFontSizeLeft(size);
-    }, [thumbTextLeft]);
+    }, [thumbTextLeft, textBoxHeight]);
 
     useEffect(() => {
       if (!textRightRef.current || !thumbTextRight) { setFontSizeRight(160); return; }
@@ -96,7 +98,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
       el.style.fontSize = `${size}px`;
       while (el.scrollHeight > el.clientHeight && size > 20) { size -= 2; el.style.fontSize = `${size}px`; }
       setFontSizeRight(size);
-    }, [thumbTextRight]);
+    }, [thumbTextRight, textBoxHeight]);
 
     return (
       <div
@@ -429,7 +431,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               left: '2%',
               bottom: '6%',
               width: '96%',
-              maxHeight: '38%',
+              maxHeight: `${textBoxHeight}%`,
               overflow: 'hidden',
               zIndex: 6,
               fontFamily: customFontFamily.includes(',') ? customFontFamily : `'${customFontFamily}', sans-serif`,
@@ -464,7 +466,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               left: '1%',
               bottom: '6%',
               width: '47%',
-              maxHeight: '40%',
+              maxHeight: `${textBoxHeight}%`,
               overflow: 'hidden',
               zIndex: 6,
               fontFamily: customFontFamily.includes(',') ? customFontFamily : `'${customFontFamily}', sans-serif`,
@@ -499,7 +501,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               right: '1%',
               bottom: '6%',
               width: '47%',
-              maxHeight: '40%',
+              maxHeight: `${textBoxHeight}%`,
               overflow: 'hidden',
               zIndex: 6,
               fontFamily: customFontFamily.includes(',') ? customFontFamily : `'${customFontFamily}', sans-serif`,
