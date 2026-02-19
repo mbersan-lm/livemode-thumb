@@ -124,8 +124,8 @@ export const CortesControls = ({
   const handleExport = async () => {
     const toastId = toast.loading('Gerando JPG...');
 
-    // Container offscreen: visível no topo da viewport mas fora do scroll
-    // html2canvas captura melhor quando o elemento está no viewport
+    // Container fixo no topo da viewport — html2canvas captura melhor com elemento no viewport
+    // visibility: hidden (não opacity: 0) — o browser ainda pinta as imagens
     const offscreen = document.createElement('div');
     offscreen.style.cssText = [
       'position: fixed',
@@ -136,7 +136,7 @@ export const CortesControls = ({
       'overflow: hidden',
       'z-index: 99999',
       'pointer-events: none',
-      'opacity: 0',
+      'visibility: hidden',
     ].join(';');
     document.body.appendChild(offscreen);
 
@@ -186,11 +186,15 @@ export const CortesControls = ({
         )
       );
 
-      // 4. Captura via html2canvas — elemento está no viewport (0,0), sem transforms externos
-      const innerEl = offscreen.firstElementChild as HTMLElement;
-      const targetEl = innerEl ?? offscreen;
+      // 4. Torna visível só na hora da captura para garantir paint correto
+      offscreen.style.visibility = 'visible';
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      await new Promise((resolve) => requestAnimationFrame(resolve));
 
-      const canvas = await html2canvas(targetEl, {
+      // 5. Captura o elemento #CANVAS_CORTES diretamente
+      const canvasEl = offscreen.querySelector('#CANVAS_CORTES') as HTMLElement ?? offscreen;
+
+      const canvas = await html2canvas(canvasEl, {
         width: 1280,
         height: 720,
         scale: 1,
@@ -203,8 +207,6 @@ export const CortesControls = ({
         scrollX: 0,
         scrollY: 0,
         foreignObjectRendering: false,
-        windowWidth: 1280,
-        windowHeight: 720,
       });
 
       const timestamp = Date.now();
