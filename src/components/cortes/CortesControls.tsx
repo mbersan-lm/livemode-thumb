@@ -47,6 +47,8 @@ interface CortesControlsProps {
   onPerson2TransformChange: (t: Partial<TransformState>) => void;
   onPipFrameChange: (f: Partial<PipFrameState>) => void;
   onClear: () => void;
+  customBgImage: string | null;
+  onBgUpload: (file: File) => void;
   canvasRef: React.RefObject<HTMLDivElement>;
 }
 
@@ -73,11 +75,14 @@ export const CortesControls = ({
   onPerson2TransformChange,
   onPipFrameChange,
   onClear,
+  customBgImage,
+  onBgUpload,
   canvasRef,
 }: CortesControlsProps) => {
   const pipInputRef = useRef<HTMLInputElement>(null);
   const personInputRef = useRef<HTMLInputElement>(null);
   const person2InputRef = useRef<HTMLInputElement>(null);
+  const bgInputRef = useRef<HTMLInputElement>(null);
 
   const handleExport = async () => {
     if (!canvasRef.current) {
@@ -305,6 +310,26 @@ export const CortesControls = ({
       {/* Person 2 Upload — only for duas-pessoas model */}
       {thumbModel === 'duas-pessoas' && (
         <>
+          {/* Background photo upload */}
+          <div className="space-y-2">
+            <Label className="font-semibold">Foto de fundo</Label>
+            <input
+              ref={bgInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => e.target.files?.[0] && onBgUpload(e.target.files[0])}
+            />
+            <Button
+              variant={customBgImage ? 'secondary' : 'outline'}
+              className="w-full"
+              onClick={() => bgInputRef.current?.click()}
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              {customBgImage ? 'Trocar fundo' : 'Upload fundo'}
+            </Button>
+          </div>
+
           <div className="space-y-2">
             <Label className="font-semibold">Pessoa (esquerda)</Label>
             <input
