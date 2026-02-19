@@ -160,6 +160,20 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           />
         )}
 
+        {/* Layer 3.5: Bottom gradient overlay */}
+        <div
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: '45%',
+            background: 'linear-gradient(to top, rgba(34,34,34,0.7) 0%, rgba(34,34,34,0) 100%)',
+            zIndex: 4,
+            pointerEvents: 'none',
+          }}
+        />
+
         {/* Layer 4: Logos */}
         <img
           src={logosImage}
@@ -170,7 +184,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            zIndex: 4,
+            zIndex: 5,
             pointerEvents: 'none',
           }}
         />
@@ -186,7 +200,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               width: '96%',
               maxHeight: '38%',
               overflow: 'hidden',
-              zIndex: 5,
+              zIndex: 6,
               fontFamily: customFontFamily.includes(',') ? customFontFamily : `'${customFontFamily}', sans-serif`,
               fontWeight: 800,
               fontSize: `${fontSize}px`,
