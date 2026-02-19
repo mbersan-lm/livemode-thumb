@@ -517,7 +517,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           >
             {thumbTextRight.split(/(\*[^*]+\*)/g).map((part, i) =>
               part.startsWith('*') && part.endsWith('*')
-                ? <span key={i} style={{ color: '#006892', marginLeft: '0.15em', marginRight: '0.15em' }}>{part.slice(1, -1)}</span>
+                ? <span key={i} style={{ color: highlightColor, marginLeft: '0.15em', marginRight: '0.15em' }}>{part.slice(1, -1)}</span>
                 : part
             )}
           </div>

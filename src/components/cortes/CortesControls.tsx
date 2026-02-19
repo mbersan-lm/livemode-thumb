@@ -1322,7 +1322,7 @@ export const CortesControls = ({
             {customBgImage ? 'Trocar fundo' : 'Upload fundo'}
           </Button>
         </div>
-      </div>
+      )}
 
       {/* Actions */}
       <div className="pt-2">
