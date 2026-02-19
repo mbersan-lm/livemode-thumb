@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { createRoot } from 'react-dom/client';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -9,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import html2canvas from 'html2canvas';
 import { toast } from 'sonner';
 import type { ThumbModel } from './CortesThumbBuilder';
+import { CortesCanvas } from './CortesCanvas';
 
 interface TransformState {
   x: number;
@@ -22,6 +24,27 @@ interface PipFrameState {
   y: number;
   width: number;
   height: number;
+}
+
+interface CurrentCanvasProps {
+  thumbModel: ThumbModel;
+  pipImage: string | null;
+  personCutout: string | null;
+  person2Cutout: string | null;
+  thumbText: string;
+  thumbTextLeft: string;
+  thumbTextRight: string;
+  pipTransform: TransformState;
+  personTransform: TransformState;
+  person2Transform: TransformState;
+  pipFrame: PipFrameState;
+  bgImage?: string;
+  logosImage?: string;
+  textColor?: string;
+  strokeColor?: string;
+  pipBorderColor?: string;
+  highlightColor?: string;
+  customFontFamily?: string;
 }
 
 interface CortesControlsProps {
@@ -56,6 +79,7 @@ interface CortesControlsProps {
   customBgImage: string | null;
   onBgUpload: (file: File) => void;
   canvasRef: React.RefObject<HTMLDivElement>;
+  currentCanvasProps: CurrentCanvasProps;
 }
 
 export const CortesControls = ({
@@ -90,6 +114,7 @@ export const CortesControls = ({
   customBgImage,
   onBgUpload,
   canvasRef,
+  currentCanvasProps,
 }: CortesControlsProps) => {
   const pipInputRef = useRef<HTMLInputElement>(null);
   const personInputRef = useRef<HTMLInputElement>(null);
@@ -97,16 +122,56 @@ export const CortesControls = ({
   const bgInputRef = useRef<HTMLInputElement>(null);
 
   const handleExport = async () => {
-    if (!canvasRef.current) {
-      toast.error('Canvas not ready');
-      return;
-    }
+    const toastId = toast.loading('Gerando JPG...');
+
+    // Create offscreen container — completely outside the scaled preview DOM
+    const offscreen = document.createElement('div');
+    offscreen.style.cssText = [
+      'position: fixed',
+      'left: -19999px',
+      'top: 0',
+      'width: 1280px',
+      'height: 720px',
+      'overflow: hidden',
+      'z-index: -9999',
+      'pointer-events: none',
+    ].join(';');
+    document.body.appendChild(offscreen);
+
+    const root = createRoot(offscreen);
 
     try {
-      toast.loading('Gerando JPG...');
+      // Render a fresh CortesCanvas with current props into the offscreen div
+      await new Promise<void>((resolve) => {
+        root.render(
+          <CortesCanvas
+            thumbModel={currentCanvasProps.thumbModel}
+            pipImage={currentCanvasProps.pipImage}
+            personCutout={currentCanvasProps.personCutout}
+            person2Cutout={currentCanvasProps.person2Cutout}
+            thumbText={currentCanvasProps.thumbText}
+            thumbTextLeft={currentCanvasProps.thumbTextLeft}
+            thumbTextRight={currentCanvasProps.thumbTextRight}
+            pipTransform={currentCanvasProps.pipTransform}
+            personTransform={currentCanvasProps.personTransform}
+            person2Transform={currentCanvasProps.person2Transform}
+            pipFrame={currentCanvasProps.pipFrame}
+            bgImage={currentCanvasProps.bgImage}
+            logosImage={currentCanvasProps.logosImage}
+            textColor={currentCanvasProps.textColor}
+            strokeColor={currentCanvasProps.strokeColor}
+            pipBorderColor={currentCanvasProps.pipBorderColor}
+            highlightColor={currentCanvasProps.highlightColor}
+            customFontFamily={currentCanvasProps.customFontFamily}
+          />
+        );
+        // Give React + fonts + images time to settle
+        setTimeout(resolve, 600);
+      });
+
       await document.fonts.ready;
 
-      const canvas = await html2canvas(canvasRef.current, {
+      const canvas = await html2canvas(offscreen, {
         width: 1280,
         height: 720,
         scale: 1,
@@ -114,32 +179,11 @@ export const CortesControls = ({
         allowTaint: true,
         backgroundColor: '#0C0C20',
         logging: false,
-        scrollX: -window.scrollX,
-        scrollY: -window.scrollY,
         x: 0,
         y: 0,
+        scrollX: 0,
+        scrollY: 0,
         foreignObjectRendering: false,
-        onclone: (clonedDoc) => {
-          const el = clonedDoc.getElementById('CANVAS_CORTES');
-          if (!el) return;
-
-          // Neutraliza transforms de todos os ancestrais
-          let parent = el.parentElement;
-          while (parent && parent !== clonedDoc.body) {
-            parent.style.transform = 'none';
-            parent.style.position = 'static';
-            (parent.style as any).zoom = '1';
-            parent = parent.parentElement;
-          }
-
-          // Força o canvas clonado para a posição exata (0,0)
-          el.style.position = 'fixed';
-          el.style.top = '0';
-          el.style.left = '0';
-          el.style.transform = 'none';
-          el.style.zIndex = '99999';
-          el.style.margin = '0';
-        },
       });
 
       const timestamp = Date.now();
@@ -152,17 +196,20 @@ export const CortesControls = ({
             link.download = `CORTE_${timestamp}.jpg`;
             link.click();
             URL.revokeObjectURL(url);
-            toast.dismiss();
+            toast.dismiss(toastId);
             toast.success('JPG exportado!');
           }
         },
         'image/jpeg',
-        0.9
+        0.95
       );
     } catch (error) {
       console.error('Export error:', error);
-      toast.dismiss();
+      toast.dismiss(toastId);
       toast.error('Falha ao exportar JPG');
+    } finally {
+      root.unmount();
+      document.body.removeChild(offscreen);
     }
   };
 
@@ -435,10 +482,11 @@ export const CortesControls = ({
               onClick={() => personInputRef.current?.click()}
             >
               <Upload className="w-4 h-4 mr-2" />
-              {personCutout ? 'Trocar imagem esquerda' : 'Upload imagem esquerda'}
+              {personCutout ? 'Trocar esquerda' : 'Upload esquerda'}
             </Button>
           </div>
 
+          {/* Left Transform */}
           {personCutout && (
             <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
               <div className="flex items-center justify-between">
@@ -449,15 +497,15 @@ export const CortesControls = ({
               </div>
               <div>
                 <Label className="text-xs">Posição X: {personTransform.x}px</Label>
-                <Slider value={[personTransform.x]} onValueChange={([x]) => onPersonTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" />
+                <Slider value={[personTransform.x]} onValueChange={([x]) => onPersonTransformChange({ x })} min={-640} max={640} step={1} className="mt-1" />
               </div>
               <div>
                 <Label className="text-xs">Posição Y: {personTransform.y}px</Label>
-                <Slider value={[personTransform.y]} onValueChange={([y]) => onPersonTransformChange({ y })} min={-800} max={800} step={1} className="mt-1" />
+                <Slider value={[personTransform.y]} onValueChange={([y]) => onPersonTransformChange({ y })} min={-360} max={360} step={1} className="mt-1" />
               </div>
               <div>
                 <Label className="text-xs">Zoom: {personTransform.scale.toFixed(2)}x</Label>
-                <Slider value={[personTransform.scale]} onValueChange={([scale]) => onPersonTransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" />
+                <Slider value={[personTransform.scale]} onValueChange={([scale]) => onPersonTransformChange({ scale })} min={0.5} max={3} step={0.01} className="mt-1" />
               </div>
             </div>
           )}
@@ -478,10 +526,11 @@ export const CortesControls = ({
               onClick={() => person2InputRef.current?.click()}
             >
               <Upload className="w-4 h-4 mr-2" />
-              {person2Cutout ? 'Trocar imagem direita' : 'Upload imagem direita'}
+              {person2Cutout ? 'Trocar direita' : 'Upload direita'}
             </Button>
           </div>
 
+          {/* Right Transform */}
           {person2Cutout && (
             <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
               <div className="flex items-center justify-between">
@@ -492,66 +541,89 @@ export const CortesControls = ({
               </div>
               <div>
                 <Label className="text-xs">Posição X: {person2Transform.x}px</Label>
-                <Slider value={[person2Transform.x]} onValueChange={([x]) => onPerson2TransformChange({ x })} min={-800} max={800} step={1} className="mt-1" />
+                <Slider value={[person2Transform.x]} onValueChange={([x]) => onPerson2TransformChange({ x })} min={-640} max={640} step={1} className="mt-1" />
               </div>
               <div>
                 <Label className="text-xs">Posição Y: {person2Transform.y}px</Label>
-                <Slider value={[person2Transform.y]} onValueChange={([y]) => onPerson2TransformChange({ y })} min={-800} max={800} step={1} className="mt-1" />
+                <Slider value={[person2Transform.y]} onValueChange={([y]) => onPerson2TransformChange({ y })} min={-360} max={360} step={1} className="mt-1" />
               </div>
               <div>
                 <Label className="text-xs">Zoom: {person2Transform.scale.toFixed(2)}x</Label>
-                <Slider value={[person2Transform.scale]} onValueChange={([scale]) => onPerson2TransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" />
+                <Slider value={[person2Transform.scale]} onValueChange={([scale]) => onPerson2TransformChange({ scale })} min={0.5} max={3} step={0.01} className="mt-1" />
               </div>
             </div>
           )}
-        </>
-      )}
 
-      {/* Text — single (pip / duas-pessoas) or dual (meio-a-meio) */}
-      {thumbModel === 'meio-a-meio' ? (
-        <div className="space-y-3">
+          {/* Meio a meio text fields */}
           <div className="space-y-2">
             <Label className="font-semibold">Texto esquerda</Label>
             <Textarea
+              placeholder="Texto esquerdo..."
               value={thumbTextLeft}
               onChange={(e) => onTextLeftChange(e.target.value)}
-              placeholder="Digite o texto esquerdo..."
-              className="min-h-[72px]"
+              className="resize-none"
+              rows={2}
             />
           </div>
           <div className="space-y-2">
             <Label className="font-semibold">Texto direita</Label>
             <Textarea
+              placeholder="Texto direito..."
               value={thumbTextRight}
               onChange={(e) => onTextRightChange(e.target.value)}
-              placeholder="Digite o texto direito..."
-              className="min-h-[72px]"
+              className="resize-none"
+              rows={2}
             />
           </div>
-          <p className="text-xs text-muted-foreground">Use <code className="bg-muted px-1 rounded">*asteriscos*</code> para destacar</p>
-        </div>
-      ) : (
+        </>
+      )}
+
+      {/* Single text field — pip & duas-pessoas */}
+      {thumbModel !== 'meio-a-meio' && (
         <div className="space-y-2">
           <Label className="font-semibold">Texto da thumbnail</Label>
           <Textarea
+            placeholder="Ex: MESSI *HUMILHA* DEFESA..."
             value={thumbText}
             onChange={(e) => onTextChange(e.target.value)}
-            placeholder="Digite o texto..."
-            className="min-h-[80px]"
+            className="resize-none"
+            rows={3}
           />
-          <p className="text-xs text-muted-foreground">Use <code className="bg-muted px-1 rounded">*asteriscos*</code> para destacar em vermelho</p>
+          <p className="text-xs text-muted-foreground">Use *asteriscos* para destacar palavras</p>
+        </div>
+      )}
+
+      {/* Background upload for pip/single model */}
+      {thumbModel !== 'duas-pessoas' && (
+        <div className="space-y-2">
+          <Label className="font-semibold">Foto de fundo (opcional)</Label>
+          <input
+            ref={bgInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => e.target.files?.[0] && onBgUpload(e.target.files[0])}
+          />
+          <Button
+            variant={customBgImage ? 'secondary' : 'outline'}
+            className="w-full"
+            onClick={() => bgInputRef.current?.click()}
+          >
+            <Upload className="w-4 h-4 mr-2" />
+            {customBgImage ? 'Trocar fundo' : 'Upload fundo'}
+          </Button>
         </div>
       )}
 
       {/* Actions */}
-      <div className="space-y-2 pt-2">
-        <Button onClick={handleExport} className="w-full" size="lg">
-          <Download className="w-4 h-4 mr-2" />
-          Baixar JPG
-        </Button>
-        <Button onClick={onClear} variant="ghost" className="w-full">
+      <div className="flex gap-2 pt-2">
+        <Button variant="outline" className="flex-1" onClick={onClear}>
           <Trash2 className="w-4 h-4 mr-2" />
-          Limpar tudo
+          Limpar
+        </Button>
+        <Button className="flex-1" onClick={handleExport}>
+          <Download className="w-4 h-4 mr-2" />
+          Exportar JPG
         </Button>
       </div>
     </div>
