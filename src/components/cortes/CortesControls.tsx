@@ -124,24 +124,26 @@ export const CortesControls = ({
   const handleExport = async () => {
     const toastId = toast.loading('Gerando JPG...');
 
-    // Create offscreen container — completely outside the scaled preview DOM
+    // Container offscreen: visível no topo da viewport mas fora do scroll
+    // html2canvas captura melhor quando o elemento está no viewport
     const offscreen = document.createElement('div');
     offscreen.style.cssText = [
       'position: fixed',
-      'left: -19999px',
+      'left: 0',
       'top: 0',
       'width: 1280px',
       'height: 720px',
       'overflow: hidden',
-      'z-index: -9999',
+      'z-index: 99999',
       'pointer-events: none',
+      'opacity: 0',
     ].join(';');
     document.body.appendChild(offscreen);
 
     const root = createRoot(offscreen);
 
     try {
-      // Render a fresh CortesCanvas with current props into the offscreen div
+      // Renderiza CortesCanvas no container offscreen com as props atuais
       root.render(
         <CortesCanvas
           thumbModel={currentCanvasProps.thumbModel}
@@ -165,13 +167,13 @@ export const CortesControls = ({
         />
       );
 
-      // 1. Aguarda fontes carregarem
+      // 1. Aguarda fontes
       await document.fonts.ready;
 
-      // 2. Aguarda useEffects de auto-fit de fonte rodarem (1000ms)
+      // 2. Aguarda useEffects de auto-fit rodarem (1000ms)
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // 3. Aguarda todas as imagens no container offscreen terminarem de carregar
+      // 3. Aguarda todas as imagens carregarem de verdade
       const imgs = Array.from(offscreen.querySelectorAll('img'));
       await Promise.all(
         imgs.map((img) =>
@@ -184,7 +186,11 @@ export const CortesControls = ({
         )
       );
 
-      const canvas = await html2canvas(offscreen, {
+      // 4. Captura via html2canvas — elemento está no viewport (0,0), sem transforms externos
+      const innerEl = offscreen.firstElementChild as HTMLElement;
+      const targetEl = innerEl ?? offscreen;
+
+      const canvas = await html2canvas(targetEl, {
         width: 1280,
         height: 720,
         scale: 1,
@@ -197,6 +203,8 @@ export const CortesControls = ({
         scrollX: 0,
         scrollY: 0,
         foreignObjectRendering: false,
+        windowWidth: 1280,
+        windowHeight: 720,
       });
 
       const timestamp = Date.now();
