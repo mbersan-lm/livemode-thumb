@@ -74,7 +74,7 @@ export const CortesThumbBuilder = ({
   const [person3Transform, setPerson3Transform] = useState(DEFAULT_PERSON3_TRANSFORM);
   const [pipFrame, setPipFrame] = useState(DEFAULT_PIP_FRAME);
   const [pipBaseScale, setPipBaseScale] = useState(1);
-  const [textBoxHeight, setTextBoxHeight] = useState(38);
+  const [textBoxHeight, setTextBoxHeight] = useState(6);
   const [pip2Image, setPip2Image] = useState<string | null>(null);
   const [pip2Transform, setPip2Transform] = useState(DEFAULT_PIP_TRANSFORM);
   const [pip2Frame, setPip2Frame] = useState(DEFAULT_PIP2_FRAME);
@@ -224,7 +224,7 @@ export const CortesThumbBuilder = ({
     setPipBaseScale(1);
     setPip2BaseScale(1);
     setCustomBgImage(null);
-    setTextBoxHeight(38);
+    setTextBoxHeight(6);
   };
 
   const scaledHeight = CANVAS_HEIGHT * canvasScale;
