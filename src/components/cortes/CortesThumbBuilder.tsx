@@ -55,6 +55,13 @@ export const CortesThumbBuilder = ({
   const [person2Transform, setPerson2Transform] = useState(DEFAULT_PERSON2_TRANSFORM);
   const [pipFrame, setPipFrame] = useState(DEFAULT_PIP_FRAME);
   const [pipBaseScale, setPipBaseScale] = useState(1);
+  const [customBgImage, setCustomBgImage] = useState<string | null>(null);
+
+  const handleBgUpload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => setCustomBgImage(e.target?.result as string);
+    reader.readAsDataURL(file);
+  };
 
   useEffect(() => {
     const updateScale = () => {
@@ -154,6 +161,7 @@ export const CortesThumbBuilder = ({
     setPerson2Transform(DEFAULT_PERSON2_TRANSFORM);
     setPipFrame(DEFAULT_PIP_FRAME);
     setPipBaseScale(1);
+    setCustomBgImage(null);
   };
 
   const scaledHeight = CANVAS_HEIGHT * canvasScale;
@@ -176,7 +184,7 @@ export const CortesThumbBuilder = ({
             personTransform={personTransform}
             person2Transform={person2Transform}
             pipFrame={pipFrame}
-            bgImage={bgImage}
+            bgImage={customBgImage || bgImage}
             logosImage={logosImage}
             textColor={textColor}
             strokeColor={strokeColor}
@@ -221,6 +229,8 @@ export const CortesThumbBuilder = ({
             onPersonTransformChange={(t) => setPersonTransform((prev) => ({ ...prev, ...t }))}
             onPerson2TransformChange={(t) => setPerson2Transform((prev) => ({ ...prev, ...t }))}
             onPipFrameChange={(f) => setPipFrame((prev) => ({ ...prev, ...f }))}
+            customBgImage={customBgImage}
+            onBgUpload={handleBgUpload}
             onClear={handleClear}
             canvasRef={canvasRef}
           />
