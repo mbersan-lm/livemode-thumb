@@ -25,6 +25,7 @@ interface CortesThumbBuilderProps {
   highlightColor?: string;
   customFontFamily?: string;
   backUrl?: string;
+  allowAllModels?: boolean;
 }
 
 export const CortesThumbBuilder = ({
@@ -37,6 +38,7 @@ export const CortesThumbBuilder = ({
   highlightColor,
   customFontFamily,
   backUrl = '/',
+  allowAllModels = false,
 }: CortesThumbBuilderProps) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
@@ -228,6 +230,7 @@ export const CortesThumbBuilder = ({
           <CortesControls
             thumbModel={thumbModel}
             onThumbModelChange={setThumbModel}
+            allowAllModels={allowAllModels}
             pipImage={pipImage}
             personCutout={personCutout}
             person2Cutout={person2Cutout}

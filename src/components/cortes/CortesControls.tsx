@@ -259,6 +259,7 @@ interface CurrentCanvasProps {
 interface CortesControlsProps {
   thumbModel: ThumbModel;
   onThumbModelChange: (model: ThumbModel) => void;
+  allowAllModels?: boolean;
   pipImage: string | null;
   personCutout: string | null;
   person2Cutout: string | null;
@@ -294,6 +295,7 @@ interface CortesControlsProps {
 export const CortesControls = ({
   thumbModel,
   onThumbModelChange,
+  allowAllModels = false,
   pipImage,
   personCutout,
   person2Cutout,
@@ -577,9 +579,13 @@ export const CortesControls = ({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="pip">Com PIP</SelectItem>
-            <SelectItem value="duas-pessoas">Duas pessoas</SelectItem>
-            <SelectItem value="meio-a-meio">Meio a meio</SelectItem>
-            <SelectItem value="so-lettering">Lettering simples</SelectItem>
+            {allowAllModels && (
+              <>
+                <SelectItem value="duas-pessoas">Duas pessoas</SelectItem>
+                <SelectItem value="meio-a-meio">Meio a meio</SelectItem>
+                <SelectItem value="so-lettering">Lettering simples</SelectItem>
+              </>
+            )}
           </SelectContent>
         </Select>
       </div>
