@@ -260,6 +260,7 @@ interface CurrentCanvasProps {
   highlightColor?: string;
   customFontFamily?: string;
   divisoriaImage?: string;
+  textBoxHeight?: number;
 }
 
 interface CortesControlsProps {
@@ -309,6 +310,8 @@ interface CortesControlsProps {
   onBgUpload: (file: File) => void;
   canvasRef: React.RefObject<HTMLDivElement>;
   currentCanvasProps: CurrentCanvasProps;
+  textBoxHeight: number;
+  onTextBoxHeightChange: (h: number) => void;
 }
 
 export const CortesControls = ({
@@ -358,6 +361,8 @@ export const CortesControls = ({
   onBgUpload,
   canvasRef,
   currentCanvasProps,
+  textBoxHeight,
+  onTextBoxHeightChange,
 }: CortesControlsProps) => {
   const pipInputRef = useRef<HTMLInputElement>(null);
   const pip2InputRef = useRef<HTMLInputElement>(null);
@@ -609,10 +614,11 @@ export const CortesControls = ({
       const strokeColor = props.strokeColor || '#0C0C20';
       const highlightColor = props.highlightColor || '#D02046';
 
+      const tbH = (props.textBoxHeight ?? 38) / 100;
+
       if (!showMeioAMeio && props.thumbText) {
-        // Área: left:2%, bottom:6%, width:96%, maxHeight:38%, padding:20px
         const areaX = W * 0.02;
-        const areaH = H * 0.38;
+        const areaH = H * tbH;
         const areaY = H - H * 0.06 - areaH;
         const areaW = W * 0.96;
         drawAutoFitText(
@@ -625,10 +631,9 @@ export const CortesControls = ({
       }
 
       if (showMeioAMeio) {
-        // Left text: left:1%, width:47%, bottom:6%, maxHeight:40%
         if (props.thumbTextLeft) {
           const areaX = W * 0.01;
-          const areaH = H * 0.40;
+          const areaH = H * tbH;
           const areaY = H - H * 0.06 - areaH;
           const areaW = W * 0.47;
           drawAutoFitText(
@@ -639,10 +644,9 @@ export const CortesControls = ({
             -2, 14
           );
         }
-        // Right text: right:1%, width:47%, bottom:6%, maxHeight:40%
         if (props.thumbTextRight) {
           const areaX = W * 0.52;
-          const areaH = H * 0.40;
+          const areaH = H * tbH;
           const areaY = H - H * 0.06 - areaH;
           const areaW = W * 0.47;
           drawAutoFitText(
@@ -1299,6 +1303,22 @@ export const CortesControls = ({
           <p className="text-xs text-muted-foreground">Use *asteriscos* para destacar palavras</p>
         </div>
       )}
+
+      {/* Text box height slider — all models */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <Label className="font-semibold">Altura da caixa de texto</Label>
+          <span className="text-xs text-muted-foreground">{textBoxHeight}%</span>
+        </div>
+        <Slider
+          value={[textBoxHeight]}
+          onValueChange={([h]) => onTextBoxHeightChange(h)}
+          min={10}
+          max={70}
+          step={1}
+          className="mt-1"
+        />
+      </div>
 
       {/* Background upload — pip, meio-a-meio, so-lettering */}
       {thumbModel !== 'duas-pessoas' && (
