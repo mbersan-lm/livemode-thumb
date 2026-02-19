@@ -5,8 +5,10 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Upload, Trash2, Download, Loader2, ChevronDown, RotateCcw } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import html2canvas from 'html2canvas';
 import { toast } from 'sonner';
+import type { ThumbModel } from './CortesThumbBuilder';
 
 interface TransformState {
   x: number;
@@ -23,44 +25,59 @@ interface PipFrameState {
 }
 
 interface CortesControlsProps {
+  thumbModel: ThumbModel;
+  onThumbModelChange: (model: ThumbModel) => void;
   pipImage: string | null;
   personCutout: string | null;
+  person2Cutout: string | null;
   thumbText: string;
   isRemovingBg: boolean;
+  isRemovingBg2: boolean;
   pipTransform: TransformState;
   personTransform: TransformState;
+  person2Transform: TransformState;
   pipFrame: PipFrameState;
   pipBaseScale: number;
   onPipUpload: (file: File) => void;
   onPersonUpload: (file: File) => void;
+  onPerson2Upload: (file: File) => void;
   onTextChange: (text: string) => void;
   onPipTransformChange: (t: Partial<TransformState>) => void;
   onPersonTransformChange: (t: Partial<TransformState>) => void;
+  onPerson2TransformChange: (t: Partial<TransformState>) => void;
   onPipFrameChange: (f: Partial<PipFrameState>) => void;
   onClear: () => void;
   canvasRef: React.RefObject<HTMLDivElement>;
 }
 
 export const CortesControls = ({
+  thumbModel,
+  onThumbModelChange,
   pipImage,
   personCutout,
+  person2Cutout,
   thumbText,
   isRemovingBg,
+  isRemovingBg2,
   pipTransform,
   personTransform,
+  person2Transform,
   pipFrame,
   pipBaseScale,
   onPipUpload,
   onPersonUpload,
+  onPerson2Upload,
   onTextChange,
   onPipTransformChange,
   onPersonTransformChange,
+  onPerson2TransformChange,
   onPipFrameChange,
   onClear,
   canvasRef,
 }: CortesControlsProps) => {
   const pipInputRef = useRef<HTMLInputElement>(null);
   const personInputRef = useRef<HTMLInputElement>(null);
+  const person2InputRef = useRef<HTMLInputElement>(null);
 
   const handleExport = async () => {
     if (!canvasRef.current) {
@@ -124,94 +141,112 @@ export const CortesControls = ({
 
   return (
     <div className="space-y-5">
-      {/* PIP Upload */}
+      {/* Model selector */}
       <div className="space-y-2">
-        <Label className="font-semibold">Imagem PIP (frame do jogo)</Label>
-        <input
-          ref={pipInputRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={(e) => e.target.files?.[0] && onPipUpload(e.target.files[0])}
-        />
-        <Button
-          variant={pipImage ? 'secondary' : 'outline'}
-          className="w-full"
-          onClick={() => pipInputRef.current?.click()}
-        >
-          <Upload className="w-4 h-4 mr-2" />
-          {pipImage ? 'Trocar PIP' : 'Upload PIP'}
-        </Button>
+        <Label className="font-semibold">Modelo</Label>
+        <Select value={thumbModel} onValueChange={(v) => onThumbModelChange(v as ThumbModel)}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="pip">Com PIP</SelectItem>
+            <SelectItem value="duas-pessoas">Duas pessoas</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
-      {/* PIP Image Transform */}
-      {pipImage && (
-        <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
-          <div className="flex items-center justify-between">
-            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste da imagem PIP</Label>
-            <button onClick={() => onPipTransformChange({ x: 0, y: 0, scale: pipBaseScale, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
-              <RotateCcw className="w-3.5 h-3.5" />
-            </button>
-          </div>
-          <div>
-            <Label className="text-xs">Posição X: {pipTransform.x}px</Label>
-            <Slider value={[pipTransform.x]} onValueChange={([x]) => onPipTransformChange({ x })} min={-500} max={500} step={1} className="mt-1" />
-          </div>
-          <div>
-            <Label className="text-xs">Posição Y: {pipTransform.y}px</Label>
-            <Slider value={[pipTransform.y]} onValueChange={([y]) => onPipTransformChange({ y })} min={-500} max={500} step={1} className="mt-1" />
-          </div>
-          <div>
-            <Label className="text-xs">Zoom: {pipTransform.scale.toFixed(2)}x</Label>
-            <Slider value={[pipTransform.scale]} onValueChange={([scale]) => onPipTransformChange({ scale })} min={0.5} max={3} step={0.01} className="mt-1" />
-          </div>
-          <div>
-            <Label className="text-xs">Rotação: {pipTransform.rotation}°</Label>
-            <Slider value={[pipTransform.rotation]} onValueChange={([rotation]) => onPipTransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" />
-          </div>
-        </div>
-      )}
-
-      {/* PIP Frame Controls */}
-      {pipImage && (
-        <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
-          <div className="flex items-center justify-between">
-            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Moldura PIP</Label>
-            <button onClick={() => onPipFrameChange({ x: 3.0, y: 15.4, width: 56.6, height: 64.3 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
-              <RotateCcw className="w-3.5 h-3.5" />
-            </button>
-          </div>
-          <div>
-            <Label className="text-xs">Posição X: {pipFrame.x.toFixed(1)}%</Label>
-            <Slider value={[pipFrame.x]} onValueChange={([x]) => onPipFrameChange({ x })} min={-20} max={60} step={0.1} className="mt-1" />
-          </div>
-          <div>
-            <Label className="text-xs">Posição Y: {pipFrame.y.toFixed(1)}%</Label>
-            <Slider value={[pipFrame.y]} onValueChange={([y]) => onPipFrameChange({ y })} min={-20} max={60} step={0.1} className="mt-1" />
+      {/* PIP Upload — only for pip model */}
+      {thumbModel === 'pip' && (
+        <>
+          <div className="space-y-2">
+            <Label className="font-semibold">Imagem PIP (frame do jogo)</Label>
+            <input
+              ref={pipInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => e.target.files?.[0] && onPipUpload(e.target.files[0])}
+            />
+            <Button
+              variant={pipImage ? 'secondary' : 'outline'}
+              className="w-full"
+              onClick={() => pipInputRef.current?.click()}
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              {pipImage ? 'Trocar PIP' : 'Upload PIP'}
+            </Button>
           </div>
 
-          <Collapsible>
-            <CollapsibleTrigger className="flex items-center gap-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors w-full">
-              <ChevronDown className="w-3 h-3" />
-              Propriedades avançadas
-            </CollapsibleTrigger>
-            <CollapsibleContent className="space-y-3 pt-3">
-              <div>
-                <Label className="text-xs">Largura: {pipFrame.width.toFixed(1)}%</Label>
-                <Slider value={[pipFrame.width]} onValueChange={([width]) => onPipFrameChange({ width })} min={10} max={90} step={0.1} className="mt-1" />
+          {/* PIP Image Transform */}
+          {pipImage && (
+            <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste da imagem PIP</Label>
+                <button onClick={() => onPipTransformChange({ x: 0, y: 0, scale: pipBaseScale, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
+                  <RotateCcw className="w-3.5 h-3.5" />
+                </button>
               </div>
               <div>
-                <Label className="text-xs">Altura: {pipFrame.height.toFixed(1)}%</Label>
-                <Slider value={[pipFrame.height]} onValueChange={([height]) => onPipFrameChange({ height })} min={10} max={90} step={0.1} className="mt-1" />
+                <Label className="text-xs">Posição X: {pipTransform.x}px</Label>
+                <Slider value={[pipTransform.x]} onValueChange={([x]) => onPipTransformChange({ x })} min={-500} max={500} step={1} className="mt-1" />
               </div>
-            </CollapsibleContent>
-          </Collapsible>
-        </div>
+              <div>
+                <Label className="text-xs">Posição Y: {pipTransform.y}px</Label>
+                <Slider value={[pipTransform.y]} onValueChange={([y]) => onPipTransformChange({ y })} min={-500} max={500} step={1} className="mt-1" />
+              </div>
+              <div>
+                <Label className="text-xs">Zoom: {pipTransform.scale.toFixed(2)}x</Label>
+                <Slider value={[pipTransform.scale]} onValueChange={([scale]) => onPipTransformChange({ scale })} min={0.5} max={3} step={0.01} className="mt-1" />
+              </div>
+              <div>
+                <Label className="text-xs">Rotação: {pipTransform.rotation}°</Label>
+                <Slider value={[pipTransform.rotation]} onValueChange={([rotation]) => onPipTransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" />
+              </div>
+            </div>
+          )}
+
+          {/* PIP Frame Controls */}
+          {pipImage && (
+            <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Moldura PIP</Label>
+                <button onClick={() => onPipFrameChange({ x: 3.0, y: 15.4, width: 56.6, height: 64.3 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
+                  <RotateCcw className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <div>
+                <Label className="text-xs">Posição X: {pipFrame.x.toFixed(1)}%</Label>
+                <Slider value={[pipFrame.x]} onValueChange={([x]) => onPipFrameChange({ x })} min={-20} max={60} step={0.1} className="mt-1" />
+              </div>
+              <div>
+                <Label className="text-xs">Posição Y: {pipFrame.y.toFixed(1)}%</Label>
+                <Slider value={[pipFrame.y]} onValueChange={([y]) => onPipFrameChange({ y })} min={-20} max={60} step={0.1} className="mt-1" />
+              </div>
+
+              <Collapsible>
+                <CollapsibleTrigger className="flex items-center gap-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors w-full">
+                  <ChevronDown className="w-3 h-3" />
+                  Propriedades avançadas
+                </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-3 pt-3">
+                  <div>
+                    <Label className="text-xs">Largura: {pipFrame.width.toFixed(1)}%</Label>
+                    <Slider value={[pipFrame.width]} onValueChange={([width]) => onPipFrameChange({ width })} min={10} max={90} step={0.1} className="mt-1" />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Altura: {pipFrame.height.toFixed(1)}%</Label>
+                    <Slider value={[pipFrame.height]} onValueChange={([height]) => onPipFrameChange({ height })} min={10} max={90} step={0.1} className="mt-1" />
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
+          )}
+        </>
       )}
 
-      {/* Person Upload */}
+      {/* Person Upload (right side / single person) */}
       <div className="space-y-2">
-        <Label className="font-semibold">Foto da pessoa</Label>
+        <Label className="font-semibold">{thumbModel === 'duas-pessoas' ? 'Pessoa (direita)' : 'Foto da pessoa'}</Label>
         <input
           ref={personInputRef}
           type="file"
@@ -243,7 +278,7 @@ export const CortesControls = ({
       {personCutout && (
         <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
           <div className="flex items-center justify-between">
-            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste da pessoa</Label>
+            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{thumbModel === 'duas-pessoas' ? 'Ajuste pessoa (direita)' : 'Ajuste da pessoa'}</Label>
             <button onClick={() => onPersonTransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
@@ -265,6 +300,68 @@ export const CortesControls = ({
             <Slider value={[personTransform.rotation]} onValueChange={([rotation]) => onPersonTransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" />
           </div>
         </div>
+      )}
+
+      {/* Person 2 Upload — only for duas-pessoas model */}
+      {thumbModel === 'duas-pessoas' && (
+        <>
+          <div className="space-y-2">
+            <Label className="font-semibold">Pessoa (esquerda)</Label>
+            <input
+              ref={person2InputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => e.target.files?.[0] && onPerson2Upload(e.target.files[0])}
+            />
+            <Button
+              variant={person2Cutout ? 'secondary' : 'outline'}
+              className="w-full"
+              disabled={isRemovingBg2}
+              onClick={() => person2InputRef.current?.click()}
+            >
+              {isRemovingBg2 ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Removendo fundo...
+                </>
+              ) : (
+                <>
+                  <Upload className="w-4 h-4 mr-2" />
+                  {person2Cutout ? 'Trocar pessoa 2' : 'Upload pessoa 2'}
+                </>
+              )}
+            </Button>
+          </div>
+
+          {/* Person 2 Transform */}
+          {person2Cutout && (
+            <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste pessoa (esquerda)</Label>
+                <button onClick={() => onPerson2TransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
+                  <RotateCcw className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <div>
+                <Label className="text-xs">Posição X: {person2Transform.x}px</Label>
+                <Slider value={[person2Transform.x]} onValueChange={([x]) => onPerson2TransformChange({ x })} min={-800} max={800} step={1} className="mt-1" />
+              </div>
+              <div>
+                <Label className="text-xs">Posição Y: {person2Transform.y}px</Label>
+                <Slider value={[person2Transform.y]} onValueChange={([y]) => onPerson2TransformChange({ y })} min={-800} max={800} step={1} className="mt-1" />
+              </div>
+              <div>
+                <Label className="text-xs">Zoom: {person2Transform.scale.toFixed(2)}x</Label>
+                <Slider value={[person2Transform.scale]} onValueChange={([scale]) => onPerson2TransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" />
+              </div>
+              <div>
+                <Label className="text-xs">Rotação: {person2Transform.rotation}°</Label>
+                <Slider value={[person2Transform.rotation]} onValueChange={([rotation]) => onPerson2TransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" />
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* Text */}
