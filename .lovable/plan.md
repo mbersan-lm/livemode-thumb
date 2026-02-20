@@ -1,76 +1,83 @@
 
-# Botão "AI Cinematic Background" — Gerador de Fundo com IA
+# AI Expand — Preencher Apenas as Áreas Vazias do Canvas
 
-## O que será feito
+## O Problema Atual
 
-Adicionar um novo botão chamado **"AI Cinematic BG"** nas "Quick Actions" de ambas as abas (Melhores Momentos e Jogo Completo) em `PhotoControls.tsx`. Ao clicar, o sistema envia a foto carregada para uma nova Edge Function que usa o modelo de geração de imagem da Lovable AI (`google/gemini-3-pro-image-preview`) para criar um fundo cinematográfico 1280x720. O resultado substitui a foto atual no canvas.
+Atualmente, o botão "AI Expand" envia a **foto bruta** (como foi feita o upload) para o PhotoRoom. O PhotoRoom então tenta expandir a imagem inteira para 1280x720, sem saber onde ela está posicionada no canvas.
 
----
+O resultado: a IA não tem contexto de posição — ela expande a foto de forma genérica, como se ela estivesse centralizada, sem respeitar o posicionamento que o usuário definiu com os sliders.
 
-## Como vai funcionar
+## O Que Vai Mudar
 
-```text
-Usuário clica em "AI Cinematic BG"
-        ↓
-Frontend envia a foto (base64) para a Edge Function
-        ↓
-Edge Function analisa a imagem com visão do modelo Gemini
-  → Extrai contexto visual (estádio, cores, atmosfera)
-        ↓
-Edge Function chama o modelo de geração de imagem
-  → Prompt: fundo cinematográfico 16:9, centro limpo e suave,
-    bokeh, iluminação dramática, sem texto/logos/pessoas
-        ↓
-Retorna o fundo gerado como base64
-        ↓
-Frontend substitui o playerPhoto no canvas
-  → Transform resetado para scale 1, x/y 0 (imagem já é 1280x720)
-```
+**Antes de enviar para o PhotoRoom**, o frontend vai:
 
----
-
-## Arquivos que serão criados/modificados
-
-### 1. `supabase/functions/ai-cinematic-bg/index.ts` (novo)
-Nova Edge Function que:
-- Recebe `image_base64` do frontend
-- Usa `google/gemini-2.5-flash` (visão) para analisar a imagem e extrair contexto (cores dominantes, ambiente, estilo)
-- Com esse contexto, chama `google/gemini-3-pro-image-preview` para gerar o fundo cinematográfico com o prompt exato especificado pelo usuário
-- Retorna a imagem gerada como `data:image/png;base64,...`
-
-O prompt enviado à geração de imagem será fixo no backend:
-> *"Cinematic 16:9 YouTube thumbnail background, 1280x720px. [contexto extraído da imagem]. Dramatic high-contrast environment, stadium atmosphere, soft bokeh depth of field, cinematic lighting. Center area must be clean, low-detail, slightly blurred. No text, no logos, no people, no foreground objects, no strong center patterns. Energetic and professional look."*
-
-### 2. `src/components/controls/PhotoControls.tsx` (editado)
-- Adicionar estado `isGeneratingBG` e `isGeneratingBGJC`
-- Adicionar função `handleAiCinematicBG` que chama a nova Edge Function
-- Adicionar botão **"AI Cinematic BG"** com ícone `Sparkles` (ou `Wand2`) nas Quick Actions de ambas as abas
-- Botão fica desabilitado se não houver foto carregada
-
-### 3. `supabase/config.toml` (editado)
-- Adicionar entrada `[functions.ai-cinematic-bg]` com `verify_jwt = false`
-
----
-
-## Detalhes técnicos
-
-- A `LOVABLE_API_KEY` já está configurada como secret — não é necessário nenhuma configuração extra do usuário
-- O modelo de visão (`gemini-2.5-flash`) lê a foto carregada para extrair contexto real (cores da camisa, tipo de iluminação, ambiente percebido), tornando o fundo gerado mais coerente com a foto
-- O modelo de geração (`gemini-3-pro-image-preview`) produz a imagem 1280x720
-- A imagem gerada substitui completamente o `playerPhoto` no estado, com transform resetado para `{x:0, y:0, scale:1}` — ela já ocupa o canvas inteiro
-- Toast de feedback: "Gerando fundo cinematográfico..." durante o processo e "Fundo gerado!" no sucesso
-
----
-
-## UX do botão
+1. Criar um canvas invisível de **1280x720 pixels** (fundo transparente)
+2. Desenhar a foto do usuário nesse canvas **exatamente como ela aparece na tela** — com o mesmo X, Y, scale que o usuário ajustou nos sliders
+3. Exportar esse canvas composto como base64 PNG (com transparência nas áreas vazias)
+4. Enviar esse canvas composto ao PhotoRoom
+5. O PhotoRoom detecta automaticamente onde a imagem está e **preenche apenas as áreas transparentes/vazias**
 
 ```text
-[ ✨ AI Cinematic BG ]   ← botão novo, acima do AI Expand
-[ ⤢  AI Expand (1280×720) ]
-[ ⊕  Center ]
-[ ↺  Reset All ]
+Foto original do usuário (lado direito)
+        ↓
+Canvas 1280x720 invisível criado no browser
+  → Foto desenhada com transform atual (x, y, scale)
+  → Área esquerda = transparente
+        ↓
+Canvas composto enviado ao PhotoRoom
+        ↓
+PhotoRoom preenche APENAS a área transparente (lado esquerdo)
+  → A foto original permanece intacta no lado direito
+        ↓
+Resultado 1280x720 retornado e aplicado ao canvas
+  → Transform resetado para x:0, y:0, scale:1
 ```
 
-- Durante a geração: spinner + "Gerando fundo..."
-- Tempo estimado: 10–20 segundos
-- Desabilitado se não houver foto carregada
+## Arquivo que será modificado
+
+### `src/components/controls/PhotoControls.tsx`
+
+Adicionar a função `compositeImageOntoCanvas` que:
+- Recebe `photo` (base64 da foto original), `transform` (x, y, scale, scaleX, scaleY)
+- Cria um `OffscreenCanvas` de 1280x720 com fundo **transparente**
+- Calcula a posição exata espelhando a lógica do CSS do `ThumbnailCanvas`:
+  - `translate(-50%, -50%)` → posição base no centro do canvas (640, 360)
+  - `+ transform.x` e `+ transform.y` → offset do usuário
+  - `scale(transform.scale) * scaleX * scaleY` → zoom aplicado
+- Desenha a imagem com `ctx.drawImage()` usando essas coordenadas
+- Retorna o canvas como `data:image/png;base64,...` (com canal alpha, preservando transparência)
+
+A função `handleAiExpand` existente é modificada apenas para chamar `compositeImageOntoCanvas` antes de invocar a edge function, trocando `photo` (foto bruta) pelo `compositeBase64` (canvas composto).
+
+**A Edge Function não precisa de nenhuma mudança** — ela já recebe `image_base64` e já usa `referenceBox: 'originalImage'`, que instrui o PhotoRoom a detectar a imagem dentro do espaço e expandir só o que falta.
+
+## Detalhes Técnicos da Composição
+
+A lógica CSS atual do `ThumbnailCanvas.tsx` é:
+```css
+transform: translate(-50%, -50%) 
+           translateX({x}px) translateY({y}px) 
+           scale({scale}) scaleX({scaleX}) scaleY({scaleY})
+position: left: 50%, top: 50%
+```
+
+Traduzindo para o canvas 2D:
+```
+centerX = 1280 / 2 = 640
+centerY = 720 / 2 = 360
+
+finalX = centerX + transform.x - (imgWidth * effectiveScale) / 2
+finalY = centerY + transform.y - (imgHeight * effectiveScale) / 2
+
+effectiveScale = transform.scale * transform.scaleX (largura)
+effectiveScaleY = transform.scale * transform.scaleY (altura)
+
+ctx.drawImage(img, finalX, finalY, imgWidth * effectiveScale, imgHeight * effectiveScaleY)
+```
+
+## O Que NÃO Muda
+- Edge Function `photoroom-ai-expand` — sem alterações
+- Lógica de reset do transform após o expand — continua resetando para `{x:0, y:0, scale:1}`
+- UX e botões — sem alterações visuais
+- Ambas as abas (Melhores Momentos e Jogo Completo) recebem a melhoria
+
