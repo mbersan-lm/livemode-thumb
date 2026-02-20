@@ -1,4 +1,4 @@
-import { Upload, Maximize2, RotateCcw, Expand, Loader2, Sparkles } from 'lucide-react';
+import { Upload, Maximize2, RotateCcw, Expand, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -39,8 +39,6 @@ export const PhotoControls = ({
 }: PhotoControlsProps) => {
   const [isExpanding, setIsExpanding] = useState(false);
   const [isExpandingJC, setIsExpandingJC] = useState(false);
-  const [isGeneratingBG, setIsGeneratingBG] = useState(false);
-  const [isGeneratingBGJC, setIsGeneratingBGJC] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -74,29 +72,6 @@ export const PhotoControls = ({
       toast.success('Imagem expandida com IA!');
     } catch (err: any) {
       toast.error(err.message || 'Erro ao expandir imagem');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleAiCinematicBG = async (photo: string | null, setter: (url: string) => void, resetTransform: () => void, setLoading: (v: boolean) => void) => {
-    if (!photo) {
-      toast.error('Faça upload de uma foto primeiro');
-      return;
-    }
-    setLoading(true);
-    toast.info('Gerando fundo cinematográfico... (pode levar 15–30s)');
-    try {
-      const { data, error } = await supabase.functions.invoke('ai-cinematic-bg', {
-        body: { image_base64: photo },
-      });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-      setter(data.result_base64);
-      resetTransform();
-      toast.success('Fundo cinematográfico gerado!');
-    } catch (err: any) {
-      toast.error(err.message || 'Erro ao gerar fundo cinematográfico');
     } finally {
       setLoading(false);
     }
@@ -168,24 +143,6 @@ export const PhotoControls = ({
         <div className="pt-4 border-t border-border space-y-2">
           <h4 className="text-sm font-semibold mb-3">Quick Actions</h4>
           <Button
-            onClick={() => handleAiCinematicBG(
-              playerPhoto,
-              onPlayerPhotoReplace,
-              () => onTransformChange({ x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 }),
-              setIsGeneratingBG,
-            )}
-            variant="outline"
-            className="w-full"
-            disabled={isGeneratingBG || isExpanding || !playerPhoto}
-          >
-            {isGeneratingBG ? (
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            ) : (
-              <Sparkles className="w-4 h-4 mr-2" />
-            )}
-            {isGeneratingBG ? 'Gerando fundo...' : 'AI Cinematic BG'}
-          </Button>
-          <Button
             onClick={() => handleAiExpand(
               playerPhoto,
               onPlayerPhotoReplace,
@@ -194,7 +151,7 @@ export const PhotoControls = ({
             )}
             variant="outline"
             className="w-full"
-            disabled={isExpanding || isGeneratingBG || !playerPhoto}
+            disabled={isExpanding || !playerPhoto}
           >
             {isExpanding ? (
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -273,24 +230,6 @@ export const PhotoControls = ({
         <div className="pt-4 border-t border-border space-y-2">
           <h4 className="text-sm font-semibold mb-3">Quick Actions</h4>
           <Button
-            onClick={() => handleAiCinematicBG(
-              jogoCompletoPhoto,
-              onJogoCompletoPhotoReplace,
-              () => onJogoCompletoTransformChange({ x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 }),
-              setIsGeneratingBGJC,
-            )}
-            variant="outline"
-            className="w-full"
-            disabled={isGeneratingBGJC || isExpandingJC || !jogoCompletoPhoto}
-          >
-            {isGeneratingBGJC ? (
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            ) : (
-              <Sparkles className="w-4 h-4 mr-2" />
-            )}
-            {isGeneratingBGJC ? 'Gerando fundo...' : 'AI Cinematic BG'}
-          </Button>
-          <Button
             onClick={() => handleAiExpand(
               jogoCompletoPhoto,
               onJogoCompletoPhotoReplace,
@@ -299,7 +238,7 @@ export const PhotoControls = ({
             )}
             variant="outline"
             className="w-full"
-            disabled={isExpandingJC || isGeneratingBGJC || !jogoCompletoPhoto}
+            disabled={isExpandingJC || !jogoCompletoPhoto}
           >
             {isExpandingJC ? (
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
