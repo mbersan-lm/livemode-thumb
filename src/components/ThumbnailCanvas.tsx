@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import { teamsBrasileirao } from '@/data/teams';
+import { Team, teamsBrasileirao } from '@/data/teams';
 import { teamsLigue1 } from '@/data/teamsLigue1';
 import { teamsBundesliga } from '@/data/teamsBundesliga';
 import { teamsSerieA } from '@/data/teamsSerieA';
@@ -25,8 +25,8 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
       template === 'paulistao' ? teamsPaulistao :
       template === 'europaleague' ? teamsEuropaLeague :
       teamsLigue1;
-    const homeTeam = currentTeams.find(t => t.id === matchData.homeTeamId);
-    const awayTeam = currentTeams.find(t => t.id === matchData.awayTeamId);
+    const homeTeam = currentTeams.find(t => t.id === matchData.homeTeamId) as Team | undefined;
+    const awayTeam = currentTeams.find(t => t.id === matchData.awayTeamId) as Team | undefined;
 
     const photoStyle = {
       transform: `

@@ -279,6 +279,10 @@ interface CortesControlsProps {
   isRemovingBg: boolean;
   isRemovingBg2: boolean;
   isRemovingBg3?: boolean;
+  isUpscalingPerson?: boolean;
+  isUpscalingPerson2?: boolean;
+  onUpscalePerson?: () => void;
+  onUpscalePerson2?: () => void;
   pipTransform: TransformState;
   pip2Transform?: TransformState;
   personTransform: TransformState;
@@ -330,6 +334,10 @@ export const CortesControls = ({
   isRemovingBg,
   isRemovingBg2,
   isRemovingBg3 = false,
+  isUpscalingPerson = false,
+  isUpscalingPerson2 = false,
+  onUpscalePerson,
+  onUpscalePerson2,
   pipTransform,
   pip2Transform = { x: 0, y: 0, scale: 1, rotation: 0 },
   personTransform,
@@ -1060,6 +1068,24 @@ export const CortesControls = ({
                 </>
               )}
             </Button>
+            {/* Botão Gemini Upscale — aparece somente se houver cutout */}
+            {personCutout && onUpscalePerson && (
+              <Button
+                variant="outline"
+                className="w-full border-primary/40 text-primary hover:bg-primary/10"
+                disabled={isUpscalingPerson}
+                onClick={onUpscalePerson}
+              >
+                {isUpscalingPerson ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Melhorando imagem...
+                  </>
+                ) : (
+                  <>✨ Melhorar com Gemini</>
+                )}
+              </Button>
+            )}
           </div>
 
           {/* Person Transform */}
@@ -1142,9 +1168,25 @@ export const CortesControls = ({
                 </>
               )}
             </Button>
+            {/* Botão Gemini Upscale para pessoa 2 */}
+            {person2Cutout && onUpscalePerson2 && (
+              <Button
+                variant="outline"
+                className="w-full border-primary/40 text-primary hover:bg-primary/10"
+                disabled={isUpscalingPerson2}
+                onClick={onUpscalePerson2}
+              >
+                {isUpscalingPerson2 ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Melhorando imagem...
+                  </>
+                ) : (
+                  <>✨ Melhorar com Gemini</>
+                )}
+              </Button>
+            )}
           </div>
-
-          {/* Person 2 Transform */}
           {person2Cutout && (
             <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
               <div className="flex items-center justify-between">
