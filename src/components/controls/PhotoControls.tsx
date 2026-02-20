@@ -55,59 +55,15 @@ export const PhotoControls = ({
   const handleJogoCompletoCenter = () => onJogoCompletoTransformChange({ x: 0, y: 0 });
   const handleJogoCompletoReset = () => onJogoCompletoTransformChange({ x: 0, y: 0, scale: initialScaleJogoCompleto, scaleX: 1, scaleY: 1 });
 
-  const compositeImageOntoCanvas = (photo: string, transform: PhotoTransform): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = 1280;
-        canvas.height = 720;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return reject(new Error('Canvas context not available'));
-
-        // Transparent background (no fillRect = fully transparent)
-        ctx.clearRect(0, 0, 1280, 720);
-
-        // Mirror the CSS transform logic:
-        // position: left 50%, top 50% → center = (640, 360)
-        // transform: translate(-50%, -50%) translateX(x) translateY(y) scale(s) scaleX(sx) scaleY(sy)
-        const centerX = 640;
-        const centerY = 360;
-        const effectiveScaleX = transform.scale * transform.scaleX;
-        const effectiveScaleY = transform.scale * transform.scaleY;
-        const drawW = img.naturalWidth * effectiveScaleX;
-        const drawH = img.naturalHeight * effectiveScaleY;
-        const finalX = centerX + transform.x - drawW / 2;
-        const finalY = centerY + transform.y - drawH / 2;
-
-        ctx.drawImage(img, finalX, finalY, drawW, drawH);
-
-        resolve(canvas.toDataURL('image/png'));
-      };
-      img.onerror = () => reject(new Error('Falha ao carregar imagem'));
-      img.src = photo;
-    });
-  };
-
-  const handleAiExpand = async (
-    photo: string | null,
-    transform: PhotoTransform,
-    setter: (url: string) => void,
-    resetTransform: () => void,
-    setLoading: (v: boolean) => void,
-  ) => {
+  const handleAiExpand = async (photo: string | null, setter: (url: string) => void, resetTransform: () => void, setLoading: (v: boolean) => void) => {
     if (!photo) {
       toast.error('Faça upload de uma foto primeiro');
       return;
     }
     setLoading(true);
     try {
-      // Composite the image onto a 1280x720 canvas with current transform
-      // so PhotoRoom only fills the transparent/empty areas
-      const compositeBase64 = await compositeImageOntoCanvas(photo, transform);
-
       const { data, error } = await supabase.functions.invoke('photoroom-ai-expand', {
-        body: { image_base64: compositeBase64, output_width: 1280, output_height: 720 },
+        body: { image_base64: photo, output_width: 1280, output_height: 720 },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
@@ -189,7 +145,6 @@ export const PhotoControls = ({
           <Button
             onClick={() => handleAiExpand(
               playerPhoto,
-              photoTransform,
               onPlayerPhotoReplace,
               () => onTransformChange({ x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 }),
               setIsExpanding,
@@ -277,7 +232,6 @@ export const PhotoControls = ({
           <Button
             onClick={() => handleAiExpand(
               jogoCompletoPhoto,
-              jogoCompletoPhotoTransform,
               onJogoCompletoPhotoReplace,
               () => onJogoCompletoTransformChange({ x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 }),
               setIsExpandingJC,
