@@ -4,6 +4,7 @@ import { teamsLigue1 } from '@/data/teamsLigue1';
 import { teamsBundesliga } from '@/data/teamsBundesliga';
 import { teamsSerieA } from '@/data/teamsSerieA';
 import { teamsPaulistao } from '@/data/teamsPaulistao';
+import { teamsEuropaLeague } from '@/data/teamsEuropaLeague';
 import { PhotoTransform, MatchData } from '@/types/thumbnail';
 import { templates, TemplateType } from '@/data/templates';
 
@@ -22,6 +23,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
       template === 'bundesliga' ? teamsBundesliga :
       template === 'seriea' ? teamsSerieA :
       template === 'paulistao' ? teamsPaulistao :
+      template === 'europa-league' ? teamsEuropaLeague :
       teamsLigue1;
     const homeTeam = currentTeams.find(t => t.id === matchData.homeTeamId);
     const awayTeam = currentTeams.find(t => t.id === matchData.awayTeamId);
@@ -86,7 +88,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
         {homeTeam && awayTeam && (
           <div 
             id="MATCH_ROW"
-            className={`absolute left-[22px] ${template === 'ligue1' || template === 'bundesliga' || template === 'seriea' || template === 'paulistao' ? 'top-[335px]' : 'top-[360px]'} flex items-center gap-[34px]`}
+            className={`absolute left-[22px] ${template === 'ligue1' || template === 'bundesliga' || template === 'seriea' || template === 'paulistao' || template === 'europa-league' ? 'top-[335px]' : 'top-[360px]'} flex items-center gap-[34px]`}
             style={{ 
               zIndex: 20,
               transform: 'none'
