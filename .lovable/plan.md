@@ -1,89 +1,76 @@
 
-# Fix: Texto Subido e Sem Traçado no Export
+# Botão "AI Cinematic Background" — Gerador de Fundo com IA
 
-## Diagnóstico dos Dois Problemas
+## O que será feito
 
-### Problema 1: Texto Subido (posicionamento errado)
+Adicionar um novo botão chamado **"AI Cinematic BG"** nas "Quick Actions" de ambas as abas (Melhores Momentos e Jogo Completo) em `PhotoControls.tsx`. Ao clicar, o sistema envia a foto carregada para uma nova Edge Function que usa o modelo de geração de imagem da Lovable AI (`google/gemini-3-pro-image-preview`) para criar um fundo cinematográfico 1280x720. O resultado substitui a foto atual no canvas.
 
-No CSS do preview (`CortesCanvas.tsx`), o div de texto tem:
-```css
-bottom: 6%
-maxHeight: 38%
-overflow: hidden
-```
+---
 
-O CSS posiciona pelo **bottom** — o texto fica sempre colado na parte inferior da área, crescendo para cima conforme necessário. O `overflow: hidden` corta o que passar do topo.
-
-Na função `drawAutoFitText` (CortesControls.tsx, linha 172):
-```typescript
-const centerY = areaY + areaH / 2;
-// lineY = -totalH / 2 + fontSize * 0.8
-```
-
-O código **centraliza verticalmente** o bloco de texto dentro da área. Isso está errado: se o texto tem 1 linha, ele fica no meio da área de 38% de altura — visualmente acima de onde o CSS o colocaria (colado no fundo).
-
-**Correção:** Ancorar o texto pelo **bottom** da área, não pelo centro. O bloco de texto deve começar em `areaY + areaH - padding - totalH` (canto inferior).
-
-```typescript
-// ANTES (centralizado — errado):
-let lineY = -totalH / 2 + fontSize * 0.8;
-
-// DEPOIS (ancorado no bottom — correto):
-// Sem ctx.translate ao centro, posicionar diretamente
-const startY = areaY + areaH - paddingPx - (totalH - fontSize * 0.8);
-```
-
-### Problema 2: Sem Traçado (shadowBlur ≠ text-shadow circular)
-
-O preview usa 32 `text-shadow`s circulares de 15px radius, criando um stroke denso e arredondado:
-```typescript
-// Preview: generateStrokeShadow(15, strokeColor, 32)
-// → 32 text-shadows dispostos em círculo a 15px de distância
-```
-
-O export usa `ctx.shadowBlur = strokeRadius` que é um blur gaussiano difuso — completamente diferente visualmente.
-
-**Correção:** Replicar o stroke circular desenhando o texto 32 vezes em posições circulares de 15px antes de desenhar o texto final:
-
-```typescript
-// Stroke circular idêntico ao preview
-const steps = 32;
-const radius = 15;
-ctx.fillStyle = strokeColor;
-for (let i = 0; i < steps; i++) {
-  const angle = (2 * Math.PI * i) / steps;
-  const ox = Math.cos(angle) * radius;
-  const oy = Math.sin(angle) * radius;
-  ctx.fillText(seg.text, segX + ox, lineY + oy);
-}
-// Texto principal por cima
-ctx.fillStyle = seg.highlight ? highlightColor : textColor;
-ctx.fillText(seg.text, segX, lineY);
-```
-
-## Arquivo a Modificar
-
-**`src/components/cortes/CortesControls.tsx`** — apenas a função `drawAutoFitText` (linhas 144-217).
-
-### Mudanças na função `drawAutoFitText`:
-
-1. **Remover o `ctx.translate` ao centro** — posicionar diretamente pelas coordenadas absolutas
-2. **Ancorar pelo bottom** — `startY = areaY + areaH - paddingPx - totalH + fontSize * 0.8`  
-3. **Substituir `shadowBlur`** por loop de 32 draws circulares com `strokeColor`
-
-### Lógica final do posicionamento:
+## Como vai funcionar
 
 ```text
-areaY ─────────────────────────── top da área (y=403px para single text)
-         [espaço vazio para 1 linha curta]
-         [texto linha 1]
-         [texto linha 2]
-areaY + areaH - padding ────────── bottom da área (y=657px, bottom 6%)
+Usuário clica em "AI Cinematic BG"
+        ↓
+Frontend envia a foto (base64) para a Edge Function
+        ↓
+Edge Function analisa a imagem com visão do modelo Gemini
+  → Extrai contexto visual (estádio, cores, atmosfera)
+        ↓
+Edge Function chama o modelo de geração de imagem
+  → Prompt: fundo cinematográfico 16:9, centro limpo e suave,
+    bokeh, iluminação dramática, sem texto/logos/pessoas
+        ↓
+Retorna o fundo gerado como base64
+        ↓
+Frontend substitui o playerPhoto no canvas
+  → Transform resetado para scale 1, x/y 0 (imagem já é 1280x720)
 ```
 
-O texto ocupa do fundo para cima, exatamente como o CSS com `bottom` faz.
+---
 
-## Resultado Esperado
-- Texto ancorado na parte inferior, idêntico ao preview
-- Stroke circular denso (32 passos, 15px) idêntico ao efeito de text-shadow do preview
-- Zero alteração no layout do preview (CortesCanvas.tsx não muda)
+## Arquivos que serão criados/modificados
+
+### 1. `supabase/functions/ai-cinematic-bg/index.ts` (novo)
+Nova Edge Function que:
+- Recebe `image_base64` do frontend
+- Usa `google/gemini-2.5-flash` (visão) para analisar a imagem e extrair contexto (cores dominantes, ambiente, estilo)
+- Com esse contexto, chama `google/gemini-3-pro-image-preview` para gerar o fundo cinematográfico com o prompt exato especificado pelo usuário
+- Retorna a imagem gerada como `data:image/png;base64,...`
+
+O prompt enviado à geração de imagem será fixo no backend:
+> *"Cinematic 16:9 YouTube thumbnail background, 1280x720px. [contexto extraído da imagem]. Dramatic high-contrast environment, stadium atmosphere, soft bokeh depth of field, cinematic lighting. Center area must be clean, low-detail, slightly blurred. No text, no logos, no people, no foreground objects, no strong center patterns. Energetic and professional look."*
+
+### 2. `src/components/controls/PhotoControls.tsx` (editado)
+- Adicionar estado `isGeneratingBG` e `isGeneratingBGJC`
+- Adicionar função `handleAiCinematicBG` que chama a nova Edge Function
+- Adicionar botão **"AI Cinematic BG"** com ícone `Sparkles` (ou `Wand2`) nas Quick Actions de ambas as abas
+- Botão fica desabilitado se não houver foto carregada
+
+### 3. `supabase/config.toml` (editado)
+- Adicionar entrada `[functions.ai-cinematic-bg]` com `verify_jwt = false`
+
+---
+
+## Detalhes técnicos
+
+- A `LOVABLE_API_KEY` já está configurada como secret — não é necessário nenhuma configuração extra do usuário
+- O modelo de visão (`gemini-2.5-flash`) lê a foto carregada para extrair contexto real (cores da camisa, tipo de iluminação, ambiente percebido), tornando o fundo gerado mais coerente com a foto
+- O modelo de geração (`gemini-3-pro-image-preview`) produz a imagem 1280x720
+- A imagem gerada substitui completamente o `playerPhoto` no estado, com transform resetado para `{x:0, y:0, scale:1}` — ela já ocupa o canvas inteiro
+- Toast de feedback: "Gerando fundo cinematográfico..." durante o processo e "Fundo gerado!" no sucesso
+
+---
+
+## UX do botão
+
+```text
+[ ✨ AI Cinematic BG ]   ← botão novo, acima do AI Expand
+[ ⤢  AI Expand (1280×720) ]
+[ ⊕  Center ]
+[ ↺  Reset All ]
+```
+
+- Durante a geração: spinner + "Gerando fundo..."
+- Tempo estimado: 10–20 segundos
+- Desabilitado se não houver foto carregada
