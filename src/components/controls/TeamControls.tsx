@@ -5,7 +5,6 @@ import { teamsLigue1 } from '@/data/teamsLigue1';
 import { teamsBundesliga } from '@/data/teamsBundesliga';
 import { teamsSerieA } from '@/data/teamsSerieA';
 import { teamsPaulistao } from '@/data/teamsPaulistao';
-import { teamsEuropaLeague } from '@/data/teamsEuropaLeague';
 import { MatchData } from '@/types/thumbnail';
 import { TemplateType } from '@/data/templates';
 import {
@@ -28,7 +27,6 @@ export const TeamControls = ({ matchData, onMatchDataChange, template }: TeamCon
     template === 'bundesliga' ? teamsBundesliga :
     template === 'seriea' ? teamsSerieA :
     template === 'paulistao' ? teamsPaulistao :
-    template === 'europa-league' ? teamsEuropaLeague :
     teamsLigue1;
   return (
     <div className="space-y-6">
