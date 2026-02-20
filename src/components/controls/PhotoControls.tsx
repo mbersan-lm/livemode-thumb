@@ -1,19 +1,26 @@
-import { Upload, Maximize2, RotateCcw } from 'lucide-react';
+import { Upload, Maximize2, RotateCcw, Expand, Loader2 } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PhotoTransform } from '@/types/thumbnail';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface PhotoControlsProps {
   photoTransform: PhotoTransform;
   initialScale: number;
   onTransformChange: (transform: Partial<PhotoTransform>) => void;
   onPhotoUpload: (file: File) => void;
+  playerPhoto: string | null;
+  jogoCompletoPhoto: string | null;
   jogoCompletoPhotoTransform: PhotoTransform;
   initialScaleJogoCompleto: number;
   onJogoCompletoTransformChange: (transform: Partial<PhotoTransform>) => void;
   onJogoCompletoPhotoUpload: (file: File) => void;
+  onPlayerPhotoReplace: (dataUrl: string) => void;
+  onJogoCompletoPhotoReplace: (dataUrl: string) => void;
 }
 
 export const PhotoControls = ({ 
@@ -21,59 +28,53 @@ export const PhotoControls = ({
   initialScale,
   onTransformChange,
   onPhotoUpload,
+  playerPhoto,
+  jogoCompletoPhoto,
   jogoCompletoPhotoTransform,
   initialScaleJogoCompleto,
   onJogoCompletoTransformChange,
-  onJogoCompletoPhotoUpload
+  onJogoCompletoPhotoUpload,
+  onPlayerPhotoReplace,
+  onJogoCompletoPhotoReplace,
 }: PhotoControlsProps) => {
+  const [isExpanding, setIsExpanding] = useState(false);
+  const [isExpandingJC, setIsExpandingJC] = useState(false);
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      onPhotoUpload(file);
-    }
+    if (file) onPhotoUpload(file);
   };
 
   const handleJogoCompletoFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      onJogoCompletoPhotoUpload(file);
+    if (file) onJogoCompletoPhotoUpload(file);
+  };
+
+  const handleCenter = () => onTransformChange({ x: 0, y: 0 });
+  const handleReset = () => onTransformChange({ x: 0, y: 0, scale: initialScale, scaleX: 1, scaleY: 1 });
+  const handleJogoCompletoCenter = () => onJogoCompletoTransformChange({ x: 0, y: 0 });
+  const handleJogoCompletoReset = () => onJogoCompletoTransformChange({ x: 0, y: 0, scale: initialScaleJogoCompleto, scaleX: 1, scaleY: 1 });
+
+  const handleAiExpand = async (photo: string | null, setter: (url: string) => void, resetTransform: () => void, setLoading: (v: boolean) => void) => {
+    if (!photo) {
+      toast.error('Faça upload de uma foto primeiro');
+      return;
     }
-  };
-
-  const handleCenter = () => {
-    onTransformChange({ x: 0, y: 0 });
-  };
-
-  const handleFillRight = () => {
-    onTransformChange({ scale: 1.5, x: 0, y: 0 });
-  };
-
-  const handleReset = () => {
-    onTransformChange({ 
-      x: 0, 
-      y: 0, 
-      scale: initialScale, 
-      scaleX: 1, 
-      scaleY: 1 
-    });
-  };
-
-  const handleJogoCompletoCenter = () => {
-    onJogoCompletoTransformChange({ x: 0, y: 0 });
-  };
-
-  const handleJogoCompletoFillRight = () => {
-    onJogoCompletoTransformChange({ scale: 1.5, x: 0, y: 0 });
-  };
-
-  const handleJogoCompletoReset = () => {
-    onJogoCompletoTransformChange({ 
-      x: 0, 
-      y: 0, 
-      scale: initialScaleJogoCompleto, 
-      scaleX: 1, 
-      scaleY: 1 
-    });
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('photoroom-ai-expand', {
+        body: { image_base64: photo, output_width: 1280, output_height: 720 },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setter(data.result_base64);
+      resetTransform();
+      toast.success('Imagem expandida com IA!');
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao expandir imagem');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -139,10 +140,26 @@ export const PhotoControls = ({
           </div>
         </div>
 
-
-
         <div className="pt-4 border-t border-border space-y-2">
           <h4 className="text-sm font-semibold mb-3">Quick Actions</h4>
+          <Button
+            onClick={() => handleAiExpand(
+              playerPhoto,
+              onPlayerPhotoReplace,
+              () => onTransformChange({ x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 }),
+              setIsExpanding,
+            )}
+            variant="outline"
+            className="w-full"
+            disabled={isExpanding || !playerPhoto}
+          >
+            {isExpanding ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Expand className="w-4 h-4 mr-2" />
+            )}
+            {isExpanding ? 'Expandindo...' : 'AI Expand (1280×720)'}
+          </Button>
           <Button onClick={handleCenter} variant="outline" className="w-full">
             <Maximize2 className="w-4 h-4 mr-2" />
             Center
@@ -210,10 +227,26 @@ export const PhotoControls = ({
           </div>
         </div>
 
-
-
         <div className="pt-4 border-t border-border space-y-2">
           <h4 className="text-sm font-semibold mb-3">Quick Actions</h4>
+          <Button
+            onClick={() => handleAiExpand(
+              jogoCompletoPhoto,
+              onJogoCompletoPhotoReplace,
+              () => onJogoCompletoTransformChange({ x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 }),
+              setIsExpandingJC,
+            )}
+            variant="outline"
+            className="w-full"
+            disabled={isExpandingJC || !jogoCompletoPhoto}
+          >
+            {isExpandingJC ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Expand className="w-4 h-4 mr-2" />
+            )}
+            {isExpandingJC ? 'Expandindo...' : 'AI Expand (1280×720)'}
+          </Button>
           <Button onClick={handleJogoCompletoCenter} variant="outline" className="w-full">
             <Maximize2 className="w-4 h-4 mr-2" />
             Center

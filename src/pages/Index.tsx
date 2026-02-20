@@ -197,10 +197,14 @@ const Index = () => {
                 initialScale={state.initialScale}
                 onTransformChange={handleTransformChange}
                 onPhotoUpload={handlePhotoUpload}
+                playerPhoto={state.playerPhoto}
+                jogoCompletoPhoto={state.jogoCompletoPhoto}
                 jogoCompletoPhotoTransform={state.jogoCompletoPhotoTransform}
                 initialScaleJogoCompleto={state.initialScaleJogoCompleto}
                 onJogoCompletoTransformChange={handleJogoCompletoTransformChange}
                 onJogoCompletoPhotoUpload={handleJogoCompletoPhotoUpload}
+                onPlayerPhotoReplace={(dataUrl) => setState(prev => ({ ...prev, playerPhoto: dataUrl, photoTransform: { x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 } }))}
+                onJogoCompletoPhotoReplace={(dataUrl) => setState(prev => ({ ...prev, jogoCompletoPhoto: dataUrl, jogoCompletoPhotoTransform: { x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 } }))}
               />
             </TabsContent>
 
