@@ -4,7 +4,6 @@ import { teamsLigue1 } from '@/data/teamsLigue1';
 import { teamsBundesliga } from '@/data/teamsBundesliga';
 import { teamsSerieA } from '@/data/teamsSerieA';
 import { teamsPaulistao } from '@/data/teamsPaulistao';
-import { teamsEuropaLeague } from '@/data/teamsEuropaLeague';
 import { PhotoTransform, MatchData } from '@/types/thumbnail';
 import { templates, TemplateType } from '@/data/templates';
 
@@ -23,7 +22,6 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
       template === 'bundesliga' ? teamsBundesliga :
       template === 'seriea' ? teamsSerieA :
       template === 'paulistao' ? teamsPaulistao :
-      template === 'europa-league' ? teamsEuropaLeague :
       teamsLigue1;
     const homeTeam = currentTeams.find(t => t.id === matchData.homeTeamId);
     const awayTeam = currentTeams.find(t => t.id === matchData.awayTeamId);
@@ -81,18 +79,14 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
           src={config.kvPath} 
           alt="Background KV"
           className="absolute left-0 top-0 pointer-events-none"
-          style={
-            template === 'europa-league'
-              ? { width: '1280px', height: '720px', objectFit: 'cover', zIndex: 10 }
-              : { height: '720px', objectFit: 'contain', objectPosition: 'left', zIndex: 10 }
-          }
+          style={{ height: '720px', objectFit: 'contain', objectPosition: 'left', zIndex: 10 }}
         />
 
         {/* Match Info Group - On top of everything */}
         {homeTeam && awayTeam && (
           <div 
             id="MATCH_ROW"
-            className={`absolute left-[22px] ${template === 'ligue1' || template === 'bundesliga' || template === 'seriea' || template === 'paulistao' ? 'top-[335px]' : template === 'europa-league' ? 'top-[440px]' : 'top-[360px]'} flex items-center gap-[34px]`}
+            className={`absolute left-[22px] ${template === 'ligue1' || template === 'bundesliga' || template === 'seriea' || template === 'paulistao' ? 'top-[335px]' : 'top-[360px]'} flex items-center gap-[34px]`}
             style={{ 
               zIndex: 20,
               transform: 'none'
