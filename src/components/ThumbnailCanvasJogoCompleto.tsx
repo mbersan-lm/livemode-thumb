@@ -99,7 +99,7 @@ export const ThumbnailCanvasJogoCompleto = forwardRef<HTMLDivElement, ThumbnailC
               id="HOME_CREST_JC"
               src={homeTeam.crest_url}
               alt={homeTeam.name}
-              className="h-auto w-auto max-w-[322px] max-h-[322px] object-contain"
+              className={`h-auto w-auto object-contain ${template === 'europaleague' ? 'max-w-[600px] max-h-[600px]' : 'max-w-[322px] max-h-[322px]'}`}
             />
 
             {/* Away Crest */}
@@ -107,7 +107,7 @@ export const ThumbnailCanvasJogoCompleto = forwardRef<HTMLDivElement, ThumbnailC
               id="AWAY_CREST_JC"
               src={awayTeam.crest_url}
               alt={awayTeam.name}
-              className="h-auto w-auto max-w-[322px] max-h-[322px] object-contain -ml-[70px]"
+              className={`h-auto w-auto object-contain -ml-[70px] ${template === 'europaleague' ? 'max-w-[600px] max-h-[600px]' : 'max-w-[322px] max-h-[322px]'}`}
             />
           </div>
         )}
