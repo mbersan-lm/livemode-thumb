@@ -67,6 +67,8 @@ export const CortesThumbBuilder = ({
   const [isRemovingBg, setIsRemovingBg] = useState(false);
   const [isRemovingBg2, setIsRemovingBg2] = useState(false);
   const [isRemovingBg3, setIsRemovingBg3] = useState(false);
+  const [isUpscalingPerson, setIsUpscalingPerson] = useState(false);
+  const [isUpscalingPerson2, setIsUpscalingPerson2] = useState(false);
 
   const [pipTransform, setPipTransform] = useState(DEFAULT_PIP_TRANSFORM);
   const [personTransform, setPersonTransform] = useState(DEFAULT_PERSON_TRANSFORM);
@@ -185,6 +187,42 @@ export const CortesThumbBuilder = ({
     reader.readAsDataURL(file);
   };
 
+  const handleUpscalePerson = async () => {
+    if (!personCutout) return;
+    setIsUpscalingPerson(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('gemini-upscale', {
+        body: { image_base64: personCutout },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setPersonCutout(data.result_base64);
+      toast.success('Imagem melhorada com Gemini!');
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao melhorar imagem com Gemini');
+    } finally {
+      setIsUpscalingPerson(false);
+    }
+  };
+
+  const handleUpscalePerson2 = async () => {
+    if (!person2Cutout) return;
+    setIsUpscalingPerson2(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('gemini-upscale', {
+        body: { image_base64: person2Cutout },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setPerson2Cutout(data.result_base64);
+      toast.success('Imagem da pessoa 2 melhorada com Gemini!');
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao melhorar imagem com Gemini');
+    } finally {
+      setIsUpscalingPerson2(false);
+    }
+  };
+
   const handlePip2Upload = (file: File) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -295,6 +333,10 @@ export const CortesThumbBuilder = ({
             isRemovingBg={isRemovingBg}
             isRemovingBg2={isRemovingBg2}
             isRemovingBg3={isRemovingBg3}
+            isUpscalingPerson={isUpscalingPerson}
+            isUpscalingPerson2={isUpscalingPerson2}
+            onUpscalePerson={handleUpscalePerson}
+            onUpscalePerson2={handleUpscalePerson2}
             pipTransform={pipTransform}
             pip2Transform={pip2Transform}
             personTransform={personTransform}
