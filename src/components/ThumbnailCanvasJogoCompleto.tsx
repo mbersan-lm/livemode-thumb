@@ -99,7 +99,8 @@ export const ThumbnailCanvasJogoCompleto = forwardRef<HTMLDivElement, ThumbnailC
               id="HOME_CREST_JC"
               src={homeTeam.crest_url}
               alt={homeTeam.name}
-              className="h-auto w-auto object-contain max-w-[322px] max-h-[322px]"
+              className="h-auto w-auto object-contain"
+              style={{ maxWidth: `${homeTeam.jcMaxSize ?? 322}px`, maxHeight: `${homeTeam.jcMaxSize ?? 322}px` }}
             />
 
             {/* Away Crest */}
@@ -107,7 +108,8 @@ export const ThumbnailCanvasJogoCompleto = forwardRef<HTMLDivElement, ThumbnailC
               id="AWAY_CREST_JC"
               src={awayTeam.crest_url}
               alt={awayTeam.name}
-              className="h-auto w-auto object-contain -ml-[70px] max-w-[322px] max-h-[322px]"
+              className="h-auto w-auto object-contain -ml-[70px]"
+              style={{ maxWidth: `${awayTeam.jcMaxSize ?? 322}px`, maxHeight: `${awayTeam.jcMaxSize ?? 322}px` }}
             />
           </div>
         )}
