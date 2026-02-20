@@ -81,14 +81,18 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
           src={config.kvPath} 
           alt="Background KV"
           className="absolute left-0 top-0 pointer-events-none"
-          style={{ height: '720px', objectFit: 'contain', objectPosition: 'left', zIndex: 10 }}
+          style={
+            template === 'europa-league'
+              ? { width: '1280px', height: '720px', objectFit: 'cover', zIndex: 10 }
+              : { height: '720px', objectFit: 'contain', objectPosition: 'left', zIndex: 10 }
+          }
         />
 
         {/* Match Info Group - On top of everything */}
         {homeTeam && awayTeam && (
           <div 
             id="MATCH_ROW"
-            className={`absolute left-[22px] ${template === 'ligue1' || template === 'bundesliga' || template === 'seriea' || template === 'paulistao' || template === 'europa-league' ? 'top-[335px]' : 'top-[360px]'} flex items-center gap-[34px]`}
+            className={`absolute left-[22px] ${template === 'ligue1' || template === 'bundesliga' || template === 'seriea' || template === 'paulistao' ? 'top-[335px]' : template === 'europa-league' ? 'top-[440px]' : 'top-[360px]'} flex items-center gap-[34px]`}
             style={{ 
               zIndex: 20,
               transform: 'none'
