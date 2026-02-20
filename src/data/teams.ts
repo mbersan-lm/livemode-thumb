@@ -3,6 +3,8 @@ export interface Team {
   name: string;
   slug: string;
   crest_url: string;
+  maxSize?: number;    // sobrescreve max-w e max-h em Melhores Momentos
+  jcMaxSize?: number;  // sobrescreve max-w e max-h em Jogo Completo
 }
 
 export const teamsBrasileirao: Team[] = [
