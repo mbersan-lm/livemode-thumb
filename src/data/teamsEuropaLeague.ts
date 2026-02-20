@@ -30,5 +30,11 @@ export const teamsEuropaLeague: Team[] = [
   { id: 'el27', name: 'PORTO', slug: 'porto', crest_url: '/crests/porto.png' },
   { id: 'el28', name: 'RANGERS', slug: 'rangers', crest_url: '/crests/rangers.png' },
   { id: 'el29', name: 'REAL BETIS', slug: 'real-betis', crest_url: '/crests/real-betis.png' },
-  { id: 'el30', name: 'YOUNG BOYS', slug: 'young-boys', crest_url: '/crests/young-boys.png' },
+  { id: 'el30', name: 'RED BULL SALZBURG', slug: 'red-bull-salzburg', crest_url: '/crests/red-bull-salzburg.png' },
+  { id: 'el31', name: 'ROMA', slug: 'roma-el', crest_url: '/crests/roma-el.png' },
+  { id: 'el32', name: 'STURM GRAZ', slug: 'sturm-graz', crest_url: '/crests/sturm-graz.png' },
+  { id: 'el33', name: 'UTRECHT', slug: 'utrecht', crest_url: '/crests/utrecht.png' },
+  { id: 'el34', name: 'VfB STUTTGART', slug: 'vfb-stuttgart', crest_url: '/crests/vfb-stuttgart.png' },
+  { id: 'el35', name: 'VIKORIA PLZEN', slug: 'viktoria-plzen', crest_url: '/crests/viktoria-plzen.png' },
+  { id: 'el36', name: 'YOUNG BOYS', slug: 'young-boys', crest_url: '/crests/young-boys.png' },
 ];
