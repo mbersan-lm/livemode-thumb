@@ -56,6 +56,7 @@ const CortesProgramBuilder = () => {
               : undefined
       }
       allowJogoV1={program!.name === 'Roda de Bobo'}
+      allowChamadaPrincipal={program!.name === 'Geral CazéTv' || program!.name === 'Geral CazéTv Brasil'}
       divisoriaImage={program!.name === 'Geral CazéTv Brasil' ? '/cortes/divisoria-brasil.png' : undefined}
       textColor={program!.text_color}
       strokeColor={program!.stroke_color}
