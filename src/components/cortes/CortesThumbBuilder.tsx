@@ -105,28 +105,32 @@ export const CortesThumbBuilder = ({
     return () => window.removeEventListener('resize', updateScale);
   }, []);
 
+  const applyPipAutoScale = (dataUrl: string) => {
+    setPipImage(dataUrl);
+    const img = new window.Image();
+    img.onload = () => {
+      const containerPixelW = (pipFrame.width / 100) * CANVAS_WIDTH;
+      const containerPixelH = (pipFrame.height / 100) * CANVAS_HEIGHT;
+      const containerRatio = containerPixelW / containerPixelH;
+      const imageRatio = img.naturalWidth / img.naturalHeight;
+      const autoScale = Math.max(
+        containerRatio / imageRatio,
+        imageRatio / containerRatio
+      ) + 0.05;
+      setPipBaseScale(autoScale);
+      setPipTransform(prev => ({ ...prev, scale: autoScale }));
+    };
+    img.src = dataUrl;
+  };
+
   const handlePipUpload = (file: File) => {
     const reader = new FileReader();
-    reader.onload = (e) => {
-      const dataUrl = e.target?.result as string;
-      setPipImage(dataUrl);
-
-      const img = new window.Image();
-      img.onload = () => {
-        const containerPixelW = (pipFrame.width / 100) * CANVAS_WIDTH;
-        const containerPixelH = (pipFrame.height / 100) * CANVAS_HEIGHT;
-        const containerRatio = containerPixelW / containerPixelH;
-        const imageRatio = img.naturalWidth / img.naturalHeight;
-        const autoScale = Math.max(
-          containerRatio / imageRatio,
-          imageRatio / containerRatio
-        ) + 0.05;
-        setPipBaseScale(autoScale);
-        setPipTransform(prev => ({ ...prev, scale: autoScale }));
-      };
-      img.src = dataUrl;
-    };
+    reader.onload = (e) => applyPipAutoScale(e.target?.result as string);
     reader.readAsDataURL(file);
+  };
+
+  const handlePipFromBase64 = (base64: string) => {
+    applyPipAutoScale(base64);
   };
 
   const removeBg = async (file: File): Promise<string> => {
@@ -417,6 +421,7 @@ export const CortesThumbBuilder = ({
             hasLogosNegative={!!logosNegativeImage}
             textBoxHeight={textBoxHeight}
             onTextBoxHeightChange={setTextBoxHeight}
+            onPipFromBase64={handlePipFromBase64}
             currentCanvasProps={{
               thumbModel,
               pipImage,

@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
 import type { ThumbModel } from './CortesThumbBuilder';
+import { PipAiGenerator } from './PipAiGenerator';
 
 // ─── Canvas Export Helpers ────────────────────────────────────────────────────
 
@@ -395,6 +396,7 @@ interface CortesControlsProps {
   logosVariant?: 'positiva' | 'negativa';
   onLogosVariantChange?: (v: 'positiva' | 'negativa') => void;
   hasLogosNegative?: boolean;
+  onPipFromBase64?: (base64: string) => void;
 }
 
 export const CortesControls = ({
@@ -453,6 +455,7 @@ export const CortesControls = ({
   logosVariant = 'positiva',
   onLogosVariantChange,
   hasLogosNegative = false,
+  onPipFromBase64,
 }: CortesControlsProps) => {
   const pipInputRef = useRef<HTMLInputElement>(null);
   const pip2InputRef = useRef<HTMLInputElement>(null);
@@ -938,9 +941,13 @@ export const CortesControls = ({
               onClick={() => pipInputRef.current?.click()}
             >
               <Upload className="w-4 h-4 mr-2" />
-              {pipImage ? 'Trocar PIP' : 'Upload PIP'}
+             {pipImage ? 'Trocar PIP' : 'Upload PIP'}
             </Button>
           </div>
+
+          {onPipFromBase64 && (
+            <PipAiGenerator onImageGenerated={onPipFromBase64} />
+          )}
 
           {/* PIP Image Transform */}
           {pipImage && (
@@ -1029,6 +1036,9 @@ export const CortesControls = ({
               <Upload className="w-4 h-4 mr-2" />{pipImage ? 'Trocar foto esquerda' : 'Upload foto esquerda'}
             </Button>
           </div>
+          {onPipFromBase64 && (
+            <PipAiGenerator onImageGenerated={onPipFromBase64} />
+          )}
           {pipImage && (
             <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
               <div className="flex items-center justify-between">
@@ -1302,6 +1312,9 @@ export const CortesControls = ({
               <Upload className="w-4 h-4 mr-2" />{pipImage ? 'Trocar PIP esquerdo' : 'Upload PIP esquerdo'}
             </Button>
           </div>
+          {onPipFromBase64 && (
+            <PipAiGenerator onImageGenerated={onPipFromBase64} />
+          )}
           {pipImage && (
             <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
               <div className="flex items-center justify-between">
