@@ -1,34 +1,13 @@
 
-# Ajustar placar de penaltis conforme referencia
+# Diminuir placar de penaltis em 30%
 
-## O que muda
+## Alteracao
 
-Na imagem de referencia, o formato do placar de penaltis e: **(3)  x  (3)** -- cada numero esta entre parenteses individualmente, com o "x" entre eles e um espacamento generoso. Atualmente, o codigo renderiza `( 3 x 3 )` com parenteses envolvendo tudo junto.
+Apenas o tamanho da fonte do placar de penaltis sera reduzido em 30%, sem mover o placar principal.
 
-## Alteracoes
+### `src/components/ThumbnailCanvas.tsx`
 
-### `src/components/ThumbnailCanvas.tsx` (linhas 148-163)
+- Linha 153: Alterar o fator de `0.35` para `0.245` (reducao de 30%)
+- Linha 159: Alterar o fator do "x" de `0.3` para `0.21` (reducao de 30%)
 
-Atualizar o bloco de renderizacao do placar menor para seguir o formato da referencia:
-
-- Cada score fica entre parenteses: `(3)` e `(3)`
-- O "x" fica entre os dois, com a mesma cor do "x" principal (`xColor`)
-- Espacamento maior entre os elementos (gap maior)
-- Manter o tamanho em ~50% do `scoreFontSize`
-- Manter `marginTop: '-8px'` para ficar proximo ao placar principal
-
-Formato final renderizado: `(3)  x  (3)`
-
-## Detalhes tecnicos
-
-A estrutura do JSX sera alterada de:
-```
-(  homeScore  x  awayScore  )
-```
-
-Para:
-```
-(homeScore)  x  (awayScore)
-```
-
-Cada grupo `(score)` sera um span unico, e o "x" central mantara a cor e fonte do template (`xColor`, `xFontFamily`). O gap sera aumentado para dar o espacamento visual similar a referencia.
+Nenhuma outra alteracao sera feita -- o placar principal permanece exatamente na mesma posicao e tamanho.
