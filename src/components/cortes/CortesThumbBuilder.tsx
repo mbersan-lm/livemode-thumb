@@ -40,6 +40,7 @@ interface CortesThumbBuilderProps {
   allowAllModels?: boolean;
   allowJogoV1?: boolean;
   allowThumbPrincipal?: boolean;
+  thumbPrincipalLogosImage?: string;
 }
 
 export const CortesThumbBuilder = ({
@@ -57,6 +58,7 @@ export const CortesThumbBuilder = ({
   allowAllModels = false,
   allowJogoV1 = false,
   allowThumbPrincipal = false,
+  thumbPrincipalLogosImage,
 }: CortesThumbBuilderProps) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
@@ -93,7 +95,8 @@ export const CortesThumbBuilder = ({
   const [pip2BaseScale, setPip2BaseScale] = useState(1);
   const [customBgImage, setCustomBgImage] = useState<string | null>(null);
   const [logosVariant, setLogosVariant] = useState<'positiva' | 'negativa'>('positiva');
-  const activeLogosImage = logosVariant === 'negativa' && logosNegativeImage ? logosNegativeImage : logosImage;
+  const baseLogosImage = logosVariant === 'negativa' && logosNegativeImage ? logosNegativeImage : logosImage;
+  const activeLogosImage = (thumbModel === 'thumb-principal' && thumbPrincipalLogosImage) ? thumbPrincipalLogosImage : baseLogosImage;
 
   const handleBgUpload = (file: File) => {
     const reader = new FileReader();
