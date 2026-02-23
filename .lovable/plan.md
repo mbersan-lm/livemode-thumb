@@ -1,42 +1,44 @@
 
 
-# Corrigir renderizacao de highlights (*cores*) no export
+# Corrigir deformacao da foto de fundo no export
 
 ## Problema
 
-Quando o texto e exportado, as palavras marcadas com `*` para highlight (ex: `*NEYMAR*`) estao aparecendo com o caractere `*` literal na imagem exportada, ao inves de renderizar com a cor de destaque como no preview.
-
-## Causa raiz
-
-A funcao `mapCleanLinesToOriginal` reconstroi as linhas com os marcadores `*`, mas quando uma quebra de linha acontece no meio de um trecho destacado, os marcadores ficam "orfaos" -- por exemplo, uma linha termina com `*PALAVRA` e a proxima comeca com `RESTO*`. A funcao `parseHighlight` espera o padrao completo `*texto*` numa unica linha e, ao nao encontra-lo, trata os `*` como texto normal, exibindo-os literalmente.
+No preview, a imagem de fundo usa `object-fit: cover` (CSS), que redimensiona a imagem mantendo a proporcao e cortando o excesso. No export, o codigo usa `ctx.drawImage(bgImg, 0, 0, 1280, 720)`, que estica a imagem para preencher exatamente 1280x720px, deformando-a se a proporcao original for diferente.
 
 ## Solucao
 
 ### Arquivo: `src/components/cortes/CortesControls.tsx`
 
-**1. Corrigir `mapCleanLinesToOriginal`** para garantir que cada linha tenha marcadores `*` completos (pares fechados):
+Substituir a linha:
 
-- Quando um highlight comeca numa linha mas nao fecha (termina sem `*` de fechamento), adicionar `*` no final da linha e abrir `*` no inicio da proxima linha
-- Isso garante que cada linha individual contenha apenas padroes `*texto*` completos
+```
+ctx.drawImage(bgImg, 0, 0, W, H);
+```
 
-**2. Alternativa mais robusta** -- mudar a estrategia de renderizacao:
+Por uma logica que replica o comportamento de `object-fit: cover`:
 
-Em vez de depender de `mapCleanLinesToOriginal` + `parseHighlight` por linha, processar o texto original inteiro em segmentos (highlight e normal) antes do wrap, e fazer o wrap consciente dos segmentos. Cada linha sera uma lista de segmentos ja classificados (highlight ou nao), eliminando a necessidade de re-parsear.
+1. Calcular a proporcao da imagem original (`bgImg.naturalWidth / bgImg.naturalHeight`)
+2. Calcular a proporcao do canvas (1280/720)
+3. Se a imagem for mais larga proporcionalmente, ajustar pela altura e centralizar horizontalmente (cortando os lados)
+4. Se a imagem for mais alta proporcionalmente, ajustar pela largura e centralizar verticalmente (cortando topo/base)
 
-A abordagem escolhida sera a opcao 1 (corrigir `mapCleanLinesToOriginal`) por ser menos invasiva:
-
-- Rastrear se estamos dentro de um highlight (`*` aberto) ao percorrer o texto original
-- Ao finalizar uma linha que esta dentro de um highlight, fechar com `*` e abrir `*` na proxima linha
-- Resultado: toda linha tera pares `*...*` completos, e `parseHighlight` funcionara corretamente
-
-## Detalhes tecnicos
-
-A funcao `mapCleanLinesToOriginal` sera atualizada para:
-
-1. Manter um flag `insideHighlight` que rastreia se um `*` de abertura foi encontrado sem seu par de fechamento
-2. Ao terminar de mapear uma linha, se `insideHighlight === true`, adicionar `*` ao final da linha mapeada
-3. Ao iniciar a proxima linha, se `insideHighlight === true`, prefixar com `*`
-4. Isso garante que `parseHighlight` receba linhas com padroes completos `*texto*`
+```typescript
+// object-fit: cover
+const imgRatio = bgImg.naturalWidth / bgImg.naturalHeight;
+const canvasRatio = W / H;
+let sx = 0, sy = 0, sw = bgImg.naturalWidth, sh = bgImg.naturalHeight;
+if (imgRatio > canvasRatio) {
+  // imagem mais larga: cortar lados
+  sw = bgImg.naturalHeight * canvasRatio;
+  sx = (bgImg.naturalWidth - sw) / 2;
+} else {
+  // imagem mais alta: cortar topo/base
+  sh = bgImg.naturalWidth / canvasRatio;
+  sy = (bgImg.naturalHeight - sh) / 2;
+}
+ctx.drawImage(bgImg, sx, sy, sw, sh, 0, 0, W, H);
+```
 
 Nenhum outro arquivo precisa ser alterado.
 
