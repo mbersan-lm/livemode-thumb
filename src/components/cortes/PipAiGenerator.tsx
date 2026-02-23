@@ -6,32 +6,6 @@ import { Loader2, Sparkles, Paperclip, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-const resizeImage = (dataUrl: string, maxSize = 512, quality = 0.7): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => {
-      let { width, height } = img;
-      if (width > maxSize || height > maxSize) {
-        if (width > height) {
-          height = Math.round((height * maxSize) / width);
-          width = maxSize;
-        } else {
-          width = Math.round((width * maxSize) / height);
-          height = maxSize;
-        }
-      }
-      const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d')!;
-      ctx.drawImage(img, 0, 0, width, height);
-      resolve(canvas.toDataURL('image/jpeg', quality));
-    };
-    img.onerror = reject;
-    img.src = dataUrl;
-  });
-};
-
 interface PipAiGeneratorProps {
   onImageGenerated: (base64DataUrl: string) => void;
 }
@@ -48,18 +22,14 @@ export const PipAiGenerator = ({ onImageGenerated }: PipAiGeneratorProps) => {
 
     Array.from(files).forEach((file) => {
       const reader = new FileReader();
-      reader.onload = async (ev) => {
+      reader.onload = (ev) => {
         const dataUrl = ev.target?.result as string;
-        try {
-          const resized = await resizeImage(dataUrl);
-          setReferenceImages((prev) => [...prev, resized]);
-        } catch {
-          setReferenceImages((prev) => [...prev, dataUrl]);
-        }
+        setReferenceImages((prev) => [...prev, dataUrl]);
       };
       reader.readAsDataURL(file);
     });
 
+    // Reset input so same file can be re-selected
     e.target.value = '';
   };
 

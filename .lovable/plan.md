@@ -1,39 +1,83 @@
 
 
-# Corrigir envio de imagens de referencia no gerador PIP com IA
+# Botao de navegacao "Melhores Momentos / Cortes" mais visivel
 
-## Problema
-Quando imagens de referencia sao anexadas, o payload enviado para a edge function fica muito grande (imagens base64 sem compressao podem ter varios MB cada). Isso excede o limite de tamanho do corpo da requisicao da edge function, resultando em erro "non-2xx status code".
+## Problema atual
+A navegacao entre "Melhores Momentos" e "Cortes" e feita por links pequenos em texto cinza (`text-xs text-muted-foreground`), quase invisiveis no header da interface.
 
 ## Solucao
-Redimensionar e comprimir as imagens de referencia no lado do cliente (browser) antes de envia-las para a edge function. Cada imagem sera reduzida para no maximo 512x512 pixels e comprimida em JPEG com qualidade 70%, mantendo o tamanho do payload viavel.
+Transformar esses links em botoes estilizados com o componente `Button`, usando o visual `outline` com borda branca e bordas arredondadas que ja existem no design system.
 
 ## Alteracoes
 
-### 1. `src/components/cortes/PipAiGenerator.tsx`
-- Criar funcao auxiliar `resizeImage(dataUrl, maxSize, quality)` que usa um canvas offscreen para redimensionar a imagem
-- No `handleAttachImages`, apos ler o arquivo, passar pela funcao de resize antes de adicionar ao estado `referenceImages`
-- Isso garante que cada imagem de referencia tenha no maximo ~50-80KB em vez de varios MB
+### 1. `src/pages/Index.tsx` (linha 168)
+- Substituir o `<a>` texto "Cortes →" por um `Button` com variante `outline`, icone de seta e texto claro
+- Estilo: borda branca, texto branco, hover com fundo sutil
 
-### 2. `supabase/functions/gemini-generate-pip/index.ts`
-- Adicionar log do tamanho do payload para facilitar debug futuro
-- Adicionar tratamento de erro mais especifico para payloads grandes
-- Manter a logica existente sem mudancas estruturais
+**De:**
+```
+<a href="/cortes" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+  Cortes →
+</a>
+```
 
-## Detalhes tecnicos
+**Para:**
+```
+<a href="/cortes">
+  <Button variant="outline" size="sm" className="gap-1.5">
+    Cortes <ArrowRight className="w-3.5 h-3.5" />
+  </Button>
+</a>
+```
 
-A funcao de resize:
-- Cria um elemento `<canvas>` temporario
-- Desenha a imagem redimensionada (max 512px no maior lado, mantendo proporcao)
-- Exporta como JPEG com qualidade 0.7
-- Retorna o novo data URL comprimido
+### 2. `src/pages/CortesHub.tsx` (linha 67)
+- Substituir o `<a>` texto "← Melhores Momentos" por um `Button` com variante `outline`
 
-## Arquivos alterados
-1. `src/components/cortes/PipAiGenerator.tsx` -- resize de imagens no cliente
-2. `supabase/functions/gemini-generate-pip/index.ts` -- melhor tratamento de erro
+**De:**
+```
+<a href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+  <ArrowLeft className="w-4 h-4" /> Melhores Momentos
+</a>
+```
+
+**Para:**
+```
+<a href="/">
+  <Button variant="outline" size="sm" className="gap-1.5">
+    <ArrowLeft className="w-3.5 h-3.5" /> Melhores Momentos
+  </Button>
+</a>
+```
+
+### 3. `src/components/cortes/CortesThumbBuilder.tsx` (linha 345)
+- Substituir o `<a>` texto "← Voltar" por um `Button` com variante `outline`
+
+**De:**
+```
+<a href={backUrl} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+  ← Voltar
+</a>
+```
+
+**Para:**
+```
+<a href={backUrl}>
+  <Button variant="outline" size="sm" className="gap-1.5">
+    <ArrowLeft className="w-3.5 h-3.5" /> Voltar
+  </Button>
+</a>
+```
+
+## Imports necessarios
+- `Index.tsx`: adicionar `import { ArrowRight } from 'lucide-react'` e `import { Button } from '@/components/ui/button'`
+- `CortesThumbBuilder.tsx`: adicionar `import { ArrowLeft } from 'lucide-react'` e `import { Button } from '@/components/ui/button'`
+- `CortesHub.tsx`: ja importa `Button` e `ArrowLeft`
+
+## Resultado
+Os botoes herdao automaticamente o estilo `rounded-full` com `border border-white/80` do design system, ficando visiveis e consistentes com o restante da interface.
 
 ## O que NAO muda
-- Fluxo de geracao sem referencias (ja funciona)
-- Qualidade da imagem gerada pela IA
-- Nenhum outro componente ou modelo
+- Nenhuma logica, canvas, preview ou download
+- Nenhum modelo de thumb
+- Nenhuma cor ou fonte do design system
 
