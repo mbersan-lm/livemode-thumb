@@ -143,6 +143,15 @@ export const CortesThumbBuilder = ({
     return data.result_base64;
   };
 
+  const removeBgFromBase64 = async (base64: string): Promise<string> => {
+    const { data, error } = await supabase.functions.invoke('photoroom-remove-bg', {
+      body: { image_base64: base64 },
+    });
+    if (error) throw error;
+    if (data?.error) throw new Error(data.error);
+    return data.result_base64;
+  };
+
   const handlePersonUpload = async (file: File) => {
     setIsRemovingBg(true);
     try {
@@ -200,8 +209,15 @@ export const CortesThumbBuilder = ({
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      setPersonCutout(data.result_base64);
-      toast.success('Imagem melhorada com Gemini!');
+      const upscaled = data.result_base64;
+      try {
+        const noBg = await removeBgFromBase64(upscaled);
+        setPersonCutout(noBg);
+        toast.success('Imagem melhorada e fundo removido!');
+      } catch {
+        setPersonCutout(upscaled);
+        toast.warning('Imagem melhorada, mas erro ao remover fundo.');
+      }
     } catch (err: any) {
       toast.error(err.message || 'Erro ao melhorar imagem com Gemini');
     } finally {
@@ -218,8 +234,15 @@ export const CortesThumbBuilder = ({
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      setPerson2Cutout(data.result_base64);
-      toast.success('Imagem da pessoa 2 melhorada com Gemini!');
+      const upscaled = data.result_base64;
+      try {
+        const noBg = await removeBgFromBase64(upscaled);
+        setPerson2Cutout(noBg);
+        toast.success('Pessoa 2 melhorada e fundo removido!');
+      } catch {
+        setPerson2Cutout(upscaled);
+        toast.warning('Pessoa 2 melhorada, mas erro ao remover fundo.');
+      }
     } catch (err: any) {
       toast.error(err.message || 'Erro ao melhorar imagem com Gemini');
     } finally {
