@@ -955,7 +955,7 @@ export const CortesControls = ({
       </div>
 
       {/* Logo variant toggle */}
-      {hasLogosNegative && (
+      {hasLogosNegative && thumbModel !== 'thumb-principal' && (
         <div className="space-y-2">
           <Label className="font-semibold">Versão da Logo</Label>
           <Select value={logosVariant} onValueChange={(v) => onLogosVariantChange?.(v as 'positiva' | 'negativa')}>
