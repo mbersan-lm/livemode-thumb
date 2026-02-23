@@ -129,7 +129,7 @@ const Index = () => {
     <div className="min-h-screen bg-background flex flex-col md:flex-row">
       {/* Main Canvas Area */}
       <div
-        className={`flex items-center justify-center overflow-hidden bg-[hsl(240_10%_6%)] ${isMobile ? '' : 'md:w-1/2'}`}
+        className={`flex items-center justify-center overflow-hidden bg-black ${isMobile ? '' : 'md:w-1/2'}`}
         style={isMobile ? { height: scaledHeight + 8, minHeight: scaledHeight + 8 } : undefined}
       >
         <div className="flex items-center justify-center">

@@ -301,7 +301,7 @@ export const CortesThumbBuilder = ({
   return (
     <div className="h-screen bg-background flex flex-col md:flex-row overflow-hidden">
       <div
-        className={`flex items-center justify-center overflow-hidden bg-[hsl(240_10%_6%)] shrink-0 ${isMobile ? '' : 'md:w-1/2'}`}
+        className={`flex items-center justify-center overflow-hidden bg-black shrink-0 ${isMobile ? '' : 'md:w-1/2'}`}
         style={isMobile ? { height: scaledHeight + 8, minHeight: scaledHeight + 8 } : undefined}
       >
         <div style={{ transform: `scale(${canvasScale})`, transformOrigin: 'center' }}>

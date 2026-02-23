@@ -37,53 +37,67 @@ html, body {
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Google Sans';
+  src: url('/fonts/GoogleSans-VariableFont_GRAD_opsz_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Google Sans';
+  src: url('/fonts/GoogleSans-Italic-VariableFont_GRAD_opsz_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: italic;
+}
+
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
 */
 
 @layer base {
   :root {
-    --background: 240 10% 8%;
-    --foreground: 0 0% 98%;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
 
-    --card: 240 8% 12%;
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 240 8% 12%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 85 100% 60%;
-    --primary-foreground: 240 10% 8%;
+    --primary: 101 61% 44%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 250 60% 50%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 0 1% 34%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 240 6% 18%;
-    --muted-foreground: 240 5% 64%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 1% 45%;
 
-    --accent: 85 100% 60%;
-    --accent-foreground: 240 10% 8%;
+    --accent: 101 61% 44%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 6% 20%;
-    --input: 240 6% 20%;
-    --ring: 85 100% 60%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 101 61% 44%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 240 10% 10%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 85 100% 60%;
-    --sidebar-primary-foreground: 240 10% 8%;
-    --sidebar-accent: 240 6% 18%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 240 6% 20%;
-    --sidebar-ring: 85 100% 60%;
+    --sidebar-background: 0 0% 5%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 101 61% 44%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 18%;
+    --sidebar-ring: 101 61% 44%;
 
     /* Custom tokens for sports graphics */
-    --neon-green: 85 100% 60%;
+    --neon-green: 101 61% 44%;
     --purple-dark: 250 60% 30%;
     --purple-mid: 250 60% 50%;
   }
@@ -96,5 +110,6 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Google Sans', sans-serif;
   }
 }
