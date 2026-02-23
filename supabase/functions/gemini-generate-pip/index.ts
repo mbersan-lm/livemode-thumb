@@ -12,7 +12,17 @@ serve(async (req) => {
   }
 
   try {
-    const { prompt, reference_images } = await req.json();
+    const body = await req.text();
+    console.log("Payload size (bytes):", body.length);
+
+    if (body.length > 5 * 1024 * 1024) {
+      return new Response(
+        JSON.stringify({ error: "Payload muito grande. Reduza o tamanho das imagens de referência." }),
+        { status: 413, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const { prompt, reference_images } = JSON.parse(body);
 
     if (!prompt || typeof prompt !== "string") {
       return new Response(
