@@ -162,7 +162,7 @@ const Index = () => {
           <div>
             <h1 className="text-xl font-bold tracking-tight">Melhores Momentos</h1>
             <p className="text-xs text-muted-foreground mt-1">
-              Thumbnail Generator
+              Gerador de Thumbnails
             </p>
           </div>
           <a href="/cortes" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
@@ -182,9 +182,9 @@ const Index = () => {
           <Tabs defaultValue="template" className="w-full">
             <TabsList className="w-full grid grid-cols-4 h-10">
               <TabsTrigger value="template" className="text-xs">Template</TabsTrigger>
-              <TabsTrigger value="photo" className="text-xs">Photo</TabsTrigger>
-              <TabsTrigger value="teams" className="text-xs">Teams</TabsTrigger>
-              <TabsTrigger value="export" className="text-xs">Export</TabsTrigger>
+              <TabsTrigger value="photo" className="text-xs">Foto</TabsTrigger>
+              <TabsTrigger value="teams" className="text-xs">Times</TabsTrigger>
+              <TabsTrigger value="export" className="text-xs">Exportar</TabsTrigger>
             </TabsList>
 
             <TabsContent value="template" className="mt-5">

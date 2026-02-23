@@ -84,7 +84,7 @@ export const PhotoControls = ({
         <Label htmlFor="photo-upload" className="cursor-pointer">
           <div className="flex items-center justify-center gap-2 p-4 border-2 border-dashed border-border rounded-lg hover:border-primary transition-colors">
             <Upload className="w-5 h-5" />
-            <span>Upload Player Photo</span>
+            <span>Enviar Foto do Jogador</span>
           </div>
           <input 
             id="photo-upload"
@@ -99,7 +99,7 @@ export const PhotoControls = ({
 
       <div className="space-y-4">
         <div>
-          <Label>Position X: {currentTransform.x}px</Label>
+          <Label>Posição X: {currentTransform.x}px</Label>
           <Slider
             value={[currentTransform.x]}
             onValueChange={([x]) => currentOnTransformChange({ x })}
@@ -111,7 +111,7 @@ export const PhotoControls = ({
         </div>
 
         <div>
-          <Label>Position Y: {currentTransform.y}px</Label>
+          <Label>Posição Y: {currentTransform.y}px</Label>
           <Slider
             value={[currentTransform.y]}
             onValueChange={([y]) => currentOnTransformChange({ y })}
@@ -123,7 +123,7 @@ export const PhotoControls = ({
         </div>
 
         <div>
-          <Label>Uniform Zoom: {currentTransform.scale.toFixed(2)}x</Label>
+          <Label>Zoom: {currentTransform.scale.toFixed(2)}x</Label>
           <Slider
             value={[currentTransform.scale]}
             onValueChange={([scale]) => currentOnTransformChange({ scale })}
@@ -136,7 +136,7 @@ export const PhotoControls = ({
       </div>
 
       <div className="pt-4 border-t border-border space-y-2">
-        <h4 className="text-sm font-semibold mb-3">Quick Actions</h4>
+        <h4 className="text-sm font-semibold mb-3">Ações Rápidas</h4>
         <Button
           onClick={() => handleAiExpand(
             currentPhoto,
@@ -152,15 +152,15 @@ export const PhotoControls = ({
           ) : (
             <Expand className="w-4 h-4 mr-2" />
           )}
-          {isExpanding ? 'Expandindo...' : 'AI Expand (1280×720)'}
+          {isExpanding ? 'Expandindo...' : 'Expandir com IA (1280×720)'}
         </Button>
         <Button onClick={() => currentOnTransformChange({ x: 0, y: 0 })} variant="outline" className="w-full">
           <Maximize2 className="w-4 h-4 mr-2" />
-          Center
+          Centralizar
         </Button>
         <Button onClick={currentResetTransform} variant="outline" className="w-full">
           <RotateCcw className="w-4 h-4 mr-2" />
-          Reset All
+          Redefinir Tudo
         </Button>
       </div>
     </div>

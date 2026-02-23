@@ -14,18 +14,14 @@ interface ExportControlsProps {
 export const ExportControls = ({ canvasRef, canvasRefJogoCompleto, matchData }: ExportControlsProps) => {
   const handleExportMelhoresMomentos = async () => {
     if (!canvasRef.current) {
-      toast.error('Canvas not ready');
+      toast.error('Canvas não está pronto');
       return;
     }
 
     try {
-      toast.loading('Generating Melhores Momentos JPG...');
+      toast.loading('Gerando JPG Melhores Momentos...');
       
-      // Wait for fonts to load to avoid reflow
       await document.fonts.ready;
-      
-      // Get the exact position and size of the canvas element
-      const rect = canvasRef.current.getBoundingClientRect();
       
       const canvas = await html2canvas(canvasRef.current, {
         width: 1280,
@@ -44,7 +40,6 @@ export const ExportControls = ({ canvasRef, canvasRefJogoCompleto, matchData }: 
           const canvas = clonedDoc.getElementById('CANVAS_1280x720');
           if (!canvas) return;
           
-          // Neutralizar transforms dos ancestrais
           let parent = canvas.parentElement;
           while (parent) {
             parent.style.transform = 'none';
@@ -53,12 +48,10 @@ export const ExportControls = ({ canvasRef, canvasRefJogoCompleto, matchData }: 
             parent = parent.parentElement;
           }
           
-          // Ajustar alinhamento vertical dos números apenas no export
           const homeScore = clonedDoc.getElementById('HOME_SCORE') as HTMLElement;
           const xChar = clonedDoc.getElementById('X_CHAR') as HTMLElement;
           const awayScore = clonedDoc.getElementById('AWAY_SCORE') as HTMLElement;
           
-          // Aplicar translateY negativo para "levantar" os números
           const verticalAdjust = '-41px';
           
           if (homeScore) {
@@ -86,23 +79,23 @@ export const ExportControls = ({ canvasRef, canvasRefJogoCompleto, matchData }: 
           link.download = filename;
           link.click();
           URL.revokeObjectURL(url);
-          toast.success('Melhores Momentos JPG exported successfully!');
+          toast.success('JPG Melhores Momentos exportado!');
         }
       }, 'image/jpeg', 0.9);
     } catch (error) {
       console.error('Export error:', error);
-      toast.error('Failed to export JPG');
+      toast.error('Falha ao exportar JPG');
     }
   };
 
   const handleExportJogoCompleto = async () => {
     if (!canvasRefJogoCompleto.current) {
-      toast.error('Canvas not ready');
+      toast.error('Canvas não está pronto');
       return;
     }
 
     try {
-      toast.loading('Generating Jogo Completo JPG...');
+      toast.loading('Gerando JPG Jogo Completo...');
       
       await document.fonts.ready;
       
@@ -146,23 +139,23 @@ export const ExportControls = ({ canvasRef, canvasRefJogoCompleto, matchData }: 
           link.download = filename;
           link.click();
           URL.revokeObjectURL(url);
-          toast.success('Jogo Completo JPG exported successfully!');
+          toast.success('JPG Jogo Completo exportado!');
         }
       }, 'image/jpeg', 0.9);
     } catch (error) {
       console.error('Export error:', error);
-      toast.error('Failed to export Jogo Completo JPG');
+      toast.error('Falha ao exportar JPG Jogo Completo');
     }
   };
 
   return (
     <div className="space-y-4">
       <div className="p-4 bg-muted rounded-lg">
-        <p className="text-sm text-muted-foreground mb-2">Export Settings</p>
+        <p className="text-sm text-muted-foreground mb-2">Configurações de Exportação</p>
         <ul className="text-sm space-y-1">
-          <li>• Resolution: 1280 × 720 px</li>
-          <li>• Format: JPG</li>
-          <li>• Quality: 90%</li>
+          <li>• Resolução: 1280 × 720 px</li>
+          <li>• Formato: JPG</li>
+          <li>• Qualidade: 90%</li>
         </ul>
       </div>
 
@@ -173,7 +166,7 @@ export const ExportControls = ({ canvasRef, canvasRefJogoCompleto, matchData }: 
           size="lg"
         >
           <Download className="w-4 h-4 mr-2" />
-          Export Melhores Momentos
+          Exportar Melhores Momentos
         </Button>
 
         <Button 
@@ -183,7 +176,7 @@ export const ExportControls = ({ canvasRef, canvasRefJogoCompleto, matchData }: 
           variant="secondary"
         >
           <Download className="w-4 h-4 mr-2" />
-          Export Jogo Completo
+          Exportar Jogo Completo
         </Button>
       </div>
     </div>
