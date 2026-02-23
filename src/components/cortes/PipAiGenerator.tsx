@@ -6,6 +6,29 @@ import { Loader2, Sparkles, Paperclip, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+const compressImage = (dataUrl: string, maxSize = 512, quality = 0.7): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      let { width, height } = img;
+      if (width > maxSize || height > maxSize) {
+        const ratio = Math.min(maxSize / width, maxSize / height);
+        width = Math.round(width * ratio);
+        height = Math.round(height * ratio);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return reject(new Error('Canvas context failed'));
+      ctx.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = () => reject(new Error('Failed to load image'));
+    img.src = dataUrl;
+  });
+};
+
 interface PipAiGeneratorProps {
   onImageGenerated: (base64DataUrl: string) => void;
 }
@@ -22,9 +45,14 @@ export const PipAiGenerator = ({ onImageGenerated }: PipAiGeneratorProps) => {
 
     Array.from(files).forEach((file) => {
       const reader = new FileReader();
-      reader.onload = (ev) => {
+      reader.onload = async (ev) => {
         const dataUrl = ev.target?.result as string;
-        setReferenceImages((prev) => [...prev, dataUrl]);
+        try {
+          const compressed = await compressImage(dataUrl);
+          setReferenceImages((prev) => [...prev, compressed]);
+        } catch {
+          setReferenceImages((prev) => [...prev, dataUrl]);
+        }
       };
       reader.readAsDataURL(file);
     });
