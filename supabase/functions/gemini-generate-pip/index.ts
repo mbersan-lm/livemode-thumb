@@ -6,6 +6,56 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
+
+async function describeReferenceImages(
+  images: string[],
+  apiKey: string
+): Promise<string> {
+  const contentParts: any[] = [
+    {
+      type: "text",
+      text: "Describe these reference images in detail. Focus on: visual style, dominant colors, composition, objects/subjects, lighting, atmosphere, textures, and mood. Be very detailed and specific. Return ONLY the description text, nothing else.",
+    },
+  ];
+
+  for (const img of images) {
+    contentParts.push({
+      type: "image_url",
+      image_url: { url: img },
+    });
+  }
+
+  const response = await fetch(GATEWAY_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "google/gemini-2.5-flash",
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are an image analysis assistant. Describe images in rich visual detail for use as reference in image generation. Focus on style, colors, composition, subjects, lighting, and atmosphere.",
+        },
+        { role: "user", content: contentParts },
+      ],
+    }),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    console.error("Stage 1 (describe) error:", response.status, text);
+    throw new Error(`Stage 1 failed: ${response.status}`);
+  }
+
+  const data = await response.json();
+  const description = data.choices?.[0]?.message?.content || "";
+  return description;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -26,51 +76,51 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    // Build user content parts
-    const contentParts: any[] = [
-      {
-        type: "text",
-        text: `Generate a high-quality image in 16:9 aspect ratio (1280x720 pixels). The image should be photographic/realistic style, vivid colors, high detail. Do NOT include any text or watermarks in the image.\n\nPrompt: ${prompt}`,
-      },
-    ];
+    const hasRefs = reference_images && Array.isArray(reference_images) && reference_images.length > 0;
 
-    // Add reference images if provided
-    if (reference_images && Array.isArray(reference_images)) {
-      for (const img of reference_images) {
-        if (typeof img === "string" && img.length > 0) {
-          contentParts.push({
-            type: "image_url",
-            image_url: { url: img },
-          });
-        }
+    console.log("Payload size (bytes):", JSON.stringify({ prompt, reference_images }).length);
+
+    // Stage 1: Describe reference images (if any)
+    let referenceDescription = "";
+    if (hasRefs) {
+      console.log(`Describing ${reference_images.length} reference images...`);
+      try {
+        referenceDescription = await describeReferenceImages(reference_images, LOVABLE_API_KEY);
+        console.log("Reference description length:", referenceDescription.length);
+      } catch (e) {
+        console.error("Stage 1 error:", e);
+        // Continue without description rather than failing entirely
       }
     }
 
-    const response = await fetch(
-      "https://ai.gateway.lovable.dev/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-3-pro-image-preview",
-          messages: [
-            {
-              role: "system",
-              content:
-                "You are an image generation assistant. Generate exactly one image based on the user's description. The image MUST be in 16:9 aspect ratio. Make it photographic, high quality, vivid and detailed. Do not add any text overlays or watermarks.",
-            },
-            {
-              role: "user",
-              content: contentParts,
-            },
-          ],
-          modalities: ["image", "text"],
-        }),
-      }
-    );
+    // Stage 2: Generate image using TEXT-ONLY prompt
+    let finalPrompt = prompt;
+    if (referenceDescription) {
+      finalPrompt = `${prompt}\n\nUse the following visual reference as inspiration for the style, colors, composition and mood:\n${referenceDescription}`;
+    }
+
+    const response = await fetch(GATEWAY_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-3-pro-image-preview",
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are an image generation assistant. Generate exactly one image based on the user's description. The image MUST be in 16:9 aspect ratio. Make it photographic, high quality, vivid and detailed. Do not add any text overlays or watermarks.",
+          },
+          {
+            role: "user",
+            content: `Generate a high-quality image in 16:9 aspect ratio (1280x720 pixels). The image should be photographic/realistic style, vivid colors, high detail. Do NOT include any text or watermarks in the image.\n\nPrompt: ${finalPrompt}`,
+          },
+        ],
+        modalities: ["image", "text"],
+      }),
+    });
 
     if (!response.ok) {
       if (response.status === 429) {
@@ -86,7 +136,7 @@ serve(async (req) => {
         );
       }
       const text = await response.text();
-      console.error("AI gateway error:", response.status, text);
+      console.error("Stage 2 (generate) error:", response.status, text);
       return new Response(
         JSON.stringify({ error: "Erro no gateway de IA" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -97,6 +147,7 @@ serve(async (req) => {
     const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
 
     if (!imageUrl) {
+      console.error("No image found. Response:", JSON.stringify(data).substring(0, 500));
       return new Response(
         JSON.stringify({ error: "Nenhuma imagem foi gerada. Tente outro prompt." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
