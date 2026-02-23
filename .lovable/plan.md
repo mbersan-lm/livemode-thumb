@@ -1,49 +1,45 @@
 
+# Adicionar placar menor (entre parenteses) nas thumbs de Melhores Momentos
 
-# Tornar "Roda de Bobo" editavel e garantir edicao para todos os programas
+## O que sera feito
 
-## Problema
-
-O programa "Roda de Bobo" esta fixo no codigo (hardcoded) com uma rota propria (`/cortes/roda-de-bobo`) e um componente dedicado. Por isso, ele nao aparece no banco de dados e nao tem os botoes de editar/excluir. A solucao e migra-lo para o banco de dados para que seja tratado igualmente a todos os outros programas.
+Adicionar um segundo placar menor, exibido entre parenteses, logo abaixo do placar principal em todas as thumbnails de "Melhores Momentos" (todos os templates). Tambem sera criado um switch on/off para controlar a visibilidade desse placar menor.
 
 ## Alteracoes
 
-### 1. Inserir "Roda de Bobo" no banco de dados
+### 1. Tipo `MatchData` — `src/types/thumbnail.ts`
 
-Criar uma migration que insere o programa com seus valores conhecidos:
-- name: `Roda de Bobo`
-- text_color: `#F1E8D5`
-- stroke_color: `#0C0C20`
-- pip_border_color: `#D02046`
-- highlight_color: `#D02046`
-- bg_url, logos_url, font_url: `null` (usa os assets locais fixos do projeto)
+Adicionar campos para o placar menor:
+- `homeScoreSmall: number` (default 0)
+- `awayScoreSmall: number` (default 0)
+- `showSmallScore: boolean` (default false)
 
-### 2. Remover rota hardcoded
+### 2. Estado inicial — `src/pages/Index.tsx`
 
-**Arquivo: `src/App.tsx`**
-- Remover a rota dedicada `/cortes/roda-de-bobo` que aponta para o componente `Cortes`
-- A rota generica `/cortes/:id` ja cobre esse caso
+Atualizar o estado inicial de `matchData` com os novos campos:
+- `homeScoreSmall: 0`
+- `awayScoreSmall: 0`
+- `showSmallScore: false`
 
-### 3. Atualizar `src/pages/CortesProgramBuilder.tsx`
+### 3. Controles — `src/components/controls/TeamControls.tsx`
 
-- Adicionar logica condicional para o nome "Roda de Bobo":
-  - `allowJogoV1={true}` (prop que so esse programa usa)
-  - `logosNegativeImage="/cortes/logos-corte-negativo.png"` (logo negativa especifica)
-- Isso segue o mesmo padrao ja usado para "Geral CazeTv", "Live CazeTv", etc.
+- Adicionar um componente `Switch` (on/off) com label "Placar menor" abaixo dos inputs de score existentes
+- Quando ativado, exibir dois inputs numericos lado a lado para `homeScoreSmall` e `awayScoreSmall`
+- Os inputs ficam ocultos quando o switch esta desligado
 
-### 4. Remover card hardcoded do hub
+### 4. Canvas — `src/components/ThumbnailCanvas.tsx`
 
-**Arquivo: `src/pages/CortesHub.tsx`**
-- Remover o bloco do `ProgramCard` fixo de "Roda de Bobo"
-- O programa agora vira do banco como qualquer outro e ja tera os botoes de editar e excluir automaticamente
+- Quando `matchData.showSmallScore` for `true`, renderizar abaixo do bloco de scores principal um texto centralizado no formato `(homeScoreSmall x awayScoreSmall)`
+- O texto usara a mesma fontFamily do template, porem com tamanho reduzido (cerca de 50-60% do `scoreFontSize`)
+- Cor branca, centralizado horizontalmente em relacao ao bloco de scores
 
-### 5. Arquivo `src/pages/Cortes.tsx` (opcional)
+### 5. Nenhuma alteracao no `ThumbnailCanvasJogoCompleto`
 
-- Pode ser removido, pois nao sera mais referenciado
+O canvas de "Jogo Completo" nao exibe placar, portanto nao precisa de alteracao.
 
-## Resultado
+## Detalhes tecnicos
 
-- "Roda de Bobo" aparecera na lista vindo do banco, com botoes de editar e excluir
-- Todos os programas novos cadastrados ja tem edicao (isso ja funciona)
-- A experiencia e uniforme para todos os programas
-
+- O `Switch` sera importado de `@/components/ui/switch` (ja existe no projeto)
+- O placar menor sera renderizado como um `div` adicional posicionado logo abaixo do flex de scores, usando `flex-col` para empilhar os dois blocos
+- O tamanho da fonte sera calculado a partir do `scoreFontSize` do template (ex: `140px` -> ~`70px` para o placar menor)
+- O "x" do placar menor usara a mesma cor do "x" principal (`xColor`)
