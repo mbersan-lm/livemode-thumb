@@ -1,48 +1,24 @@
 
 
-# Corrigir modelo "Com PIP dividido" — UMA moldura com DUAS fotos dentro
+# Adicionar controles de upload de imagem PIP ao modelo "Com PIP dividido"
 
-## Problema atual
+## Problema
 
-O modelo atual renderiza **duas molduras PIP separadas** (cada uma com sua borda). O correto e ter **uma unica moldura PIP** (como o modelo "Com PIP") e dentro dela encaixar **duas fotos lado a lado**.
+O modelo "Com PIP dividido" nao possui campos de upload para as duas imagens PIP. O bloco de controles do modelo `pip` so aparece quando `thumbModel === 'pip'`, e o bloco do `jogo-pip-duplo` so aparece quando `thumbModel === 'jogo-pip-duplo'`. O resultado e que ao selecionar "Com PIP dividido", nao ha como fazer upload das fotos do PIP.
 
-## Mudancas
+## Solucao
 
-### 1. `src/components/cortes/CortesCanvas.tsx` (preview)
+### Arquivo: `src/components/cortes/CortesControls.tsx`
 
-Substituir os dois blocos `showPipDividido` (linhas 167-210) por uma unica moldura PIP com duas imagens dentro:
+Adicionar um novo bloco de controles exclusivo para `thumbModel === 'pip-dividido'`, logo apos o bloco do modelo `pip` (apos linha 895). O bloco contera:
 
-- Uma unica `<div>` com borda, posicao e rotacao identicas ao PIP normal
-- Dentro: dois containers lado a lado (cada um com 50% da largura), cada um com `overflow: hidden`
-- Foto esquerda (`pipImage`) no container da esquerda com seus controles de transform
-- Foto direita (`pip2Image`) no container da direita com seus controles de transform
+1. **Imagem PIP esquerda** — Upload usando `onPipUpload` + controles de ajuste (X, Y, Zoom) usando `pipTransform`/`onPipTransformChange`
+2. **Imagem PIP direita** — Upload usando `onPip2Upload` + controles de ajuste (X, Y, Zoom) usando `pip2Transform`/`onPip2TransformChange`
+3. **Moldura PIP** — Controles de posicao e tamanho da moldura unica (`pipFrame`/`onPipFrameChange`), identicos aos do modelo `pip` normal
 
-### 2. `src/components/cortes/CortesControls.tsx` (export)
+Os labels serao "Imagem PIP esquerda" e "Imagem PIP direita" para deixar claro que sao as duas fotos dentro da moldura unica.
 
-Substituir a logica de export do `showPipDividido` (linhas 466-513) que desenha dois frames separados por:
+### Nenhum outro arquivo precisa ser alterado
 
-- Um unico clip retangular (moldura PIP)
-- Dentro: desenhar a foto esquerda clippada na metade esquerda do frame
-- Depois: desenhar a foto direita clippada na metade direita do frame
-- Uma unica borda ao redor de todo o frame
-- Adicionar uma linha divisoria vertical no centro (mesma cor da borda)
-
-### 3. `src/components/cortes/CortesControls.tsx` (controles UI)
-
-Atualizar os labels e remover os controles de "Moldura dos PIPs (proporcional)" que sincronizavam dois frames separados. Manter apenas:
-
-- Upload foto esquerda + ajustes (X, Y, Zoom)
-- Upload foto direita + ajustes (X, Y, Zoom)  
-- Controles de moldura unica (posicao, tamanho) — reutilizar os mesmos controles de frame do PIP normal
-
-### 4. `src/components/cortes/CortesThumbBuilder.tsx`
-
-Remover `pip-dividido` da condicao de sincronizacao de frames (linha 365), ja que agora usa apenas `pipFrame` como moldura unica (nao precisa mais de `pip2Frame`).
-
-## Resultado visual
-
-- Uma unica moldura PIP com borda colorida e rotacao -1.2deg
-- Dentro da moldura: duas fotos divididas ao meio por uma linha vertical
-- Pessoa recortada no lado direito (igual ao modelo "Com PIP")
-- Texto, gradiente, logos — identico ao "Com PIP"
+O canvas (preview) e o export ja funcionam corretamente com o modelo pip-dividido — o problema era apenas a ausencia dos campos de upload na interface de controles.
 
