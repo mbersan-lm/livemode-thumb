@@ -1,5 +1,5 @@
 import { CortesThumbBuilder } from '@/components/cortes/CortesThumbBuilder';
 
-const Cortes = () => <CortesThumbBuilder programName="Roda de Bobo" backUrl="/cortes" allowJogoV1={true} />;
+const Cortes = () => <CortesThumbBuilder programName="Roda de Bobo" backUrl="/cortes" allowJogoV1={true} logosNegativeImage="/cortes/logos-corte-negativo.png" />;
 
 export default Cortes;

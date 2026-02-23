@@ -27,6 +27,7 @@ interface CortesThumbBuilderProps {
   programName?: string;
   bgImage?: string;
   logosImage?: string;
+  logosNegativeImage?: string;
   divisoriaImage?: string;
   textColor?: string;
   strokeColor?: string;
@@ -42,6 +43,7 @@ export const CortesThumbBuilder = ({
   programName = 'Roda de Bobo',
   bgImage,
   logosImage,
+  logosNegativeImage,
   divisoriaImage,
   textColor,
   strokeColor,
@@ -82,6 +84,8 @@ export const CortesThumbBuilder = ({
   const [pip2Frame, setPip2Frame] = useState(DEFAULT_PIP2_FRAME);
   const [pip2BaseScale, setPip2BaseScale] = useState(1);
   const [customBgImage, setCustomBgImage] = useState<string | null>(null);
+  const [logosVariant, setLogosVariant] = useState<'positiva' | 'negativa'>('positiva');
+  const activeLogosImage = logosVariant === 'negativa' && logosNegativeImage ? logosNegativeImage : logosImage;
 
   const handleBgUpload = (file: File) => {
     const reader = new FileReader();
@@ -293,7 +297,7 @@ export const CortesThumbBuilder = ({
             pipFrame={pipFrame}
             pip2Frame={pip2Frame}
             bgImage={customBgImage || bgImage}
-            logosImage={logosImage}
+            logosImage={activeLogosImage}
             divisoriaImage={divisoriaImage}
             textColor={textColor}
             strokeColor={strokeColor}
@@ -385,6 +389,9 @@ export const CortesThumbBuilder = ({
             onBgUpload={handleBgUpload}
             onClear={handleClear}
             canvasRef={canvasRef}
+            logosVariant={logosVariant}
+            onLogosVariantChange={setLogosVariant}
+            hasLogosNegative={!!logosNegativeImage}
             textBoxHeight={textBoxHeight}
             onTextBoxHeightChange={setTextBoxHeight}
             currentCanvasProps={{
@@ -405,7 +412,7 @@ export const CortesThumbBuilder = ({
               pipFrame,
               pip2Frame,
               bgImage: customBgImage || bgImage,
-              logosImage,
+              logosImage: activeLogosImage,
               divisoriaImage,
               textColor,
               strokeColor,
