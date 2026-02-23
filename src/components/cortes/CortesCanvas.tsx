@@ -425,9 +425,14 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           />
         )}
 
-        {/* Layer 3f: Thumb Principal — 4 cutouts in a row */}
+        {/* Layer 3f: Thumb Principal — 4 cutouts in 2x2 quadrants */}
         {showThumbPrincipal && (() => {
-          const positions = [0.125, 0.375, 0.625, 0.875];
+          const quadrants = [
+            { left: '0%', top: '0%' },    // top-left
+            { left: '50%', top: '0%' },   // top-right
+            { left: '0%', top: '50%' },   // bottom-left
+            { left: '50%', top: '50%' },  // bottom-right
+          ];
           const cutouts = [
             { src: personCutout, t: personTransform },
             { src: person2Cutout, t: person2Transform },
@@ -435,21 +440,32 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
             { src: person4Cutout, t: person4Transform },
           ];
           return cutouts.map((c, i) => c.src ? (
-            <img
+            <div
               key={`tp-${i}`}
-              src={c.src}
-              alt=""
               style={{
                 position: 'absolute',
-                left: `${positions[i] * 100}%`,
-                bottom: 0,
-                height: '95%',
-                width: 'auto',
+                left: quadrants[i].left,
+                top: quadrants[i].top,
+                width: '50%',
+                height: '50%',
+                overflow: 'hidden',
                 zIndex: 3,
-                transform: `translateX(-50%) translate(${c.t.x}px, ${c.t.y}px) scale(${c.t.scale}) rotate(${c.t.rotation}deg)`,
-                transformOrigin: 'center bottom',
               }}
-            />
+            >
+              <img
+                src={c.src}
+                alt=""
+                style={{
+                  position: 'absolute',
+                  left: '50%',
+                  top: '50%',
+                  height: '100%',
+                  width: 'auto',
+                  transform: `translate(-50%, -50%) translate(${c.t.x}px, ${c.t.y}px) scale(${c.t.scale}) rotate(${c.t.rotation}deg)`,
+                  transformOrigin: 'center center',
+                }}
+              />
+            </div>
           ) : null);
         })()}
 

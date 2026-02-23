@@ -796,29 +796,39 @@ export const CortesControls = ({
         drawPipFrame(pip2Img, pip2FrameVal, pip2T, 1.2);
       }
 
-      // ── Layer 3f: Thumb Principal — 4 cutouts in a row ──────────────────
+      // ── Layer 3f: Thumb Principal — 4 cutouts in 2x2 quadrants ──────────
       if (showThumbPrincipal) {
-        const positions = [0.125, 0.375, 0.625, 0.875];
+        const quadrants = [
+          { x: 0, y: 0 },         // top-left
+          { x: W / 2, y: 0 },     // top-right
+          { x: 0, y: H / 2 },     // bottom-left
+          { x: W / 2, y: H / 2 }, // bottom-right
+        ];
         const cutouts = [
           { img: personImg, t: props.personTransform },
           { img: person2Img, t: props.person2Transform },
           { img: person3Img, t: props.person3Transform ?? { x: 0, y: 0, scale: 1, rotation: 0 } },
           { img: person4Img, t: props.person4Transform ?? { x: 0, y: 0, scale: 1, rotation: 0 } },
         ];
+        const qW = W / 2;
+        const qH = H / 2;
         for (let i = 0; i < cutouts.length; i++) {
           const c = cutouts[i];
           if (!c.img) continue;
-          const bH = H * 0.95;
-          const aspect = c.img.naturalWidth / c.img.naturalHeight;
-          const bW = bH * aspect;
-          const anchorX = W * positions[i];
-          const cx = anchorX + c.t.x;
-          const cy = H - c.t.y; // bottom-anchored
+          const q = quadrants[i];
           ctx.save();
+          ctx.beginPath();
+          ctx.rect(q.x, q.y, qW, qH);
+          ctx.clip();
+          const aspect = c.img.naturalWidth / c.img.naturalHeight;
+          const drawH = qH;
+          const drawW = drawH * aspect;
+          const cx = q.x + qW / 2 + c.t.x;
+          const cy = q.y + qH / 2 + c.t.y;
           ctx.translate(cx, cy);
           ctx.rotate((c.t.rotation * Math.PI) / 180);
           ctx.scale(c.t.scale, c.t.scale);
-          ctx.drawImage(c.img, -bW / 2, -bH, bW, bH);
+          ctx.drawImage(c.img, -drawW / 2, -drawH / 2, drawW, drawH);
           ctx.restore();
         }
       }
