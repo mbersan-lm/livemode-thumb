@@ -152,7 +152,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
                     fontFamily: config.fontFamily,
                     fontSize: `${Math.round(parseInt(config.scoreFontSize) * 0.245)}px`,
                     lineHeight: '1',
-                    marginTop: '-14px',
+                    marginTop: '4px',
                   }}
                 >
                   <span>({matchData.homeScoreSmall})</span>
