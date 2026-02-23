@@ -54,6 +54,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
      highlightColor = '#D02046', customFontFamily = "'Clash Grotesk', sans-serif",
      textBoxHeight = 38 }, ref) => {
   const showPip = thumbModel === 'pip';
+  const showPipDividido = thumbModel === 'pip-dividido';
   const showPerson2 = thumbModel === 'duas-pessoas';
   const showJogoV1 = thumbModel === 'jogo-v1';
   const showJogoPipDuplo = thumbModel === 'jogo-pip-duplo';
@@ -163,7 +164,53 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           </div>
         )}
 
-        {/* Layer 3: Person cutout (right side) — pip & duas-pessoas models */}
+        {/* Layer 2: PIP dividido — two PIP frames side by side */}
+        {showPipDividido && pipImage && (
+          <div
+            style={{
+              position: 'absolute',
+              left: `${pipFrame.x}%`,
+              top: `${pipFrame.y}%`,
+              width: `${pipFrame.width}%`,
+              height: `${pipFrame.height}%`,
+              border: `10px solid ${pipBorderColor}`,
+              transform: 'rotate(-1.2deg)',
+              overflow: 'hidden',
+              zIndex: 2,
+            }}
+          >
+            <img src={pipImage} alt="" style={{
+              position: 'absolute', left: '50%', top: '50%',
+              width: '100%', height: '100%', objectFit: 'contain',
+              transform: `translate(-50%, -50%) translate(${pipTransform.x}px, ${pipTransform.y}px) scale(${pipTransform.scale}) rotate(${pipTransform.rotation}deg)`,
+              transformOrigin: 'center center',
+            }} />
+          </div>
+        )}
+        {showPipDividido && pip2Image && (
+          <div
+            style={{
+              position: 'absolute',
+              left: `${pip2Frame.x}%`,
+              top: `${pip2Frame.y}%`,
+              width: `${pip2Frame.width}%`,
+              height: `${pip2Frame.height}%`,
+              border: `10px solid ${pipBorderColor}`,
+              transform: 'rotate(1.2deg)',
+              overflow: 'hidden',
+              zIndex: 2,
+            }}
+          >
+            <img src={pip2Image} alt="" style={{
+              position: 'absolute', left: '50%', top: '50%',
+              width: '100%', height: '100%', objectFit: 'contain',
+              transform: `translate(-50%, -50%) translate(${pip2Transform.x}px, ${pip2Transform.y}px) scale(${pip2Transform.scale}) rotate(${pip2Transform.rotation}deg)`,
+              transformOrigin: 'center center',
+            }} />
+          </div>
+        )}
+
+        {/* Layer 3: Person cutout (right side) — pip, pip-dividido & duas-pessoas models */}
         {!showMeioAMeio && !showSoLettering && !showJogoV1 && !showJogoPipDuplo && personCutout && (
           <img
             src={personCutout}

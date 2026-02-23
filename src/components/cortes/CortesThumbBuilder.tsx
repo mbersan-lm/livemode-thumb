@@ -21,7 +21,7 @@ const DEFAULT_DUPLO_PIP_HEIGHT = 55.0;
 const DEFAULT_PIP1_DUPLO_FRAME = { x: DEFAULT_DUPLO_PIP_X, y: DEFAULT_DUPLO_PIP_Y, width: DEFAULT_DUPLO_PIP_WIDTH, height: DEFAULT_DUPLO_PIP_HEIGHT };
 const DEFAULT_PIP2_FRAME = { x: 100 - DEFAULT_DUPLO_PIP_X - DEFAULT_DUPLO_PIP_WIDTH, y: DEFAULT_DUPLO_PIP_Y, width: DEFAULT_DUPLO_PIP_WIDTH, height: DEFAULT_DUPLO_PIP_HEIGHT };
 
-export type ThumbModel = 'pip' | 'duas-pessoas' | 'meio-a-meio' | 'so-lettering' | 'jogo-v1' | 'jogo-pip-duplo';
+export type ThumbModel = 'pip' | 'pip-dividido' | 'duas-pessoas' | 'meio-a-meio' | 'so-lettering' | 'jogo-v1' | 'jogo-pip-duplo';
 
 interface CortesThumbBuilderProps {
   programName?: string;
@@ -362,7 +362,7 @@ export const CortesThumbBuilder = ({
             onPerson2TransformChange={(t) => setPerson2Transform((prev) => ({ ...prev, ...t }))}
             onPerson3TransformChange={(t) => setPerson3Transform((prev) => ({ ...prev, ...t }))}
             onPipFrameChange={(f) => {
-              if (thumbModel === 'jogo-pip-duplo') {
+              if (thumbModel === 'jogo-pip-duplo' || thumbModel === 'pip-dividido') {
                 // Sincroniza width, height, y; pip2.x é sempre espelhado
                 setPipFrame((pip1Prev) => {
                   const pip1Next = { ...pip1Prev, ...f };
