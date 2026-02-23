@@ -95,6 +95,14 @@ serve(async (req) => {
           { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+      if (response.status === 400) {
+        const text = await response.text();
+        console.error("AI gateway 400:", text);
+        return new Response(
+          JSON.stringify({ error: "Não foi possível processar as imagens de referência. Tente com outras imagens ou sem referências." }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
       const text = await response.text();
       console.error("AI gateway error:", response.status, text);
       return new Response(
@@ -104,9 +112,42 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    console.log("Response structure:", JSON.stringify(Object.keys(data)));
+
+    // Try multiple paths to find the generated image
+    let imageUrl: string | undefined;
+
+    // Path 1: message.images array
+    imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+
+    // Path 2: content parts with inline image
+    if (!imageUrl) {
+      const content = data.choices?.[0]?.message?.content;
+      if (Array.isArray(content)) {
+        for (const part of content) {
+          if (part.type === "image_url" && part.image_url?.url) {
+            imageUrl = part.image_url.url;
+            break;
+          }
+          if (part.type === "image" && part.image_url?.url) {
+            imageUrl = part.image_url.url;
+            break;
+          }
+          if (part.inline_data?.data) {
+            imageUrl = `data:${part.inline_data.mime_type || "image/png"};base64,${part.inline_data.data}`;
+            break;
+          }
+        }
+      }
+    }
+
+    // Path 3: images at top level of choice
+    if (!imageUrl) {
+      imageUrl = data.choices?.[0]?.images?.[0]?.url;
+    }
 
     if (!imageUrl) {
+      console.error("No image found in response. Full response:", JSON.stringify(data).substring(0, 500));
       return new Response(
         JSON.stringify({ error: "Nenhuma imagem foi gerada. Tente outro prompt." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
