@@ -1,81 +1,30 @@
 
-# Novo Modelo: Thumb Principal (4 fotos em linha + lettering)
+# Agrupar os 4 Quadrantes em um unico menu
 
-## Resumo
-Criar um novo modelo de thumbnail chamado "Thumb Principal" que exibe 4 pessoas recortadas (com remocao de fundo automatica) posicionadas em linha horizontal sobre o KV enviado, com lettering dinamico na parte inferior.
+## Objetivo
+Agrupar os 4 quadrantes do modelo **Thumb Principal** dentro de um unico card/menu colapsavel, em vez de exibi-los como 4 blocos separados na interface.
 
-## Layout (1280x720)
+## Mudancas
 
-```text
-+----------------------------------------------+
-|            KV de fundo (THUMB_GERAL.jpg)      |
-|                                               |
-|  [Foto1]  [Foto2]  [Foto3]  [Foto4]          |
-|  ~25%     ~25%     ~25%     ~25%              |
-|  (ancoradas no bottom do canvas)              |
-|                                               |
-|  ========= GRADIENTE INFERIOR =========       |
-|  [Logos]                                      |
-|       TEXTO AUTO-FIT (lettering)              |
-+----------------------------------------------+
-```
+### Arquivo: `src/components/cortes/CortesControls.tsx`
 
-## Arquivos alterados
+**Estrutura atual (linhas ~1445-1500):**
+Os 4 quadrantes sao renderizados como blocos individuais (`<div>`) diretamente no fluxo principal dos controles, sem agrupamento visual.
 
-### 1. Novo asset: `public/cortes/bg-thumb-principal.jpg`
-- Copiar a imagem enviada (`THUMB_GERAL.jpg`) para uso como fundo padrao deste modelo
+**Nova estrutura:**
+Envolver os 4 quadrantes em um componente `Collapsible` (ja importado no arquivo) com:
 
-### 2. `src/components/cortes/CortesThumbBuilder.tsx`
-- Adicionar `'thumb-principal'` ao tipo `ThumbModel`
-- Adicionar estado para `person4Cutout`, `person4Transform`, `isRemovingBg4`
-- Adicionar handler `handlePerson4Upload` (com remocao de fundo via PhotoRoom)
-- Adicionar `DEFAULT_PERSON4_TRANSFORM`
-- Passar `person4Cutout`, `person4Transform`, `isRemovingBg4` para `CortesCanvas` e `CortesControls`
-- Limpar `person4Cutout` no `handleClear`
-- Adicionar prop `allowThumbPrincipal` para controlar visibilidade no seletor
+1. **Cabecalho do menu**: Um trigger colapsavel com o titulo "Quadrantes" e o icone de seta (ChevronDown), seguindo o mesmo padrao visual dos outros menus colapsaveis do builder.
 
-### 3. `src/components/cortes/CortesCanvas.tsx` (preview)
-- Adicionar props `person4Cutout` e `person4Transform`
-- Adicionar `showThumbPrincipal = thumbModel === 'thumb-principal'`
-- Renderizar 4 pessoas recortadas em linha:
-  - Foto 1: centroX ~16% da largura
-  - Foto 2: centroX ~37%
-  - Foto 3: centroX ~63%
-  - Foto 4: centroX ~84%
-  - Cada foto: height ~95% do canvas, ancorada no bottom
-  - Controles individuais de X, Y, Zoom e Rotacao
-- Excluir este modelo da renderizacao de pessoa do modelo "pip"/"duas-pessoas" (adicionar `!showThumbPrincipal` nas condicoes)
+2. **Conteudo interno**: Os 4 cards de quadrante (que ja existem) ficam dentro do `CollapsibleContent`, organizados em um `space-y-3` para espa amento entre eles.
 
-### 4. `src/components/cortes/CortesControls.tsx` (controles + export)
-**Controles:**
-- Adicionar `'thumb-principal'` ao seletor de modelos (visivel quando `allowAllModels` ou nova prop)
-- Adicionar 4 blocos de upload de foto (reutilizando o padrao existente: upload + removendo fundo + sliders de ajuste)
-- Adicionar `person4InputRef`, `showPerson4Adjust` states
-- Receber props: `person4Cutout`, `person4Transform`, `onPerson4Upload`, `onPerson4TransformChange`, `isRemovingBg4`
+3. **Estilo do container**: Borda arredondada com fundo sutil (`rounded-lg border border-border bg-muted/20 p-3`), consistente com o restante da UI.
 
-**Export (Canvas API):**
-- Adicionar bloco `if (showThumbPrincipal)` na funcao `handleExport`
-- Carregar `person4Img` em paralelo com as demais imagens
-- Desenhar as 4 pessoas em linha, cada uma com centroX nos pontos definidos acima
-- Reutilizar gradiente, logos e `drawAutoFitText` existentes
+A logica interna de cada quadrante (upload de foto, toggle de visibilidade, sliders de ajuste) permanece identica -- apenas o agrupamento visual muda.
 
-### 5. `src/pages/CortesProgramBuilder.tsx`
-- Ativar o modelo para os programas "Geral CazeTv" e "Geral CazeTv Brasil" (passando `allowThumbPrincipal={true}`)
+## Detalhes tecnicos
 
-## Posicionamento das 4 fotos (detalhes tecnicos)
-
-Cada foto recortada:
-- height: 95% do canvas (684px)
-- largura: automatica pelo aspect ratio da imagem
-- ancorada no bottom (base da imagem alinhada com a base do canvas)
-- centroX distribuido uniformemente: 16%, 37%, 63%, 84% da largura
-
-No preview (HTML/CSS), cada foto sera renderizada como `<img>` com `position: absolute`, `bottom: 0`, `height: 95%`, e `left` calculado para centrar no ponto adequado.
-
-No export (Canvas API), a funcao `drawJogoCutout` sera reutilizada/adaptada para desenhar cada pessoa no posicionamento correto.
-
-## O que NAO muda
-- Nenhum modelo existente (pip, pip-dividido, duas-pessoas, meio-a-meio, so-lettering, jogo-v1, jogo-pip-duplo)
-- Nenhuma logica de remocao de fundo ou upscale
-- Nenhuma edge function
-- Nenhuma cor, fonte ou estilo base
+- Adicionar um estado `const [showQuadrantsMenu, setShowQuadrantsMenu] = useState(true)` para controlar se o menu inicia aberto ou fechado.
+- Usar os componentes `Collapsible`, `CollapsibleTrigger` e `CollapsibleContent` que ja estao importados no arquivo.
+- Nenhuma nova dependencia necessaria.
+- Apenas o arquivo `CortesControls.tsx` sera modificado.
