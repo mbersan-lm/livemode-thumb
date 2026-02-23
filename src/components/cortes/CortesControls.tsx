@@ -408,6 +408,7 @@ interface CortesControlsProps {
   onPipFromBase64?: (base64: string) => void;
   quadrantVisibility?: boolean[];
   onQuadrantVisibilityChange?: (v: boolean[]) => void;
+  onQuadrantPresetSelect?: (idx: number, url: string) => void;
 }
 
 export const CortesControls = ({

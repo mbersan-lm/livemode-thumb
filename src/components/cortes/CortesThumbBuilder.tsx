@@ -246,7 +246,6 @@ export const CortesThumbBuilder = ({
     } catch (err) {
       console.error('Preset load error:', err);
     }
-    reader.readAsDataURL(file);
   };
 
   const handleUpscalePerson = async () => {
