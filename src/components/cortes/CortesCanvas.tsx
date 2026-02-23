@@ -427,7 +427,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
 
         {/* Layer 3f: Thumb Principal — 4 cutouts in a row */}
         {showThumbPrincipal && (() => {
-          const positions = [0.16, 0.37, 0.63, 0.84];
+          const positions = [0.125, 0.375, 0.625, 0.875];
           const cutouts = [
             { src: personCutout, t: personTransform },
             { src: person2Cutout, t: person2Transform },

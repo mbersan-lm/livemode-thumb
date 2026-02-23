@@ -798,7 +798,7 @@ export const CortesControls = ({
 
       // ── Layer 3f: Thumb Principal — 4 cutouts in a row ──────────────────
       if (showThumbPrincipal) {
-        const positions = [0.16, 0.37, 0.63, 0.84];
+        const positions = [0.125, 0.375, 0.625, 0.875];
         const cutouts = [
           { img: personImg, t: props.personTransform },
           { img: person2Img, t: props.person2Transform },
