@@ -20,6 +20,7 @@ interface CortesCanvasProps {
   personCutout: string | null;
   person2Cutout: string | null;
   person3Cutout?: string | null;
+  person4Cutout?: string | null;
   thumbText: string;
   thumbTextLeft?: string;
   thumbTextRight?: string;
@@ -28,6 +29,7 @@ interface CortesCanvasProps {
   personTransform: { x: number; y: number; scale: number; rotation: number };
   person2Transform: { x: number; y: number; scale: number; rotation: number };
   person3Transform?: { x: number; y: number; scale: number; rotation: number };
+  person4Transform?: { x: number; y: number; scale: number; rotation: number };
   pipFrame: { x: number; y: number; width: number; height: number };
   pip2Frame?: { x: number; y: number; width: number; height: number };
   bgImage?: string;
@@ -42,24 +44,26 @@ interface CortesCanvasProps {
 }
 
 export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
-  ({ thumbModel = 'pip', pipImage, pip2Image = null, personCutout, person2Cutout, person3Cutout = null,
+  ({ thumbModel = 'pip', pipImage, pip2Image = null, personCutout, person2Cutout, person3Cutout = null, person4Cutout = null,
      thumbText, thumbTextLeft = '', thumbTextRight = '',
      pipTransform, pip2Transform = { x: 0, y: 0, scale: 1, rotation: 0 },
      personTransform, person2Transform,
      person3Transform = { x: 0, y: 0, scale: 1, rotation: 0 },
+     person4Transform = { x: 0, y: 0, scale: 1, rotation: 0 },
      pipFrame, pip2Frame = { x: 67, y: 15.4, width: 30, height: 55 },
      bgImage = '/cortes/bg-corte.png', logosImage = '/cortes/logos-corte.png',
      divisoriaImage = '/cortes/divisoria-geral.png',
      textColor = '#F1E8D5', strokeColor = '#0C0C20', pipBorderColor = '#D02046',
      highlightColor = '#D02046', customFontFamily = "'Clash Grotesk', sans-serif",
      textBoxHeight = 38 }, ref) => {
-  const showPip = thumbModel === 'pip';
-  const showPipDividido = thumbModel === 'pip-dividido';
-  const showPerson2 = thumbModel === 'duas-pessoas';
-  const showJogoV1 = thumbModel === 'jogo-v1';
-  const showJogoPipDuplo = thumbModel === 'jogo-pip-duplo';
+   const showPip = thumbModel === 'pip';
+   const showPipDividido = thumbModel === 'pip-dividido';
+   const showPerson2 = thumbModel === 'duas-pessoas';
+   const showJogoV1 = thumbModel === 'jogo-v1';
+   const showJogoPipDuplo = thumbModel === 'jogo-pip-duplo';
     const showMeioAMeio = thumbModel === 'meio-a-meio';
     const showSoLettering = thumbModel === 'so-lettering';
+    const showThumbPrincipal = thumbModel === 'thumb-principal';
     const textRef = useRef<HTMLDivElement>(null);
     const textLeftRef = useRef<HTMLDivElement>(null);
     const textRightRef = useRef<HTMLDivElement>(null);
@@ -208,7 +212,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
         )}
 
         {/* Layer 3: Person cutout (right side) — pip, pip-dividido & duas-pessoas models */}
-        {!showMeioAMeio && !showSoLettering && !showJogoV1 && !showJogoPipDuplo && personCutout && (
+        {!showMeioAMeio && !showSoLettering && !showJogoV1 && !showJogoPipDuplo && !showThumbPrincipal && personCutout && (
           <img
             src={personCutout}
             alt=""
@@ -226,7 +230,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
         )}
 
         {/* Layer 3b: Person 2 cutout (left side) — duas-pessoas model */}
-        {showPerson2 && !showSoLettering && !showJogoV1 && !showJogoPipDuplo && person2Cutout && (
+        {showPerson2 && !showSoLettering && !showJogoV1 && !showJogoPipDuplo && !showThumbPrincipal && person2Cutout && (
           <img
             src={person2Cutout}
             alt=""
@@ -420,6 +424,34 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
             }}
           />
         )}
+
+        {/* Layer 3f: Thumb Principal — 4 cutouts in a row */}
+        {showThumbPrincipal && (() => {
+          const positions = [0.16, 0.37, 0.63, 0.84];
+          const cutouts = [
+            { src: personCutout, t: personTransform },
+            { src: person2Cutout, t: person2Transform },
+            { src: person3Cutout, t: person3Transform },
+            { src: person4Cutout, t: person4Transform },
+          ];
+          return cutouts.map((c, i) => c.src ? (
+            <img
+              key={`tp-${i}`}
+              src={c.src}
+              alt=""
+              style={{
+                position: 'absolute',
+                left: `${positions[i] * 100}%`,
+                bottom: 0,
+                height: '95%',
+                width: 'auto',
+                zIndex: 3,
+                transform: `translateX(-50%) translate(${c.t.x}px, ${c.t.y}px) scale(${c.t.scale}) rotate(${c.t.rotation}deg)`,
+                transformOrigin: 'center bottom',
+              }}
+            />
+          ) : null);
+        })()}
 
         {/* Layer 3.5: Bottom gradient overlay */}
         <div
