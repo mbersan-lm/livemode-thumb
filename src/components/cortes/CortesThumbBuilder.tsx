@@ -92,7 +92,7 @@ export const CortesThumbBuilder = ({
   useEffect(() => {
     const updateScale = () => {
       const availableWidth = window.innerWidth >= 768
-        ? window.innerWidth - 380 - 32
+        ? (window.innerWidth / 2) - 32
         : window.innerWidth - 16;
       setCanvasScale(Math.min(availableWidth / CANVAS_WIDTH, 0.85));
     };
@@ -270,7 +270,7 @@ export const CortesThumbBuilder = ({
   return (
     <div className="h-screen bg-background flex flex-col md:flex-row overflow-hidden">
       <div
-        className={`flex items-center justify-center overflow-hidden bg-[hsl(240_10%_6%)] shrink-0 ${isMobile ? '' : 'flex-1'}`}
+        className={`flex items-center justify-center overflow-hidden bg-[hsl(240_10%_6%)] shrink-0 ${isMobile ? '' : 'md:w-1/2'}`}
         style={isMobile ? { height: scaledHeight + 8, minHeight: scaledHeight + 8 } : undefined}
       >
         <div style={{ transform: `scale(${canvasScale})`, transformOrigin: 'center' }}>
@@ -305,7 +305,7 @@ export const CortesThumbBuilder = ({
         </div>
       </div>
 
-      <div className="w-full md:w-[380px] bg-card border-t md:border-t-0 md:border-l border-border flex flex-col flex-1 md:flex-none overflow-hidden">
+      <div className="w-full md:w-1/2 bg-card border-t md:border-t-0 md:border-l border-border flex flex-col flex-1 md:flex-none overflow-hidden">
         <div className="p-4 md:p-6 pb-3 md:pb-4 border-b border-border flex items-center justify-between shrink-0">
           <div>
           <h1 className="text-xl font-bold tracking-tight">{programName}</h1>
