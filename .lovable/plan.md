@@ -1,130 +1,63 @@
 
-# Funcionalidade: Upscale Gemini na "Foto de Pessoa" (imagem isolada)
+# Duas Alterações: Re-remoção de Fundo pós-Gemini + Layout 50/50
 
-## Visão Geral
+## 1. Re-remoção de fundo após Upscale do Gemini
 
-O Gemini vai melhorar **apenas a foto da pessoa** (ou da pessoa 2/3), não a thumb composta inteira. Assim o fluxo é:
+### Problema
+O Gemini devolve a imagem melhorada, mas pode adicionar um fundo (branco, preto, etc.) mesmo recebendo um PNG com transparência. O `personCutout` é substituído por essa imagem com fundo, quebrando a composição.
 
+### Solução
+Após receber a imagem do Gemini, chamar automaticamente a mesma função `removeBg` (Photoroom) antes de atualizar o `personCutout`.
+
+**Arquivo:** `src/components/cortes/CortesThumbBuilder.tsx`
+
+Fluxo atualizado do `handleUpscalePerson`:
 ```text
-[Usuário faz upload da foto da pessoa]
-         ↓
-[Sistema remove o fundo (Photoroom)]
-         ↓
-[Foto sem fundo fica em personCutout]
-         ↓
-[Usuário clica "✨ Melhorar com Gemini"]
-         ↓
-[Edge Function: gemini-upscale recebe personCutout em base64]
-         ↓
-[Gemini edita a imagem com o prompt de upscale]
-         ↓
-[personCutout é substituído pela versão melhorada]
-         ↓
-[Preview da thumb atualiza automaticamente]
+personCutout (sem fundo)
+  → Gemini upscale (pode voltar com fundo)
+  → Photoroom remove-bg (garante transparência)
+  → setPersonCutout (imagem final limpa e melhorada)
 ```
 
-Isso é muito mais elegante: a thumb toda não precisa ser re-renderizada — o React simplesmente reusa a imagem melhorada no lugar da original.
+O toast de loading muda para refletir as duas etapas:
+- "Melhorando imagem..." (durante Gemini)
+- "Removendo fundo..." (durante Photoroom)
+
+Mesma lógica para `handleUpscalePerson2`.
 
 ---
 
-## Fix Urgente (Build Errors)
+## 2. Layout 50/50 entre Preview e Painel de Controles
 
-Os erros de build em `ThumbnailCanvas.tsx` e `ThumbnailCanvasJogoCompleto.tsx` existem porque `maxSize` e `jcMaxSize` não foram reconhecidos — a interface `Team` foi atualizada em `src/data/teams.ts` mas os componentes importam o tipo de outro lugar ou o `.find()` retorna um tipo inferido sem os campos opcionais.
+### Problema atual
+O painel de controles tem largura fixa de `380px` (`md:w-[380px]`), e o preview ocupa o restante com `flex-1`. Em telas grandes, o preview fica desproporcional.
 
-**Fix:** Importar explicitamente o tipo `Team` de `@/data/teams` e tipar o resultado do `.find()`:
+### Solução
+Mudar para layout 50/50 no desktop:
+- Preview: `w-1/2`
+- Painel de controles: `w-1/2`
 
-```typescript
-import { Team, teamsBrasileirao } from '@/data/teams';
-// ...
-const homeTeam = currentTeams.find(t => t.id === matchData.homeTeamId) as Team | undefined;
-const awayTeam = currentTeams.find(t => t.id === matchData.awayTeamId) as Team | undefined;
-```
+O cálculo do `canvasScale` será atualizado para usar metade da largura da tela em vez de `window.innerWidth - 380`.
 
-**Arquivos afetados:** `src/components/ThumbnailCanvas.tsx` e `src/components/ThumbnailCanvasJogoCompleto.tsx`
+**Arquivo:** `src/components/cortes/CortesThumbBuilder.tsx`
 
----
+Alterações no layout:
+- Container do preview: de `flex-1` para `w-1/2`
+- Container dos controles: de `md:w-[380px]` para `w-1/2`
+- Cálculo do scale: `availableWidth = (window.innerWidth / 2) - 32` no desktop
 
-## Componentes do Feature
-
-### 1. Nova Edge Function: `supabase/functions/gemini-upscale/index.ts`
-
-Recebe `image_base64` (PNG da pessoa com fundo removido) e retorna a versão melhorada.
-
-- Usa o **Lovable AI Gateway** (`LOVABLE_API_KEY` — já configurado como secret)
-- Modelo: `google/gemini-3-pro-image-preview` (melhor qualidade para edição de imagem)
-- Envia a imagem + o prompt de upscale exato
-- Retorna `{ result_base64: "data:image/png;base64,..." }`
-
-**Prompt usado:**
-```
-Enhance the image to true photorealistic realism while fully preserving composition, proportions, identity, and emotion.
-No beautification, stylization, or facial changes.
-Add natural imperfections: subtle asymmetry, uneven eyes/brows/lips, realistic skin texture with pores, fine lines, tiny blemishes, mild discoloration, uneven tones, and natural micro-shadows.
-No smooth or plastic skin.
-Improve clarity and depth without over-sharpening.
-Enhance micro-details: hair strands, fabric fibers, wrinkles, dust, wear, fingerprints, reflections.
-Use natural real-world lighting with imperfect shadows and soft highlights.
-Ultra-high-resolution, clean upscale, authentic photographic look.
-Keep the composition EXACTLY the same. Do not move, resize, crop, or reframe anything. Preserve any transparent background exactly as-is.
-```
-
-### 2. `src/components/cortes/CortesThumbBuilder.tsx`
-
-Adicionar:
-- Estado `isUpscalingPerson: boolean`
-- Função `handleUpscalePerson()` que chama a edge function com `personCutout` e substitui `personCutout` com o resultado
-- Passa `isUpscalingPerson` e `onUpscalePerson` como props para `CortesControls`
-
-Mesma lógica replicada para `person2Cutout` → `isUpscalingPerson2` / `handleUpscalePerson2`.
-
-### 3. `src/components/cortes/CortesControls.tsx`
-
-**No painel da Foto de Pessoa**, logo após o botão "Remover fundo", adicionar um novo botão:
-
-```
-┌──────────────────────────────────────────────────┐
-│ Foto de Pessoa                                   │
-│  [Upload]  [Remover fundo]                       │
-│  [✨ Melhorar com Gemini]  ← NOVO               │
-│                                                  │
-│  (Aparece somente se personCutout existir)       │
-│  (Mostra spinner "Melhorando imagem..." quando   │
-│   isUpscalingPerson = true)                      │
-└──────────────────────────────────────────────────┘
-```
-
-O botão só aparece se `personCutout` existir. Quando clicado, chama `onUpscalePerson()`. Ao retornar, `personCutout` já é substituído automaticamente e o preview atualiza.
+No mobile, o layout continua empilhado (coluna) sem alteração.
 
 ---
 
-## Interface de Props (atualização)
+## Arquivos modificados
 
-```typescript
-// CortesControls.tsx — novos props adicionados:
-isUpscalingPerson?: boolean;
-isUpscalingPerson2?: boolean;
-onUpscalePerson?: () => void;
-onUpscalePerson2?: () => void;
-```
+| Arquivo | Alteração |
+|---------|-----------|
+| `src/components/cortes/CortesThumbBuilder.tsx` | Layout 50/50 + re-remoção de fundo pós-Gemini |
 
----
-
-## Arquivos que serão criados/modificados
-
-| Arquivo | Ação |
-|---------|------|
-| `src/components/ThumbnailCanvas.tsx` | Fix de build (cast de tipo `Team`) |
-| `src/components/ThumbnailCanvasJogoCompleto.tsx` | Fix de build (cast de tipo `Team`) |
-| `supabase/functions/gemini-upscale/index.ts` | CRIAR — edge function |
-| `src/components/cortes/CortesThumbBuilder.tsx` | Adicionar estados + handler de upscale |
-| `src/components/cortes/CortesControls.tsx` | Adicionar botão "✨ Melhorar com Gemini" no painel da pessoa |
-
----
-
-## O que NÃO muda
-
-- O fluxo de exportação JPG não é alterado — a thumb composta não passa pelo Gemini
-- O fundo removido (Photoroom) continua funcionando igual
-- O preview atualiza automaticamente porque o React já observa `personCutout`
-- Nenhuma nova dependência de pacote é necessária
-- A chave `GEMINI_API_KEY` fornecida pelo usuário **não** será usada diretamente — usaremos o `LOVABLE_API_KEY` já configurado via Lovable AI Gateway, que é mais seguro
+## O que NAO muda
+- Edge function `gemini-upscale` -- sem alteração
+- `CortesControls.tsx` -- sem alteração
+- Layout da pagina Index (Melhores Momentos) -- sem alteração
+- Fluxo de upload e remoção de fundo manual -- intacto
