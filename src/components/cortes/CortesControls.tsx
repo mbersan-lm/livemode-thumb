@@ -90,12 +90,33 @@ function drawCover(
   ctx.restore();
 }
 
-/** Quebra texto em linhas que caibam em maxWidth. */
+/** Remove marcadores de highlight (*) para medição de texto. */
+function stripHighlightMarkers(text: string): string {
+  return text.replace(/\*/g, '');
+}
+
+/** Quebra texto em linhas que caibam em maxWidth, com suporte a word-break. */
 function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
   const words = text.split(' ');
   const lines: string[] = [];
   let current = '';
   for (const word of words) {
+    // Word-break: se a palavra sozinha excede maxWidth, quebrar por caractere
+    if (ctx.measureText(word).width > maxWidth) {
+      if (current) { lines.push(current); current = ''; }
+      let chunk = '';
+      for (const char of word) {
+        const test = chunk + char;
+        if (ctx.measureText(test).width > maxWidth && chunk) {
+          lines.push(chunk);
+          chunk = char;
+        } else {
+          chunk = test;
+        }
+      }
+      current = chunk;
+      continue;
+    }
     const test = current ? `${current} ${word}` : word;
     if (ctx.measureText(test).width > maxWidth && current) {
       lines.push(current);
@@ -119,9 +140,10 @@ function fitFontSize(
 ): number {
   let size = startSize;
   const lineHeight = 1.2;
+  const cleanText = stripHighlightMarkers(text.toUpperCase());
   while (size > 20) {
     ctx.font = `800 ${size}px ${fontFamily}`;
-    const lines = wrapText(ctx, text.toUpperCase(), maxW);
+    const lines = wrapText(ctx, cleanText, maxW);
     const totalH = lines.length * size * lineHeight;
     if (totalH <= maxH) break;
     size -= 2;
@@ -136,6 +158,41 @@ function parseHighlight(raw: string): TextSegment[] {
     text: part.startsWith('*') && part.endsWith('*') ? part.slice(1, -1) : part,
     highlight: part.startsWith('*') && part.endsWith('*'),
   }));
+}
+
+/**
+ * Desenha texto multiline com auto-fit, highlight por segmentos e stroke via shadowBlur/shadowColor.
+ * Replica exatamente o layout do CortesCanvas.
+ */
+/**
+ * Mapeia linhas calculadas com texto limpo de volta ao texto original (com marcadores *).
+ * Percorre o texto original consumindo caracteres não-* correspondentes a cada linha limpa.
+ */
+function mapCleanLinesToOriginal(cleanLines: string[], originalText: string): string[] {
+  const result: string[] = [];
+  let origIdx = 0;
+  for (const cleanLine of cleanLines) {
+    let mapped = '';
+    let cleanCharIdx = 0;
+    while (cleanCharIdx < cleanLine.length && origIdx < originalText.length) {
+      const origChar = originalText[origIdx];
+      if (origChar === '*') {
+        mapped += origChar;
+        origIdx++;
+      } else {
+        mapped += origChar;
+        origIdx++;
+        cleanCharIdx++;
+      }
+    }
+    // Capturar * restantes no final da linha (ex: fechamento de highlight)
+    while (origIdx < originalText.length && originalText[origIdx] === '*') {
+      mapped += '*';
+      origIdx++;
+    }
+    result.push(mapped);
+  }
+  return result;
 }
 
 /**
@@ -159,14 +216,20 @@ function drawAutoFitText(
   paddingPx: number
 ) {
   const text = rawText.toUpperCase();
+  const cleanText = stripHighlightMarkers(text);
   const innerW = areaW - paddingPx * 2;
   const innerH = areaH - paddingPx * 2;
 
   const fontSize = fitFontSize(ctx, text, innerW, innerH, startFontSize, fontFamily);
   ctx.font = `800 ${fontSize}px ${fontFamily}`;
   const lineHeight = fontSize * 1.2;
-  const lines = wrapText(ctx, text, innerW);
-  const totalH = lines.length * lineHeight;
+
+  // Layout com texto limpo (sem marcadores)
+  const cleanLines = wrapText(ctx, cleanText, innerW);
+  // Mapear de volta ao texto original para manter highlights
+  const lines = mapCleanLinesToOriginal(cleanLines, text);
+
+  const totalH = cleanLines.length * lineHeight;
 
   // Ancorado pelo bottom, idêntico ao CSS: bottom:6%, maxHeight:38%
   const centerX = areaX + areaW / 2;
