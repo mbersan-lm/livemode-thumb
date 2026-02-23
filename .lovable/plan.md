@@ -1,83 +1,62 @@
 
+# Correcao: Imagens de referencia na geracao de PIP com IA
 
-# Botao de navegacao "Melhores Momentos / Cortes" mais visivel
+## Problema
+Quando imagens de referencia sao anexadas, o modelo `gemini-3-pro-image-preview` recebe as imagens diretamente e retorna `IMAGE_OTHER` (recusa gerar). Alem disso, imagens grandes geram payloads enormes que podem causar timeout.
 
-## Problema atual
-A navegacao entre "Melhores Momentos" e "Cortes" e feita por links pequenos em texto cinza (`text-xs text-muted-foreground`), quase invisiveis no header da interface.
+## Solucao: Dois estagios + compressao no cliente
 
-## Solucao
-Transformar esses links em botoes estilizados com o componente `Button`, usando o visual `outline` com borda branca e bordas arredondadas que ja existem no design system.
+### Fluxo corrigido
 
-## Alteracoes
-
-### 1. `src/pages/Index.tsx` (linha 168)
-- Substituir o `<a>` texto "Cortes →" por um `Button` com variante `outline`, icone de seta e texto claro
-- Estilo: borda branca, texto branco, hover com fundo sutil
-
-**De:**
-```
-<a href="/cortes" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-  Cortes →
-</a>
-```
-
-**Para:**
-```
-<a href="/cortes">
-  <Button variant="outline" size="sm" className="gap-1.5">
-    Cortes <ArrowRight className="w-3.5 h-3.5" />
-  </Button>
-</a>
+```text
+Cliente                          Edge Function
+  |                                    |
+  |-- comprime imagens (512px) ------->|
+  |                                    |-- Estagio 1: gemini-2.5-flash
+  |                                    |   descreve as imagens de referencia
+  |                                    |   (retorna texto descritivo)
+  |                                    |
+  |                                    |-- Estagio 2: gemini-3-pro-image-preview
+  |                                    |   gera imagem usando APENAS o prompt
+  |                                    |   + descricao textual (sem imagens)
+  |                                    |
+  |<-- imagem gerada (base64) ---------|
 ```
 
-### 2. `src/pages/CortesHub.tsx` (linha 67)
-- Substituir o `<a>` texto "← Melhores Momentos" por um `Button` com variante `outline`
+### 1. Compressao no cliente
+**Arquivo:** `src/components/cortes/PipAiGenerator.tsx`
+- Ao anexar imagens, redimensionar para max 512px (largura ou altura) usando canvas
+- Converter para JPEG com qualidade 0.7
+- Isso reduz drasticamente o tamanho do payload (de varios MB para ~50-100KB por imagem)
 
-**De:**
-```
-<a href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
-  <ArrowLeft className="w-4 h-4" /> Melhores Momentos
-</a>
-```
+### 2. Fluxo de dois estagios na edge function
+**Arquivo:** `supabase/functions/gemini-generate-pip/index.ts`
+- **Estagio 1**: Enviar as imagens de referencia ao modelo `google/gemini-2.5-flash` pedindo uma descricao textual detalhada (cores, composicao, estilo, objetos)
+- **Estagio 2**: Usar o prompt do usuario + a descricao textual para gerar a imagem com `google/gemini-3-pro-image-preview` (SEM enviar as imagens, apenas texto)
+- Adicionar logs para debug (`console.log` com tamanho do payload, comprimento da descricao)
+- Tratar erros de rate limit (429) e creditos (402) em ambos os estagios
 
-**Para:**
-```
-<a href="/">
-  <Button variant="outline" size="sm" className="gap-1.5">
-    <ArrowLeft className="w-3.5 h-3.5" /> Melhores Momentos
-  </Button>
-</a>
-```
+## Detalhes tecnicos
 
-### 3. `src/components/cortes/CortesThumbBuilder.tsx` (linha 345)
-- Substituir o `<a>` texto "← Voltar" por um `Button` com variante `outline`
-
-**De:**
-```
-<a href={backUrl} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-  ← Voltar
-</a>
+### Compressao de imagem no cliente (canvas resize)
+```text
+Imagem original (ex: 3000x2000, 4MB base64)
+  -> Canvas resize para 512x341
+  -> JPEG quality 0.7
+  -> ~50-100KB base64
 ```
 
-**Para:**
-```
-<a href={backUrl}>
-  <Button variant="outline" size="sm" className="gap-1.5">
-    <ArrowLeft className="w-3.5 h-3.5" /> Voltar
-  </Button>
-</a>
-```
+### Prompt do estagio 1 (descricao)
+Sistema pede ao modelo de texto para descrever as imagens em detalhe: estilo visual, cores dominantes, composicao, objetos, iluminacao, atmosfera. Retorna apenas texto.
 
-## Imports necessarios
-- `Index.tsx`: adicionar `import { ArrowRight } from 'lucide-react'` e `import { Button } from '@/components/ui/button'`
-- `CortesThumbBuilder.tsx`: adicionar `import { ArrowLeft } from 'lucide-react'` e `import { Button } from '@/components/ui/button'`
-- `CortesHub.tsx`: ja importa `Button` e `ArrowLeft`
+### Prompt do estagio 2 (geracao)
+Combina o prompt do usuario com a descricao das referencias em um unico prompt textual. O modelo de imagem recebe apenas texto, evitando o erro `IMAGE_OTHER`.
 
-## Resultado
-Os botoes herdao automaticamente o estilo `rounded-full` com `border border-white/80` do design system, ficando visiveis e consistentes com o restante da interface.
+## Arquivos alterados
+1. `src/components/cortes/PipAiGenerator.tsx` -- adicionar funcao de compressao de imagem
+2. `supabase/functions/gemini-generate-pip/index.ts` -- implementar fluxo de dois estagios
 
 ## O que NAO muda
-- Nenhuma logica, canvas, preview ou download
-- Nenhum modelo de thumb
-- Nenhuma cor ou fonte do design system
-
+- Interface do usuario (botoes, layout, fluxo de uso)
+- Modelos de thumbnail existentes
+- Outras edge functions
