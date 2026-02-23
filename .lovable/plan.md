@@ -1,118 +1,83 @@
 
 
-# Traducao para Portugues + Botoes arredondados com borda branca
+# Botao de navegacao "Melhores Momentos / Cortes" mais visivel
 
-## Escopo
-Apenas textos da interface e estilo dos botoes. Nenhuma alteracao em logica, modelos, preview ou download.
+## Problema atual
+A navegacao entre "Melhores Momentos" e "Cortes" e feita por links pequenos em texto cinza (`text-xs text-muted-foreground`), quase invisiveis no header da interface.
 
-## 1. Botoes mais arredondados com borda branca de 1px
+## Solucao
+Transformar esses links em botoes estilizados com o componente `Button`, usando o visual `outline` com borda branca e bordas arredondadas que ja existem no design system.
 
-### Arquivo: `src/components/ui/button.tsx`
-- Alterar o `border-radius` base de `rounded-md` para `rounded-full` (totalmente arredondado)
-- Adicionar `border border-white/80` ao estilo base de todos os botoes
-- Ajustar as variantes para manter consistencia com a borda branca
+## Alteracoes
 
-## 2. Traducao de textos em ingles para portugues
+### 1. `src/pages/Index.tsx` (linha 168)
+- Substituir o `<a>` texto "Cortes →" por um `Button` com variante `outline`, icone de seta e texto claro
+- Estilo: borda branca, texto branco, hover com fundo sutil
 
-### Arquivo: `src/pages/Index.tsx`
-| Texto atual | Novo texto |
-|---|---|
-| `Thumbnail Generator` | `Gerador de Thumbnails` |
-| `Cortes →` | `Cortes →` (ja esta em PT) |
+**De:**
+```
+<a href="/cortes" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+  Cortes →
+</a>
+```
 
-### Arquivo: `src/components/controls/ViewControls.tsx`
-| Texto atual | Novo texto |
-|---|---|
-| `Thumbnail Ativa` | ja esta em PT |
+**Para:**
+```
+<a href="/cortes">
+  <Button variant="outline" size="sm" className="gap-1.5">
+    Cortes <ArrowRight className="w-3.5 h-3.5" />
+  </Button>
+</a>
+```
 
-### Arquivo: `src/components/controls/TemplateControls.tsx`
-| Texto atual | Novo texto |
-|---|---|
-| `Select Template` | `Selecionar Template` |
-| `Each template has its own:` | `Cada template possui:` |
-| `Background design (KV)` | `Design de fundo (KV)` |
-| `Team selection` | `Selecao de times` |
-| `Score font style` | `Estilo da fonte do placar` |
+### 2. `src/pages/CortesHub.tsx` (linha 67)
+- Substituir o `<a>` texto "← Melhores Momentos" por um `Button` com variante `outline`
 
-### Arquivo: `src/components/controls/TeamControls.tsx`
-| Texto atual | Novo texto |
-|---|---|
-| `Home Team` | `Time da Casa` |
-| `Select home team` | `Selecionar time da casa` |
-| `Away Team` | `Time Visitante` |
-| `Select away team` | `Selecionar time visitante` |
-| `Home Score` | `Placar Casa` |
-| `Away Score` | `Placar Visitante` |
-| `Home (menor)` | ja esta em PT |
-| `Away (menor)` | `Visitante (menor)` |
+**De:**
+```
+<a href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+  <ArrowLeft className="w-4 h-4" /> Melhores Momentos
+</a>
+```
 
-### Arquivo: `src/components/controls/PhotoControls.tsx`
-| Texto atual | Novo texto |
-|---|---|
-| `Upload Player Photo` | `Enviar Foto do Jogador` |
-| `Position X:` | `Posicao X:` |
-| `Position Y:` | `Posicao Y:` |
-| `Uniform Zoom:` | `Zoom:` |
-| `Quick Actions` | `Acoes Rapidas` |
-| `AI Expand (1280x720)` | `Expandir com IA (1280x720)` |
-| `Expandindo...` | ja esta em PT |
-| `Center` | `Centralizar` |
-| `Reset All` | `Redefinir Tudo` |
+**Para:**
+```
+<a href="/">
+  <Button variant="outline" size="sm" className="gap-1.5">
+    <ArrowLeft className="w-3.5 h-3.5" /> Melhores Momentos
+  </Button>
+</a>
+```
 
-### Arquivo: `src/components/controls/ExportControls.tsx`
-| Texto atual | Novo texto |
-|---|---|
-| `Export Settings` | `Configuracoes de Exportacao` |
-| `Resolution: 1280 x 720 px` | `Resolucao: 1280 x 720 px` |
-| `Format: JPG` | `Formato: JPG` |
-| `Quality: 90%` | `Qualidade: 90%` |
-| `Export Melhores Momentos` | `Exportar Melhores Momentos` |
-| `Export Jogo Completo` | `Exportar Jogo Completo` |
-| `Generating Melhores Momentos JPG...` | `Gerando JPG Melhores Momentos...` |
-| `Generating Jogo Completo JPG...` | `Gerando JPG Jogo Completo...` |
-| `Melhores Momentos JPG exported successfully!` | `JPG Melhores Momentos exportado!` |
-| `Jogo Completo JPG exported successfully!` | `JPG Jogo Completo exportado!` |
-| `Canvas not ready` | `Canvas nao esta pronto` |
-| `Failed to export JPG` | `Falha ao exportar JPG` |
-| `Failed to export Jogo Completo JPG` | `Falha ao exportar JPG Jogo Completo` |
+### 3. `src/components/cortes/CortesThumbBuilder.tsx` (linha 345)
+- Substituir o `<a>` texto "← Voltar" por um `Button` com variante `outline`
 
-### Arquivo: `src/components/cortes/CortesThumbBuilder.tsx`
-| Texto atual | Novo texto |
-|---|---|
-| `Thumbnail Generator` (linha 343) | `Gerador de Thumbnails` |
+**De:**
+```
+<a href={backUrl} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+  ← Voltar
+</a>
+```
 
-### Arquivo: `src/components/cortes/PipAiGenerator.tsx`
-| Texto atual | Novo texto |
-|---|---|
-| Ja esta todo em portugues | -- |
+**Para:**
+```
+<a href={backUrl}>
+  <Button variant="outline" size="sm" className="gap-1.5">
+    <ArrowLeft className="w-3.5 h-3.5" /> Voltar
+  </Button>
+</a>
+```
 
-### Arquivo: `src/pages/NotFound.tsx`
-| Texto atual | Novo texto |
-|---|---|
-| `404` | `404` |
-| `Oops! Page not found` | `Pagina nao encontrada` |
-| `Return to Home` | `Voltar ao Inicio` |
+## Imports necessarios
+- `Index.tsx`: adicionar `import { ArrowRight } from 'lucide-react'` e `import { Button } from '@/components/ui/button'`
+- `CortesThumbBuilder.tsx`: adicionar `import { ArrowLeft } from 'lucide-react'` e `import { Button } from '@/components/ui/button'`
+- `CortesHub.tsx`: ja importa `Button` e `ArrowLeft`
 
-### Arquivo: `src/pages/Index.tsx` (tabs)
-| Texto atual | Novo texto |
-|---|---|
-| `Template` | `Template` (manter) |
-| `Photo` | `Foto` |
-| `Teams` | `Times` |
-| `Export` | `Exportar` |
-
-## Arquivos alterados (total: 8)
-1. `src/components/ui/button.tsx` -- estilo arredondado + borda branca
-2. `src/pages/Index.tsx` -- traducao das tabs e subtitulo
-3. `src/pages/NotFound.tsx` -- traducao
-4. `src/components/controls/TemplateControls.tsx` -- traducao
-5. `src/components/controls/TeamControls.tsx` -- traducao
-6. `src/components/controls/PhotoControls.tsx` -- traducao
-7. `src/components/controls/ExportControls.tsx` -- traducao
-8. `src/components/cortes/CortesThumbBuilder.tsx` -- traducao do subtitulo
+## Resultado
+Os botoes herdao automaticamente o estilo `rounded-full` com `border border-white/80` do design system, ficando visiveis e consistentes com o restante da interface.
 
 ## O que NAO muda
-- Nenhum canvas, preview ou logica de download
+- Nenhuma logica, canvas, preview ou download
 - Nenhum modelo de thumb
-- Nenhuma edge function
-- Nenhuma cor ou fonte (ja foram alteradas anteriormente)
+- Nenhuma cor ou fonte do design system
+
