@@ -164,8 +164,8 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           </div>
         )}
 
-        {/* Layer 2: PIP dividido — two PIP frames side by side */}
-        {showPipDividido && pipImage && (
+        {/* Layer 2: PIP dividido — single frame with two photos inside */}
+        {showPipDividido && (pipImage || pip2Image) && (
           <div
             style={{
               position: 'absolute',
@@ -177,36 +177,33 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               transform: 'rotate(-1.2deg)',
               overflow: 'hidden',
               zIndex: 2,
+              display: 'flex',
             }}
           >
-            <img src={pipImage} alt="" style={{
-              position: 'absolute', left: '50%', top: '50%',
-              width: '100%', height: '100%', objectFit: 'contain',
-              transform: `translate(-50%, -50%) translate(${pipTransform.x}px, ${pipTransform.y}px) scale(${pipTransform.scale}) rotate(${pipTransform.rotation}deg)`,
-              transformOrigin: 'center center',
-            }} />
-          </div>
-        )}
-        {showPipDividido && pip2Image && (
-          <div
-            style={{
-              position: 'absolute',
-              left: `${pip2Frame.x}%`,
-              top: `${pip2Frame.y}%`,
-              width: `${pip2Frame.width}%`,
-              height: `${pip2Frame.height}%`,
-              border: `10px solid ${pipBorderColor}`,
-              transform: 'rotate(1.2deg)',
-              overflow: 'hidden',
-              zIndex: 2,
-            }}
-          >
-            <img src={pip2Image} alt="" style={{
-              position: 'absolute', left: '50%', top: '50%',
-              width: '100%', height: '100%', objectFit: 'contain',
-              transform: `translate(-50%, -50%) translate(${pip2Transform.x}px, ${pip2Transform.y}px) scale(${pip2Transform.scale}) rotate(${pip2Transform.rotation}deg)`,
-              transformOrigin: 'center center',
-            }} />
+            {/* Left half */}
+            <div style={{ width: '50%', height: '100%', overflow: 'hidden', position: 'relative' }}>
+              {pipImage && (
+                <img src={pipImage} alt="" style={{
+                  position: 'absolute', left: '50%', top: '50%',
+                  width: '100%', height: '100%', objectFit: 'contain',
+                  transform: `translate(-50%, -50%) translate(${pipTransform.x}px, ${pipTransform.y}px) scale(${pipTransform.scale}) rotate(${pipTransform.rotation}deg)`,
+                  transformOrigin: 'center center',
+                }} />
+              )}
+            </div>
+            {/* Vertical divider */}
+            <div style={{ width: '4px', height: '100%', backgroundColor: pipBorderColor, flexShrink: 0 }} />
+            {/* Right half */}
+            <div style={{ width: '50%', height: '100%', overflow: 'hidden', position: 'relative' }}>
+              {pip2Image && (
+                <img src={pip2Image} alt="" style={{
+                  position: 'absolute', left: '50%', top: '50%',
+                  width: '100%', height: '100%', objectFit: 'contain',
+                  transform: `translate(-50%, -50%) translate(${pip2Transform.x}px, ${pip2Transform.y}px) scale(${pip2Transform.scale}) rotate(${pip2Transform.rotation}deg)`,
+                  transformOrigin: 'center center',
+                }} />
+              )}
+            </div>
           </div>
         )}
 

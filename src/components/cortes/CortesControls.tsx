@@ -462,54 +462,76 @@ export const CortesControls = ({
         ctx.restore();
       }
 
-      // ── Layer 2: PIP dividido ───────────────────────────────────────────
-      if (showPipDividido) {
-        const drawPipFrame = (
-          img: HTMLImageElement | null,
-          frame: PipFrameState,
-          transform: TransformState,
-          rotDeg: number
-        ) => {
-          if (!img) return;
-          const fx = (frame.x / 100) * W;
-          const fy = (frame.y / 100) * H;
-          const fw = (frame.width / 100) * W;
-          const fh = (frame.height / 100) * H;
-          const cx = fx + fw / 2;
-          const cy = fy + fh / 2;
+      // ── Layer 2: PIP dividido (single frame, two photos) ──────────────
+      if (showPipDividido && (pipImg || pip2Img)) {
+        const pip = props.pipFrame;
+        const fx = (pip.x / 100) * W;
+        const fy = (pip.y / 100) * H;
+        const fw = (pip.width / 100) * W;
+        const fh = (pip.height / 100) * H;
+        const cx = fx + fw / 2;
+        const cy = fy + fh / 2;
+        const rotDeg = -1.2;
+        const halfW = fw / 2;
+        const dividerW = 4;
+
+        // Draw left half image
+        if (pipImg) {
+          const t = props.pipTransform;
           ctx.save();
           ctx.translate(cx, cy);
           ctx.rotate((rotDeg * Math.PI) / 180);
           ctx.beginPath();
-          ctx.rect(-fw / 2, -fh / 2, fw, fh);
+          ctx.rect(-fw / 2, -fh / 2, halfW, fh);
           ctx.clip();
-          const imgRatio = img.naturalWidth / img.naturalHeight;
-          const contRatio = fw / fh;
+          const imgRatio = pipImg.naturalWidth / pipImg.naturalHeight;
+          const contRatio = halfW / fh;
           let drawW: number, drawH: number;
-          if (imgRatio > contRatio) { drawW = fw; drawH = fw / imgRatio; }
+          if (imgRatio > contRatio) { drawW = halfW; drawH = halfW / imgRatio; }
           else { drawH = fh; drawW = fh * imgRatio; }
-          ctx.translate(transform.x, transform.y);
-          ctx.rotate((transform.rotation * Math.PI) / 180);
-          ctx.scale(transform.scale, transform.scale);
-          ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
+          ctx.translate(-halfW / 2 + t.x, t.y);
+          ctx.rotate((t.rotation * Math.PI) / 180);
+          ctx.scale(t.scale, t.scale);
+          ctx.drawImage(pipImg, -drawW / 2, -drawH / 2, drawW, drawH);
           ctx.restore();
-          const borderW = 10;
+        }
+
+        // Draw right half image
+        if (pip2Img) {
+          const t = props.pip2Transform ?? { x: 0, y: 0, scale: 1, rotation: 0 };
           ctx.save();
           ctx.translate(cx, cy);
           ctx.rotate((rotDeg * Math.PI) / 180);
-          ctx.strokeStyle = props.pipBorderColor || '#D02046';
-          ctx.lineWidth = borderW;
-          ctx.strokeRect(-fw / 2, -fh / 2, fw, fh);
+          ctx.beginPath();
+          ctx.rect(0, -fh / 2, halfW, fh);
+          ctx.clip();
+          const imgRatio = pip2Img.naturalWidth / pip2Img.naturalHeight;
+          const contRatio = halfW / fh;
+          let drawW: number, drawH: number;
+          if (imgRatio > contRatio) { drawW = halfW; drawH = halfW / imgRatio; }
+          else { drawH = fh; drawW = fh * imgRatio; }
+          ctx.translate(halfW / 2 + t.x, t.y);
+          ctx.rotate((t.rotation * Math.PI) / 180);
+          ctx.scale(t.scale, t.scale);
+          ctx.drawImage(pip2Img, -drawW / 2, -drawH / 2, drawW, drawH);
           ctx.restore();
-        };
+        }
 
-        const pip1Frame = props.pipFrame;
-        const pip2FrameVal = props.pip2Frame ?? { x: 67, y: 15.4, width: 30, height: 55 };
-        const pip1T = props.pipTransform;
-        const pip2T = props.pip2Transform ?? { x: 0, y: 0, scale: 1, rotation: 0 };
-
-        drawPipFrame(pipImg, pip1Frame, pip1T, -1.2);
-        drawPipFrame(pip2Img, pip2FrameVal, pip2T, 1.2);
+        // Draw border around entire frame
+        const borderW = 10;
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate((rotDeg * Math.PI) / 180);
+        ctx.strokeStyle = props.pipBorderColor || '#D02046';
+        ctx.lineWidth = borderW;
+        ctx.strokeRect(-fw / 2, -fh / 2, fw, fh);
+        // Vertical divider line in center
+        ctx.beginPath();
+        ctx.moveTo(0, -fh / 2);
+        ctx.lineTo(0, fh / 2);
+        ctx.lineWidth = dividerW;
+        ctx.stroke();
+        ctx.restore();
       }
 
       if (showMeioAMeio) {
@@ -1089,68 +1111,6 @@ export const CortesControls = ({
         </>
       )}
 
-      {/* PIP dividido — two PIP uploads + person */}
-      {thumbModel === 'pip-dividido' && (
-        <>
-          {/* PIP esquerdo */}
-          <div className="space-y-2">
-            <Label className="font-semibold">PIP esquerdo</Label>
-            <input ref={pipInputRef} type="file" accept="image/*" className="hidden"
-              onChange={(e) => e.target.files?.[0] && onPipUpload(e.target.files[0])} />
-            <Button variant={pipImage ? 'secondary' : 'outline'} className="w-full"
-              onClick={() => pipInputRef.current?.click()}>
-              <Upload className="w-4 h-4 mr-2" />{pipImage ? 'Trocar PIP esquerdo' : 'Upload PIP esquerdo'}
-            </Button>
-          </div>
-          {pipImage && (
-            <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste PIP esquerdo</Label>
-                <button onClick={() => onPipTransformChange({ x: 0, y: 0, scale: pipBaseScale, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
-              </div>
-              <div><Label className="text-xs">Posição X: {pipTransform.x}px</Label><Slider value={[pipTransform.x]} onValueChange={([x]) => onPipTransformChange({ x })} min={-500} max={500} step={1} className="mt-1" /></div>
-              <div><Label className="text-xs">Posição Y: {pipTransform.y}px</Label><Slider value={[pipTransform.y]} onValueChange={([y]) => onPipTransformChange({ y })} min={-500} max={500} step={1} className="mt-1" /></div>
-              <div><Label className="text-xs">Zoom: {pipTransform.scale.toFixed(2)}x</Label><Slider value={[pipTransform.scale]} onValueChange={([scale]) => onPipTransformChange({ scale })} min={0.5} max={3} step={0.01} className="mt-1" /></div>
-            </div>
-          )}
-
-          {/* PIP direito */}
-          <div className="space-y-2">
-            <Label className="font-semibold">PIP direito</Label>
-            <input ref={pip2InputRef} type="file" accept="image/*" className="hidden"
-              onChange={(e) => e.target.files?.[0] && onPip2Upload?.(e.target.files[0])} />
-            <Button variant={pip2Image ? 'secondary' : 'outline'} className="w-full"
-              onClick={() => pip2InputRef.current?.click()}>
-              <Upload className="w-4 h-4 mr-2" />{pip2Image ? 'Trocar PIP direito' : 'Upload PIP direito'}
-            </Button>
-          </div>
-          {pip2Image && (
-            <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste PIP direito</Label>
-                <button onClick={() => onPip2TransformChange?.({ x: 0, y: 0, scale: pip2BaseScale, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
-              </div>
-              <div><Label className="text-xs">Posição X: {pip2Transform.x}px</Label><Slider value={[pip2Transform.x]} onValueChange={([x]) => onPip2TransformChange?.({ x })} min={-500} max={500} step={1} className="mt-1" /></div>
-              <div><Label className="text-xs">Posição Y: {pip2Transform.y}px</Label><Slider value={[pip2Transform.y]} onValueChange={([y]) => onPip2TransformChange?.({ y })} min={-500} max={500} step={1} className="mt-1" /></div>
-              <div><Label className="text-xs">Zoom: {pip2Transform.scale.toFixed(2)}x</Label><Slider value={[pip2Transform.scale]} onValueChange={([scale]) => onPip2TransformChange?.({ scale })} min={0.5} max={3} step={0.01} className="mt-1" /></div>
-            </div>
-          )}
-
-          {/* Moldura compartilhada */}
-          {(pipImage || pip2Image) && (
-            <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Moldura dos PIPs (proporcional)</Label>
-                <button onClick={() => onPipFrameChange({ x: 3.0, y: 15.4, width: 27.0, height: 55.0 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir"><RotateCcw className="w-3.5 h-3.5" /></button>
-              </div>
-              <div><Label className="text-xs">Posição X (esquerdo): {pipFrame.x.toFixed(1)}%</Label><Slider value={[pipFrame.x]} onValueChange={([x]) => onPipFrameChange({ x })} min={0} max={30} step={0.1} className="mt-1" /></div>
-              <div><Label className="text-xs">Posição Y: {pipFrame.y.toFixed(1)}%</Label><Slider value={[pipFrame.y]} onValueChange={([y]) => onPipFrameChange({ y })} min={-20} max={80} step={0.1} className="mt-1" /></div>
-              <div><Label className="text-xs">Largura: {pipFrame.width.toFixed(1)}%</Label><Slider value={[pipFrame.width]} onValueChange={([width]) => onPipFrameChange({ width })} min={10} max={45} step={0.1} className="mt-1" /></div>
-              <div><Label className="text-xs">Altura: {pipFrame.height.toFixed(1)}%</Label><Slider value={[pipFrame.height]} onValueChange={([height]) => onPipFrameChange({ height })} min={10} max={90} step={0.1} className="mt-1" /></div>
-            </div>
-          )}
-        </>
-      )}
 
       {/* Person Upload (right side / single person) — pip, pip-dividido & duas-pessoas */}
       {thumbModel !== 'meio-a-meio' && thumbModel !== 'so-lettering' && thumbModel !== 'jogo-v1' && thumbModel !== 'jogo-pip-duplo' && (
