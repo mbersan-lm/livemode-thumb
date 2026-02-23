@@ -58,7 +58,11 @@ const CortesProgramBuilder = () => {
       allowJogoV1={program!.name === 'Roda de Bobo'}
       allowThumbPrincipal={program!.name === 'Geral CazéTv' || program!.name === 'Geral CazéTv Brasil' || program!.name === 'Roda de Bobo'}
       thumbPrincipalBgImage={program!.name === 'Roda de Bobo' ? '/cortes/bg-thumb-principal-rdb.jpg' : undefined}
-      thumbPrincipalLogosImage={program!.name === 'Geral CazéTv' ? '/cortes/logos-thumb-principal.png' : undefined}
+      thumbPrincipalLogosImage={
+        program!.name === 'Geral CazéTv' ? '/cortes/logos-thumb-principal.png'
+        : program!.name === 'Roda de Bobo' ? '/cortes/logos-thumb-principal-rdb.png'
+        : undefined
+      }
       divisoriaImage={program!.name === 'Geral CazéTv Brasil' ? '/cortes/divisoria-brasil.png' : undefined}
       textColor={program!.text_color}
       strokeColor={program!.stroke_color}
