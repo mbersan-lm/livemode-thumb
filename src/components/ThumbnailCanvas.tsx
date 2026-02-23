@@ -147,7 +147,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
 
               {matchData.showSmallScore && (
                 <div 
-                  className="flex items-center gap-2 text-white font-bold"
+                  className="flex items-center gap-4 text-white font-bold"
                   style={{
                     fontFamily: config.fontFamily,
                     fontSize: `${Math.round(parseInt(config.scoreFontSize) * 0.5)}px`,
@@ -155,11 +155,9 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
                     marginTop: '-8px',
                   }}
                 >
-                  <span>(</span>
-                  <span>{matchData.homeScoreSmall}</span>
+                  <span>({matchData.homeScoreSmall})</span>
                   <span style={{ color: config.xColor || '#C9FF2E', fontFamily: config.xFontFamily || config.fontFamily, fontSize: `${Math.round(parseInt(config.xFontSize) * 0.5)}px` }}>x</span>
-                  <span>{matchData.awayScoreSmall}</span>
-                  <span>)</span>
+                  <span>({matchData.awayScoreSmall})</span>
                 </div>
               )}
             </div>
