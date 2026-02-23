@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import CortesHub from "./pages/CortesHub";
-import Cortes from "./pages/Cortes";
 import CortesProgramBuilder from "./pages/CortesProgramBuilder";
 import NotFound from "./pages/NotFound";
 
@@ -20,7 +19,6 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/cortes" element={<CortesHub />} />
-          <Route path="/cortes/roda-de-bobo" element={<Cortes />} />
           <Route path="/cortes/:id" element={<CortesProgramBuilder />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

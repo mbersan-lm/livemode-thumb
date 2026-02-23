@@ -51,8 +51,11 @@ const CortesProgramBuilder = () => {
           ? '/cortes/logos-geral-negativa.png'
           : program!.name === 'Live CazéTv'
             ? '/cortes/logos-live-negativa.png'
-            : undefined
+            : program!.name === 'Roda de Bobo'
+              ? '/cortes/logos-corte-negativo.png'
+              : undefined
       }
+      allowJogoV1={program!.name === 'Roda de Bobo'}
       divisoriaImage={program!.name === 'Geral CazéTv Brasil' ? '/cortes/divisoria-brasil.png' : undefined}
       textColor={program!.text_color}
       strokeColor={program!.stroke_color}

@@ -70,15 +70,7 @@ const CortesHub = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {/* Roda de Bobo — hardcoded */}
-          <ProgramCard
-            name="Roda de Bobo"
-            thumbType="Corte com PIP"
-            previewColors={{ text: '#F1E8D5', stroke: '#0C0C20', pip: '#D02046' }}
-            onClick={() => navigate('/cortes/roda-de-bobo')}
-          />
-
-          {/* Custom programs from DB */}
+          {/* Programs from DB */}
           {programs.map(p => (
             <ProgramCard
               key={p.id}
