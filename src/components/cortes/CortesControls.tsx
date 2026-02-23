@@ -171,13 +171,19 @@ function parseHighlight(raw: string): TextSegment[] {
 function mapCleanLinesToOriginal(cleanLines: string[], originalText: string): string[] {
   const result: string[] = [];
   let origIdx = 0;
+  let insideHighlight = false;
   for (const cleanLine of cleanLines) {
     let mapped = '';
+    // Se estamos dentro de um highlight que veio da linha anterior, abrir * nesta linha
+    if (insideHighlight) {
+      mapped += '*';
+    }
     let cleanCharIdx = 0;
     while (cleanCharIdx < cleanLine.length && origIdx < originalText.length) {
       const origChar = originalText[origIdx];
       if (origChar === '*') {
         mapped += origChar;
+        insideHighlight = !insideHighlight;
         origIdx++;
       } else {
         mapped += origChar;
@@ -188,7 +194,13 @@ function mapCleanLinesToOriginal(cleanLines: string[], originalText: string): st
     // Capturar * restantes no final da linha (ex: fechamento de highlight)
     while (origIdx < originalText.length && originalText[origIdx] === '*') {
       mapped += '*';
+      insideHighlight = !insideHighlight;
       origIdx++;
+    }
+    // Se a linha termina com highlight aberto, fechar para garantir pares completos
+    if (insideHighlight) {
+      mapped += '*';
+      // insideHighlight continua true para abrir na próxima linha
     }
     result.push(mapped);
   }
