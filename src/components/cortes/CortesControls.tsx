@@ -486,6 +486,14 @@ export const CortesControls = ({
   const person4InputRef = useRef<HTMLInputElement>(null);
   const bgInputRef = useRef<HTMLInputElement>(null);
 
+  const QUADRANT_PRESETS = [
+    { label: 'Cazé', url: '/cortes/presets/caze.png' },
+    { label: 'Donan', url: '/cortes/presets/donan.png' },
+    { label: 'Igor', url: '/cortes/presets/igor.png' },
+    { label: 'LFF', url: '/cortes/presets/lff.png' },
+    { label: 'Simões', url: '/cortes/presets/simoes.png' },
+  ];
+
   const [showPipAdjust, setShowPipAdjust] = useState(false);
   const [showPip2Adjust, setShowPip2Adjust] = useState(false);
   const [showPerson1Adjust, setShowPerson1Adjust] = useState(false);
