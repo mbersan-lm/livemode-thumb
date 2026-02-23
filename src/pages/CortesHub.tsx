@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { ProgramCard } from '@/components/cortes/ProgramCard';
 import { CreateProgramDialog } from '@/components/cortes/CreateProgramDialog';
+import { EditProgramDialog } from '@/components/cortes/EditProgramDialog';
 import { Button } from '@/components/ui/button';
 import { Plus, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
@@ -26,6 +27,7 @@ const CortesHub = () => {
   const navigate = useNavigate();
   const [programs, setPrograms] = useState<CortesProgram[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingProgram, setEditingProgram] = useState<CortesProgram | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchPrograms = async () => {
@@ -84,6 +86,7 @@ const CortesHub = () => {
               thumbType="Corte com PIP"
               previewColors={{ text: p.text_color, stroke: p.stroke_color, pip: p.pip_border_color }}
               onClick={() => navigate(`/cortes/${p.id}`)}
+              onEdit={() => setEditingProgram(p)}
               onDelete={() => handleDelete(p.id)}
             />
           ))}
@@ -106,6 +109,15 @@ const CortesHub = () => {
         onOpenChange={setDialogOpen}
         onCreated={() => { fetchPrograms(); setDialogOpen(false); }}
       />
+
+      {editingProgram && (
+        <EditProgramDialog
+          open={!!editingProgram}
+          onOpenChange={(open) => { if (!open) setEditingProgram(null); }}
+          program={editingProgram}
+          onSaved={() => { fetchPrograms(); setEditingProgram(null); }}
+        />
+      )}
     </div>
   );
 };

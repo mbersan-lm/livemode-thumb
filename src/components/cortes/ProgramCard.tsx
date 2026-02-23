@@ -1,14 +1,15 @@
-import { Trash2 } from 'lucide-react';
+import { Trash2, Pencil } from 'lucide-react';
 
 interface ProgramCardProps {
   name: string;
   thumbType: string;
   previewColors: { text: string; stroke: string; pip: string };
   onClick: () => void;
+  onEdit?: () => void;
   onDelete?: () => void;
 }
 
-export const ProgramCard = ({ name, thumbType, previewColors, onClick, onDelete }: ProgramCardProps) => {
+export const ProgramCard = ({ name, thumbType, previewColors, onClick, onEdit, onDelete }: ProgramCardProps) => {
   return (
     <div
       onClick={onClick}
@@ -26,14 +27,27 @@ export const ProgramCard = ({ name, thumbType, previewColors, onClick, onDelete 
         <p className="text-xs text-muted-foreground mt-1">{thumbType}</p>
       </div>
 
-      {onDelete && (
-        <button
-          onClick={(e) => { e.stopPropagation(); onDelete(); }}
-          className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all p-1"
-          title="Excluir programa"
-        >
-          <Trash2 className="w-4 h-4" />
-        </button>
+      {(onEdit || onDelete) && (
+        <div className="absolute top-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
+          {onEdit && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onEdit(); }}
+              className="text-muted-foreground hover:text-foreground transition-colors p-1"
+              title="Editar programa"
+            >
+              <Pencil className="w-4 h-4" />
+            </button>
+          )}
+          {onDelete && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onDelete(); }}
+              className="text-muted-foreground hover:text-destructive transition-colors p-1"
+              title="Excluir programa"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
+        </div>
       )}
     </div>
   );

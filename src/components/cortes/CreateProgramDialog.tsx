@@ -150,7 +150,7 @@ export const CreateProgramDialog = ({ open, onOpenChange, onCreated }: CreatePro
   );
 };
 
-const FileUploadButton = ({ file, onFile, accept, label }: { file: File | null; onFile: (f: File) => void; accept: string; label: string }) => (
+export const FileUploadButton = ({ file, onFile, accept, label }: { file: File | null; onFile: (f: File) => void; accept: string; label: string }) => (
   <label className="flex items-center gap-2 cursor-pointer border border-input rounded-md px-3 py-2 hover:bg-muted/50 transition-colors">
     <Upload className="w-4 h-4 text-muted-foreground shrink-0" />
     <span className="text-sm truncate">{file ? file.name : `Upload ${label}`}</span>
@@ -158,7 +158,7 @@ const FileUploadButton = ({ file, onFile, accept, label }: { file: File | null; 
   </label>
 );
 
-const ColorPicker = ({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) => (
+export const ColorPicker = ({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) => (
   <div className="space-y-1.5">
     <Label className="text-xs">{label}</Label>
     <div className="flex items-center gap-2">
