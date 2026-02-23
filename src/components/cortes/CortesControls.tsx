@@ -1121,26 +1121,6 @@ export const CortesControls = ({
       {/* Person 2 Upload — only for duas-pessoas model */}
       {thumbModel === 'duas-pessoas' && (
         <>
-          {/* Background photo upload */}
-          <div className="space-y-2">
-            <Label className="font-semibold">Foto de fundo</Label>
-            <input
-              ref={bgInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => e.target.files?.[0] && onBgUpload(e.target.files[0])}
-            />
-            <Button
-              variant={customBgImage ? 'secondary' : 'outline'}
-              className="w-full"
-              onClick={() => bgInputRef.current?.click()}
-            >
-              <Upload className="w-4 h-4 mr-2" />
-              {customBgImage ? 'Trocar fundo' : 'Upload fundo'}
-            </Button>
-          </div>
-
           <div className="space-y-2">
             <Label className="font-semibold">Pessoa (esquerda)</Label>
             <input
@@ -1362,12 +1342,10 @@ export const CortesControls = ({
         />
       </div>
 
-      {/* Background upload — pip, meio-a-meio, so-lettering */}
-      {thumbModel !== 'duas-pessoas' && (
+      {/* Background upload — only for so-lettering */}
+      {thumbModel === 'so-lettering' && (
         <div className="space-y-2">
-          <Label className="font-semibold">
-            Foto de fundo{thumbModel === 'so-lettering' ? '' : ' (opcional)'}
-          </Label>
+          <Label className="font-semibold">Foto de fundo</Label>
           <input
             ref={bgInputRef}
             type="file"
