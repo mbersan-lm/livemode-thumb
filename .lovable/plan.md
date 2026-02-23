@@ -1,39 +1,49 @@
 
 
-# Adicionar Switch on/off nas caixas de ajuste de imagem
+# Corrigir discrepancia entre preview e export do lettering
 
-## Problema
+## Problema raiz
 
-Atualmente, quando uma imagem e adicionada ao PIP ou a qualquer slot de foto, a caixa "Ajuste da imagem" abre automaticamente e fica sempre visivel. O usuario quer que essas caixas comecem fechadas e tenham um botao Switch (on/off) para controlar a visibilidade.
+As funcoes de export (`wrapText`, `fitFontSize`, `drawAutoFitText`) medem o texto bruto incluindo os marcadores `*` de highlight (ex: `*NEYMAR*`), mas esses caracteres sao removidos na hora de desenhar. Isso causa:
+
+1. **Tamanho de fonte errado** -- `fitFontSize` calcula a largura das linhas com os `*` incluidos, achando que o texto e mais largo do que realmente e, resultando em fonte menor que no preview
+2. **Quebras de linha em posicoes erradas** -- `wrapText` quebra linhas contando a largura dos `*`, gerando linhas mais curtas que o necessario
+3. **Word-break** -- O preview usa `wordBreak: 'break-word'` (CSS), que permite quebrar palavras longas; o export so quebra em espacos
 
 ## Solucao
 
 ### Arquivo: `src/components/cortes/CortesControls.tsx`
 
-1. **Adicionar estados de visibilidade** — criar estados `useState<boolean>(false)` para cada caixa de ajuste:
-   - `showPipAdjust` — ajuste imagem PIP (modelo pip)
-   - `showPipLeftAdjust` — ajuste foto esquerda (modelo pip-dividido)
-   - `showPipRightAdjust` — ajuste foto direita (modelo pip-dividido)
-   - `showPersonAdjust` — ajuste da pessoa
-   - `showPerson2Adjust` — ajuste da pessoa 2
-   - `showPerson3Adjust` — ajuste da pessoa 3
-   - `showPipDuploLeftAdjust` — ajuste PIP esquerdo (jogo-pip-duplo)
-   - `showPipDuploRightAdjust` — ajuste PIP direito (jogo-pip-duplo)
-   - E os equivalentes para o modelo jogo-v1
+**1. Criar funcao `stripHighlightMarkers`** para remover os `*` antes de medir:
 
-2. **Substituir a renderizacao condicional** — em cada bloco de ajuste (ex: `{pipImage && (<div>...Ajuste da imagem PIP...</div>)}`), trocar para `{pipImage && (<div>...header com Switch...{showPipAdjust && sliders}...</div>)}`:
-   - O container `<div>` com borda continua aparecendo quando ha imagem
-   - O header com o label "Ajuste da imagem PIP" e o botao Reset continua visivel
-   - Adicionar um componente `Switch` ao lado do label/reset
-   - Os sliders (X, Y, Zoom, Rotacao) so aparecem quando o Switch esta "on"
+```typescript
+function stripHighlightMarkers(text: string): string {
+  return text.replace(/\*/g, '');
+}
+```
 
-3. **Layout do header** — cada caixa de ajuste tera:
-   - Label do ajuste (esquerda)
-   - Switch on/off (centro-direita)
-   - Botao Reset (direita)
+**2. Corrigir `fitFontSize`** -- medir o texto sem os marcadores:
 
-4. **Import do Switch** — adicionar import do componente `Switch` de `@/components/ui/switch`
+Trocar `wrapText(ctx, text.toUpperCase(), maxW)` por `wrapText(ctx, stripHighlightMarkers(text.toUpperCase()), maxW)`.
 
-## Resultado
+**3. Corrigir `wrapText` nas chamadas dentro de `drawAutoFitText`** -- usar texto limpo para calcular as quebras de linha, e depois re-aplicar os marcadores nos segmentos correspondentes.
 
-Ao fazer upload de uma imagem, aparece a caixa de ajuste com o titulo e um Switch "off". O usuario clica no Switch para ver os sliders e clica novamente para esconde-los. Isso aplica-se a todas as caixas de ajuste em todos os modelos.
+A abordagem mais simples e robusta: dentro de `drawAutoFitText`, antes de fazer o wrap, remover os `*` do texto para calcular o layout (fontSize e quebras de linha), e depois ao desenhar cada linha, usar o texto original com marcadores para o `parseHighlight` funcionar corretamente. Isso requer:
+
+- Calcular `fontSize` e `lines` usando texto limpo (sem `*`)
+- Mapear cada linha limpa de volta ao texto original para manter os highlights
+- Manter o restante do fluxo de desenho inalterado
+
+**4. Melhorar `wrapText` com suporte a break-word** -- adicionar logica para quebrar palavras longas que excedam `maxWidth` sozinhas, replicando o comportamento CSS `word-break: break-word`.
+
+## Detalhes tecnicos
+
+A funcao `drawAutoFitText` sera atualizada para:
+
+1. Criar versao limpa do texto: `cleanText = stripHighlightMarkers(text)`
+2. Usar `cleanText` em `fitFontSize` e `wrapText` para layout
+3. Reconstruir as linhas com os marcadores originais para preservar os highlights na renderizacao
+4. Adicionar fallback de quebra por caractere em `wrapText` para palavras que sozinhas excedam a largura
+
+Nenhum outro arquivo precisa ser alterado -- o preview (CortesCanvas) ja funciona corretamente.
+
