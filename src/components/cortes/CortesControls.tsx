@@ -1517,6 +1517,16 @@ export const CortesControls = ({
                 </div>
                 {quadrantVisibility[item.idx] && (
                   <div className="space-y-2">
+                    <Select onValueChange={(url) => onQuadrantPresetSelect?.(item.idx, url)}>
+                      <SelectTrigger className="w-full h-8 text-xs">
+                        <SelectValue placeholder="Selecionar preset..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {QUADRANT_PRESETS.map((p) => (
+                          <SelectItem key={p.url} value={p.url}>{p.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <input ref={item.inputRef} type="file" accept="image/*" className="hidden"
                       onChange={(e) => e.target.files?.[0] && item.onUpload(e.target.files[0])} />
                     <Button variant={item.cutout ? 'secondary' : 'outline'} className="w-full" size="sm"
