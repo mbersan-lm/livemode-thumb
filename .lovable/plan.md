@@ -1,44 +1,20 @@
 
 
-# Corrigir deformacao da foto de fundo no export
+# Adicionar logo negativa para programas Geral CazéTv
 
-## Problema
+## O que sera feito
 
-No preview, a imagem de fundo usa `object-fit: cover` (CSS), que redimensiona a imagem mantendo a proporcao e cortando o excesso. No export, o codigo usa `ctx.drawImage(bgImg, 0, 0, 1280, 720)`, que estica a imagem para preencher exatamente 1280x720px, deformando-a se a proporcao original for diferente.
+Salvar a logo negativa enviada no projeto e ativar a opcao de troca positiva/negativa nos programas "Geral CazéTv" e "Geral CazéTv Brasil", igual ja funciona no "Roda de Bobo".
 
-## Solucao
+## Alteracoes
 
-### Arquivo: `src/components/cortes/CortesControls.tsx`
+### 1. Novo asset
+- Copiar a imagem enviada para `public/cortes/logos-geral-negativa.png`
 
-Substituir a linha:
+### 2. Arquivo: `src/pages/CortesProgramBuilder.tsx`
+- Adicionar a prop `logosNegativeImage` no componente `CortesThumbBuilder` quando o programa for "Geral CazéTv" ou "Geral CazéTv Brasil"
+- Valor: `"/cortes/logos-geral-negativa.png"`
+- Logica: condicional pelo nome do programa, similar ao que ja e feito para `divisoriaImage` e `allowAllModels`
 
-```
-ctx.drawImage(bgImg, 0, 0, W, H);
-```
-
-Por uma logica que replica o comportamento de `object-fit: cover`:
-
-1. Calcular a proporcao da imagem original (`bgImg.naturalWidth / bgImg.naturalHeight`)
-2. Calcular a proporcao do canvas (1280/720)
-3. Se a imagem for mais larga proporcionalmente, ajustar pela altura e centralizar horizontalmente (cortando os lados)
-4. Se a imagem for mais alta proporcionalmente, ajustar pela largura e centralizar verticalmente (cortando topo/base)
-
-```typescript
-// object-fit: cover
-const imgRatio = bgImg.naturalWidth / bgImg.naturalHeight;
-const canvasRatio = W / H;
-let sx = 0, sy = 0, sw = bgImg.naturalWidth, sh = bgImg.naturalHeight;
-if (imgRatio > canvasRatio) {
-  // imagem mais larga: cortar lados
-  sw = bgImg.naturalHeight * canvasRatio;
-  sx = (bgImg.naturalWidth - sw) / 2;
-} else {
-  // imagem mais alta: cortar topo/base
-  sh = bgImg.naturalWidth / canvasRatio;
-  sy = (bgImg.naturalHeight - sh) / 2;
-}
-ctx.drawImage(bgImg, sx, sy, sw, sh, 0, 0, W, H);
-```
-
-Nenhum outro arquivo precisa ser alterado.
+Nenhuma alteracao no banco de dados ou em outros arquivos e necessaria -- a infraestrutura de troca de logo (seletor, estado, renderizacao) ja existe no `CortesThumbBuilder` e `CortesControls`.
 
