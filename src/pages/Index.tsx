@@ -193,6 +193,7 @@ const Index = () => {
 
             <TabsContent value="photo" className="mt-5">
               <PhotoControls
+                activeCanvas={activeCanvas}
                 photoTransform={state.photoTransform}
                 initialScale={state.initialScale}
                 onTransformChange={handleTransformChange}
