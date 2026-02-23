@@ -153,7 +153,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
                     fontSize: `${Math.round(parseInt(config.scoreFontSize) * 0.245)}px`,
                     lineHeight: '1',
                     marginTop: '4px',
-                    transform: template === 'seriea' ? 'translateX(5%)' : 'translateX(-15%)',
+                    transform: template === 'seriea' ? 'translateX(3%)' : 'translateX(-15%)',
                   }}
                 >
                   <span>({matchData.homeScoreSmall})</span>
