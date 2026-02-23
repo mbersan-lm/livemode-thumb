@@ -1,24 +1,29 @@
 
 
-# Adicionar controles de upload de imagem PIP ao modelo "Com PIP dividido"
+# Simplificar aba Photo — remover sub-tabs redundantes
 
 ## Problema
 
-O modelo "Com PIP dividido" nao possui campos de upload para as duas imagens PIP. O bloco de controles do modelo `pip` so aparece quando `thumbModel === 'pip'`, e o bloco do `jogo-pip-duplo` so aparece quando `thumbModel === 'jogo-pip-duplo'`. O resultado e que ao selecionar "Com PIP dividido", nao ha como fazer upload das fotos do PIP.
+A aba "Photo" possui sub-tabs internas ("Melhores Momentos" / "Jogo Completo") que sao redundantes, pois ja existe o seletor "Thumbnail Ativa" acima das tabs que controla qual canvas esta visivel. O usuario quer apenas uma area de upload unica que mude automaticamente conforme a thumbnail ativa.
 
 ## Solucao
 
-### Arquivo: `src/components/cortes/CortesControls.tsx`
+Usar o estado `activeCanvas` (ja existente no Index.tsx) para determinar qual conjunto de controles de foto mostrar, eliminando as sub-tabs internas.
 
-Adicionar um novo bloco de controles exclusivo para `thumbModel === 'pip-dividido'`, logo apos o bloco do modelo `pip` (apos linha 895). O bloco contera:
+## Arquivos modificados
 
-1. **Imagem PIP esquerda** — Upload usando `onPipUpload` + controles de ajuste (X, Y, Zoom) usando `pipTransform`/`onPipTransformChange`
-2. **Imagem PIP direita** — Upload usando `onPip2Upload` + controles de ajuste (X, Y, Zoom) usando `pip2Transform`/`onPip2TransformChange`
-3. **Moldura PIP** — Controles de posicao e tamanho da moldura unica (`pipFrame`/`onPipFrameChange`), identicos aos do modelo `pip` normal
+### 1. `src/components/controls/PhotoControls.tsx`
 
-Os labels serao "Imagem PIP esquerda" e "Imagem PIP direita" para deixar claro que sao as duas fotos dentro da moldura unica.
+- Adicionar prop `activeCanvas: 'mm' | 'jc'` a interface.
+- Remover o componente `Tabs`/`TabsList`/`TabsTrigger`/`TabsContent` interno.
+- Renderizar condicionalmente: se `activeCanvas === 'mm'`, mostra os controles de "Melhores Momentos" (upload, sliders X/Y/Zoom, AI Expand, Center, Reset). Se `activeCanvas === 'jc'`, mostra os controles de "Jogo Completo".
+- O resultado e uma unica area de upload e ajustes, sem sub-tabs.
 
-### Nenhum outro arquivo precisa ser alterado
+### 2. `src/pages/Index.tsx`
 
-O canvas (preview) e o export ja funcionam corretamente com o modelo pip-dividido — o problema era apenas a ausencia dos campos de upload na interface de controles.
+- Passar a prop `activeCanvas` para o componente `PhotoControls`.
+
+## Resultado
+
+Ao clicar na aba "Photo", o usuario vera diretamente o upload e os controles da thumbnail que esta ativa no momento, sem precisar alternar entre sub-tabs.
 
