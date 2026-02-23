@@ -1,29 +1,39 @@
 
 
-# Simplificar aba Photo — remover sub-tabs redundantes
+# Adicionar Switch on/off nas caixas de ajuste de imagem
 
 ## Problema
 
-A aba "Photo" possui sub-tabs internas ("Melhores Momentos" / "Jogo Completo") que sao redundantes, pois ja existe o seletor "Thumbnail Ativa" acima das tabs que controla qual canvas esta visivel. O usuario quer apenas uma area de upload unica que mude automaticamente conforme a thumbnail ativa.
+Atualmente, quando uma imagem e adicionada ao PIP ou a qualquer slot de foto, a caixa "Ajuste da imagem" abre automaticamente e fica sempre visivel. O usuario quer que essas caixas comecem fechadas e tenham um botao Switch (on/off) para controlar a visibilidade.
 
 ## Solucao
 
-Usar o estado `activeCanvas` (ja existente no Index.tsx) para determinar qual conjunto de controles de foto mostrar, eliminando as sub-tabs internas.
+### Arquivo: `src/components/cortes/CortesControls.tsx`
 
-## Arquivos modificados
+1. **Adicionar estados de visibilidade** — criar estados `useState<boolean>(false)` para cada caixa de ajuste:
+   - `showPipAdjust` — ajuste imagem PIP (modelo pip)
+   - `showPipLeftAdjust` — ajuste foto esquerda (modelo pip-dividido)
+   - `showPipRightAdjust` — ajuste foto direita (modelo pip-dividido)
+   - `showPersonAdjust` — ajuste da pessoa
+   - `showPerson2Adjust` — ajuste da pessoa 2
+   - `showPerson3Adjust` — ajuste da pessoa 3
+   - `showPipDuploLeftAdjust` — ajuste PIP esquerdo (jogo-pip-duplo)
+   - `showPipDuploRightAdjust` — ajuste PIP direito (jogo-pip-duplo)
+   - E os equivalentes para o modelo jogo-v1
 
-### 1. `src/components/controls/PhotoControls.tsx`
+2. **Substituir a renderizacao condicional** — em cada bloco de ajuste (ex: `{pipImage && (<div>...Ajuste da imagem PIP...</div>)}`), trocar para `{pipImage && (<div>...header com Switch...{showPipAdjust && sliders}...</div>)}`:
+   - O container `<div>` com borda continua aparecendo quando ha imagem
+   - O header com o label "Ajuste da imagem PIP" e o botao Reset continua visivel
+   - Adicionar um componente `Switch` ao lado do label/reset
+   - Os sliders (X, Y, Zoom, Rotacao) so aparecem quando o Switch esta "on"
 
-- Adicionar prop `activeCanvas: 'mm' | 'jc'` a interface.
-- Remover o componente `Tabs`/`TabsList`/`TabsTrigger`/`TabsContent` interno.
-- Renderizar condicionalmente: se `activeCanvas === 'mm'`, mostra os controles de "Melhores Momentos" (upload, sliders X/Y/Zoom, AI Expand, Center, Reset). Se `activeCanvas === 'jc'`, mostra os controles de "Jogo Completo".
-- O resultado e uma unica area de upload e ajustes, sem sub-tabs.
+3. **Layout do header** — cada caixa de ajuste tera:
+   - Label do ajuste (esquerda)
+   - Switch on/off (centro-direita)
+   - Botao Reset (direita)
 
-### 2. `src/pages/Index.tsx`
-
-- Passar a prop `activeCanvas` para o componente `PhotoControls`.
+4. **Import do Switch** — adicionar import do componente `Switch` de `@/components/ui/switch`
 
 ## Resultado
 
-Ao clicar na aba "Photo", o usuario vera diretamente o upload e os controles da thumbnail que esta ativa no momento, sem precisar alternar entre sub-tabs.
-
+Ao fazer upload de uma imagem, aparece a caixa de ajuste com o titulo e um Switch "off". O usuario clica no Switch para ver os sliders e clica novamente para esconde-los. Isso aplica-se a todas as caixas de ajuste em todos os modelos.
