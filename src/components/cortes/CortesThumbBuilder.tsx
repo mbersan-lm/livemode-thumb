@@ -362,7 +362,7 @@ export const CortesThumbBuilder = ({
             onPerson2TransformChange={(t) => setPerson2Transform((prev) => ({ ...prev, ...t }))}
             onPerson3TransformChange={(t) => setPerson3Transform((prev) => ({ ...prev, ...t }))}
             onPipFrameChange={(f) => {
-              if (thumbModel === 'jogo-pip-duplo' || thumbModel === 'pip-dividido') {
+              if (thumbModel === 'jogo-pip-duplo') {
                 // Sincroniza width, height, y; pip2.x é sempre espelhado
                 setPipFrame((pip1Prev) => {
                   const pip1Next = { ...pip1Prev, ...f };
