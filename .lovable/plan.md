@@ -1,49 +1,42 @@
 
 
-# Corrigir discrepancia entre preview e export do lettering
+# Corrigir renderizacao de highlights (*cores*) no export
 
-## Problema raiz
+## Problema
 
-As funcoes de export (`wrapText`, `fitFontSize`, `drawAutoFitText`) medem o texto bruto incluindo os marcadores `*` de highlight (ex: `*NEYMAR*`), mas esses caracteres sao removidos na hora de desenhar. Isso causa:
+Quando o texto e exportado, as palavras marcadas com `*` para highlight (ex: `*NEYMAR*`) estao aparecendo com o caractere `*` literal na imagem exportada, ao inves de renderizar com a cor de destaque como no preview.
 
-1. **Tamanho de fonte errado** -- `fitFontSize` calcula a largura das linhas com os `*` incluidos, achando que o texto e mais largo do que realmente e, resultando em fonte menor que no preview
-2. **Quebras de linha em posicoes erradas** -- `wrapText` quebra linhas contando a largura dos `*`, gerando linhas mais curtas que o necessario
-3. **Word-break** -- O preview usa `wordBreak: 'break-word'` (CSS), que permite quebrar palavras longas; o export so quebra em espacos
+## Causa raiz
+
+A funcao `mapCleanLinesToOriginal` reconstroi as linhas com os marcadores `*`, mas quando uma quebra de linha acontece no meio de um trecho destacado, os marcadores ficam "orfaos" -- por exemplo, uma linha termina com `*PALAVRA` e a proxima comeca com `RESTO*`. A funcao `parseHighlight` espera o padrao completo `*texto*` numa unica linha e, ao nao encontra-lo, trata os `*` como texto normal, exibindo-os literalmente.
 
 ## Solucao
 
 ### Arquivo: `src/components/cortes/CortesControls.tsx`
 
-**1. Criar funcao `stripHighlightMarkers`** para remover os `*` antes de medir:
+**1. Corrigir `mapCleanLinesToOriginal`** para garantir que cada linha tenha marcadores `*` completos (pares fechados):
 
-```typescript
-function stripHighlightMarkers(text: string): string {
-  return text.replace(/\*/g, '');
-}
-```
+- Quando um highlight comeca numa linha mas nao fecha (termina sem `*` de fechamento), adicionar `*` no final da linha e abrir `*` no inicio da proxima linha
+- Isso garante que cada linha individual contenha apenas padroes `*texto*` completos
 
-**2. Corrigir `fitFontSize`** -- medir o texto sem os marcadores:
+**2. Alternativa mais robusta** -- mudar a estrategia de renderizacao:
 
-Trocar `wrapText(ctx, text.toUpperCase(), maxW)` por `wrapText(ctx, stripHighlightMarkers(text.toUpperCase()), maxW)`.
+Em vez de depender de `mapCleanLinesToOriginal` + `parseHighlight` por linha, processar o texto original inteiro em segmentos (highlight e normal) antes do wrap, e fazer o wrap consciente dos segmentos. Cada linha sera uma lista de segmentos ja classificados (highlight ou nao), eliminando a necessidade de re-parsear.
 
-**3. Corrigir `wrapText` nas chamadas dentro de `drawAutoFitText`** -- usar texto limpo para calcular as quebras de linha, e depois re-aplicar os marcadores nos segmentos correspondentes.
+A abordagem escolhida sera a opcao 1 (corrigir `mapCleanLinesToOriginal`) por ser menos invasiva:
 
-A abordagem mais simples e robusta: dentro de `drawAutoFitText`, antes de fazer o wrap, remover os `*` do texto para calcular o layout (fontSize e quebras de linha), e depois ao desenhar cada linha, usar o texto original com marcadores para o `parseHighlight` funcionar corretamente. Isso requer:
-
-- Calcular `fontSize` e `lines` usando texto limpo (sem `*`)
-- Mapear cada linha limpa de volta ao texto original para manter os highlights
-- Manter o restante do fluxo de desenho inalterado
-
-**4. Melhorar `wrapText` com suporte a break-word** -- adicionar logica para quebrar palavras longas que excedam `maxWidth` sozinhas, replicando o comportamento CSS `word-break: break-word`.
+- Rastrear se estamos dentro de um highlight (`*` aberto) ao percorrer o texto original
+- Ao finalizar uma linha que esta dentro de um highlight, fechar com `*` e abrir `*` na proxima linha
+- Resultado: toda linha tera pares `*...*` completos, e `parseHighlight` funcionara corretamente
 
 ## Detalhes tecnicos
 
-A funcao `drawAutoFitText` sera atualizada para:
+A funcao `mapCleanLinesToOriginal` sera atualizada para:
 
-1. Criar versao limpa do texto: `cleanText = stripHighlightMarkers(text)`
-2. Usar `cleanText` em `fitFontSize` e `wrapText` para layout
-3. Reconstruir as linhas com os marcadores originais para preservar os highlights na renderizacao
-4. Adicionar fallback de quebra por caractere em `wrapText` para palavras que sozinhas excedam a largura
+1. Manter um flag `insideHighlight` que rastreia se um `*` de abertura foi encontrado sem seu par de fechamento
+2. Ao terminar de mapear uma linha, se `insideHighlight === true`, adicionar `*` ao final da linha mapeada
+3. Ao iniciar a proxima linha, se `insideHighlight === true`, prefixar com `*`
+4. Isso garante que `parseHighlight` receba linhas com padroes completos `*texto*`
 
-Nenhum outro arquivo precisa ser alterado -- o preview (CortesCanvas) ja funciona corretamente.
+Nenhum outro arquivo precisa ser alterado.
 
