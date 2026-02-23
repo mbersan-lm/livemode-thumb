@@ -392,6 +392,9 @@ interface CortesControlsProps {
   currentCanvasProps: CurrentCanvasProps;
   textBoxHeight: number;
   onTextBoxHeightChange: (h: number) => void;
+  logosVariant?: 'positiva' | 'negativa';
+  onLogosVariantChange?: (v: 'positiva' | 'negativa') => void;
+  hasLogosNegative?: boolean;
 }
 
 export const CortesControls = ({
@@ -447,6 +450,9 @@ export const CortesControls = ({
   currentCanvasProps,
   textBoxHeight,
   onTextBoxHeightChange,
+  logosVariant = 'positiva',
+  onLogosVariantChange,
+  hasLogosNegative = false,
 }: CortesControlsProps) => {
   const pipInputRef = useRef<HTMLInputElement>(null);
   const pip2InputRef = useRef<HTMLInputElement>(null);
@@ -888,7 +894,22 @@ export const CortesControls = ({
         </Select>
       </div>
 
-      {/* PIP Upload — for pip model */}
+      {/* Logo variant toggle */}
+      {hasLogosNegative && (
+        <div className="space-y-2">
+          <Label className="font-semibold">Versão da Logo</Label>
+          <Select value={logosVariant} onValueChange={(v) => onLogosVariantChange?.(v as 'positiva' | 'negativa')}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="positiva">Positiva (branca)</SelectItem>
+              <SelectItem value="negativa">Negativa (preta)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
       {thumbModel === 'pip' && (
         <>
           <div className="space-y-2">
