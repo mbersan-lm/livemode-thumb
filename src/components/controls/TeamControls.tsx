@@ -1,5 +1,6 @@
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import { teamsBrasileirao } from '@/data/teams';
 import { teamsLigue1 } from '@/data/teamsLigue1';
 import { teamsBundesliga } from '@/data/teamsBundesliga';
@@ -95,6 +96,42 @@ export const TeamControls = ({ matchData, onMatchDataChange, template }: TeamCon
           />
         </div>
       </div>
+
+      <div className="flex items-center justify-between pt-4 border-t border-border">
+        <Label htmlFor="small-score-switch">Placar menor</Label>
+        <Switch
+          id="small-score-switch"
+          checked={matchData.showSmallScore}
+          onCheckedChange={(checked) => onMatchDataChange({ showSmallScore: checked })}
+        />
+      </div>
+
+      {matchData.showSmallScore && (
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="home-score-small">Home (menor)</Label>
+            <Input
+              id="home-score-small"
+              type="number"
+              min="0"
+              value={matchData.homeScoreSmall}
+              onChange={(e) => onMatchDataChange({ homeScoreSmall: parseInt(e.target.value) || 0 })}
+              className="mt-2"
+            />
+          </div>
+          <div>
+            <Label htmlFor="away-score-small">Away (menor)</Label>
+            <Input
+              id="away-score-small"
+              type="number"
+              min="0"
+              value={matchData.awayScoreSmall}
+              onChange={(e) => onMatchDataChange({ awayScoreSmall: parseInt(e.target.value) || 0 })}
+              className="mt-2"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

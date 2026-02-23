@@ -104,44 +104,64 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
             />
 
             {/* Scores */}
-            <div className="flex items-center gap-4">
-              <div 
-                id="HOME_SCORE"
-                className="text-white font-bold"
-                style={{ 
-                  fontFamily: config.fontFamily,
-                  fontSize: config.scoreFontSize,
-                  lineHeight: '1',
-                  letterSpacing: '-0.01em'
-                }}
-              >
-                {matchData.homeScore}
+            <div className="flex flex-col items-center">
+              <div className="flex items-center gap-4">
+                <div 
+                  id="HOME_SCORE"
+                  className="text-white font-bold"
+                  style={{ 
+                    fontFamily: config.fontFamily,
+                    fontSize: config.scoreFontSize,
+                    lineHeight: '1',
+                    letterSpacing: '-0.01em'
+                  }}
+                >
+                  {matchData.homeScore}
+                </div>
+                <div 
+                  id="X_CHAR"
+                  className="font-bold"
+                  style={{ 
+                    fontFamily: config.xFontFamily || config.fontFamily,
+                    fontSize: config.xFontSize,
+                    lineHeight: '1',
+                    letterSpacing: '-0.01em',
+                    color: config.xColor || '#C9FF2E',
+                  }}
+                >
+                  x
+                </div>
+                <div 
+                  id="AWAY_SCORE"
+                  className="text-white font-bold"
+                  style={{ 
+                    fontFamily: config.fontFamily,
+                    fontSize: config.scoreFontSize,
+                    lineHeight: '1',
+                    letterSpacing: '-0.01em'
+                  }}
+                >
+                  {matchData.awayScore}
+                </div>
               </div>
-              <div 
-                id="X_CHAR"
-                className="font-bold"
-                style={{ 
-                  fontFamily: config.xFontFamily || config.fontFamily,
-                  fontSize: config.xFontSize,
-                  lineHeight: '1',
-                  letterSpacing: '-0.01em',
-                  color: config.xColor || '#C9FF2E',
-                }}
-              >
-                x
-              </div>
-              <div 
-                id="AWAY_SCORE"
-                className="text-white font-bold"
-                style={{ 
-                  fontFamily: config.fontFamily,
-                  fontSize: config.scoreFontSize,
-                  lineHeight: '1',
-                  letterSpacing: '-0.01em'
-                }}
-              >
-                {matchData.awayScore}
-              </div>
+
+              {matchData.showSmallScore && (
+                <div 
+                  className="flex items-center gap-2 text-white font-bold"
+                  style={{
+                    fontFamily: config.fontFamily,
+                    fontSize: `${Math.round(parseInt(config.scoreFontSize) * 0.5)}px`,
+                    lineHeight: '1',
+                    marginTop: '-8px',
+                  }}
+                >
+                  <span>(</span>
+                  <span>{matchData.homeScoreSmall}</span>
+                  <span style={{ color: config.xColor || '#C9FF2E', fontFamily: config.xFontFamily || config.fontFamily, fontSize: `${Math.round(parseInt(config.xFontSize) * 0.5)}px` }}>x</span>
+                  <span>{matchData.awayScoreSmall}</span>
+                  <span>)</span>
+                </div>
+              )}
             </div>
 
             {/* Away Crest */}
