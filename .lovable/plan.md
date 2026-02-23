@@ -1,12 +1,12 @@
 
-# Ajustar posicao do placar de penaltis
+# Mover placar de penaltis 15% para a esquerda
 
 ## Alteracao
 
-O `marginTop` atual e `-14px`, o que deixa o placar de penaltis muito proximo (grudado) ao placar principal. A alteracao sera mudar de `-14px` para `4px`, criando um pequeno espacamento entre os dois placares sem afastar demais.
+Adicionar `transform: translateX(-15%)` ao container do placar de penaltis para deslocar 15% para a esquerda, mantendo tudo mais inalterado.
 
-### `src/components/ThumbnailCanvas.tsx` (linha 155)
+### `src/components/ThumbnailCanvas.tsx` (linha 149-156)
 
-- Alterar `marginTop: '-14px'` para `marginTop: '4px'`
+No `style` do div do placar de penaltis, adicionar `transform: 'translateX(-15%)'`.
 
-Isso adiciona 4px de espaco abaixo do placar principal, separando visualmente os dois sem distanciar demais.
+Resultado: o bloco `(3) x (3)` sera deslocado 15% para a esquerda em relacao a sua posicao atual centralizada.
