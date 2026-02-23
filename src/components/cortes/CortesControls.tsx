@@ -476,6 +476,7 @@ export const CortesControls = ({
   onPipFromBase64,
   quadrantVisibility = [true, true, true, true],
   onQuadrantVisibilityChange,
+  onQuadrantPresetSelect,
 }: CortesControlsProps) => {
   const pipInputRef = useRef<HTMLInputElement>(null);
   const pip2InputRef = useRef<HTMLInputElement>(null);
