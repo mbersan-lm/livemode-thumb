@@ -340,6 +340,7 @@ interface CurrentCanvasProps {
   customFontFamily?: string;
   divisoriaImage?: string;
   textBoxHeight?: number;
+  quadrantVisibility?: boolean[];
 }
 
 interface CortesControlsProps {
@@ -405,6 +406,8 @@ interface CortesControlsProps {
   onLogosVariantChange?: (v: 'positiva' | 'negativa') => void;
   hasLogosNegative?: boolean;
   onPipFromBase64?: (base64: string) => void;
+  quadrantVisibility?: boolean[];
+  onQuadrantVisibilityChange?: (v: boolean[]) => void;
 }
 
 export const CortesControls = ({
@@ -470,6 +473,8 @@ export const CortesControls = ({
   onLogosVariantChange,
   hasLogosNegative = false,
   onPipFromBase64,
+  quadrantVisibility = [true, true, true, true],
+  onQuadrantVisibilityChange,
 }: CortesControlsProps) => {
   const pipInputRef = useRef<HTMLInputElement>(null);
   const pip2InputRef = useRef<HTMLInputElement>(null);
@@ -812,9 +817,10 @@ export const CortesControls = ({
         ];
         const qW = W / 2;
         const qH = H / 2;
+        const qVis = props.quadrantVisibility ?? [true, true, true, true];
         for (let i = 0; i < cutouts.length; i++) {
           const c = cutouts[i];
-          if (!c.img) continue;
+          if (!c.img || !qVis[i]) continue;
           const q = quadrants[i];
           ctx.save();
           ctx.beginPath();
@@ -1436,41 +1442,56 @@ export const CortesControls = ({
         </>
       )}
 
-      {/* Thumb Principal — 4 cutout uploads */}
+      {/* Thumb Principal — 4 quadrant uploads with visibility toggles */}
       {thumbModel === 'thumb-principal' && (
         <>
           {[
-            { label: 'Foto 1', cutout: personCutout, inputRef: personInputRef, isRemoving: isRemovingBg, onUpload: onPersonUpload, transform: personTransform, onTransformChange: onPersonTransformChange, showAdjust: showPerson1Adjust, setShowAdjust: setShowPerson1Adjust },
-            { label: 'Foto 2', cutout: person2Cutout, inputRef: person2InputRef, isRemoving: isRemovingBg2, onUpload: onPerson2Upload, transform: person2Transform, onTransformChange: onPerson2TransformChange, showAdjust: showPerson2Adjust, setShowAdjust: setShowPerson2Adjust },
-            { label: 'Foto 3', cutout: person3Cutout, inputRef: person3InputRef, isRemoving: isRemovingBg3, onUpload: onPerson3Upload!, transform: person3Transform, onTransformChange: onPerson3TransformChange!, showAdjust: showPerson3Adjust, setShowAdjust: setShowPerson3Adjust },
-            { label: 'Foto 4', cutout: person4Cutout, inputRef: person4InputRef, isRemoving: isRemovingBg4, onUpload: onPerson4Upload!, transform: person4Transform, onTransformChange: onPerson4TransformChange!, showAdjust: showPerson4Adjust, setShowAdjust: setShowPerson4Adjust },
-          ].map((item, idx) => (
-            <div key={idx}>
-              <div className="space-y-2">
-                <Label className="font-semibold">{item.label}</Label>
-                <input ref={item.inputRef} type="file" accept="image/*" className="hidden"
-                  onChange={(e) => e.target.files?.[0] && item.onUpload(e.target.files[0])} />
-                <Button variant={item.cutout ? 'secondary' : 'outline'} className="w-full"
-                  disabled={item.isRemoving} onClick={() => item.inputRef.current?.click()}>
-                  {item.isRemoving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Removendo fundo...</>
-                    : <><Upload className="w-4 h-4 mr-2" />{item.cutout ? `Trocar ${item.label.toLowerCase()}` : `Upload ${item.label.toLowerCase()}`}</>}
-                </Button>
+            { label: 'Quadrante 1 (↖)', cutout: personCutout, inputRef: personInputRef, isRemoving: isRemovingBg, onUpload: onPersonUpload, transform: personTransform, onTransformChange: onPersonTransformChange, showAdjust: showPerson1Adjust, setShowAdjust: setShowPerson1Adjust, idx: 0 },
+            { label: 'Quadrante 2 (↗)', cutout: person2Cutout, inputRef: person2InputRef, isRemoving: isRemovingBg2, onUpload: onPerson2Upload, transform: person2Transform, onTransformChange: onPerson2TransformChange, showAdjust: showPerson2Adjust, setShowAdjust: setShowPerson2Adjust, idx: 1 },
+            { label: 'Quadrante 3 (↙)', cutout: person3Cutout, inputRef: person3InputRef, isRemoving: isRemovingBg3, onUpload: onPerson3Upload!, transform: person3Transform, onTransformChange: onPerson3TransformChange!, showAdjust: showPerson3Adjust, setShowAdjust: setShowPerson3Adjust, idx: 2 },
+            { label: 'Quadrante 4 (↘)', cutout: person4Cutout, inputRef: person4InputRef, isRemoving: isRemovingBg4, onUpload: onPerson4Upload!, transform: person4Transform, onTransformChange: onPerson4TransformChange!, showAdjust: showPerson4Adjust, setShowAdjust: setShowPerson4Adjust, idx: 3 },
+          ].map((item) => (
+            <div key={item.idx} className={`p-3 rounded-lg border border-border ${quadrantVisibility[item.idx] ? 'bg-muted/30' : 'bg-muted/10 opacity-60'}`}>
+              <div className="flex items-center justify-between mb-2">
+                <Label className="font-semibold text-sm">{item.label}</Label>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">{quadrantVisibility[item.idx] ? 'Visível' : 'Oculto'}</span>
+                  <Switch
+                    checked={quadrantVisibility[item.idx]}
+                    onCheckedChange={(checked) => {
+                      const next = [...quadrantVisibility];
+                      next[item.idx] = checked;
+                      onQuadrantVisibilityChange?.(next);
+                    }}
+                  />
+                </div>
               </div>
-              {item.cutout && (
-                <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30 mt-2">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste {item.label.toLowerCase()}</Label>
-                    <div className="flex items-center gap-2">
-                      <Switch checked={item.showAdjust} onCheckedChange={item.setShowAdjust} />
-                      <button onClick={() => item.onTransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+              {quadrantVisibility[item.idx] && (
+                <div className="space-y-2">
+                  <input ref={item.inputRef} type="file" accept="image/*" className="hidden"
+                    onChange={(e) => e.target.files?.[0] && item.onUpload(e.target.files[0])} />
+                  <Button variant={item.cutout ? 'secondary' : 'outline'} className="w-full" size="sm"
+                    disabled={item.isRemoving} onClick={() => item.inputRef.current?.click()}>
+                    {item.isRemoving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Removendo fundo...</>
+                      : <><Upload className="w-4 h-4 mr-2" />{item.cutout ? 'Trocar foto' : 'Upload foto'}</>}
+                  </Button>
+                  {item.cutout && (
+                    <div className="space-y-3 p-2 rounded border border-border bg-background/50 mt-1">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste</Label>
+                        <div className="flex items-center gap-2">
+                          <Switch checked={item.showAdjust} onCheckedChange={item.setShowAdjust} />
+                          <button onClick={() => item.onTransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                        </div>
+                      </div>
+                      {item.showAdjust && (<>
+                        <div><Label className="text-xs">X: {item.transform.x}px</Label><Slider value={[item.transform.x]} onValueChange={([x]) => item.onTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
+                        <div><Label className="text-xs">Y: {item.transform.y}px</Label><Slider value={[item.transform.y]} onValueChange={([y]) => item.onTransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
+                        <div><Label className="text-xs">Zoom: {item.transform.scale.toFixed(2)}x</Label><Slider value={[item.transform.scale]} onValueChange={([scale]) => item.onTransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
+                        <div><Label className="text-xs">Rotação: {item.transform.rotation}°</Label><Slider value={[item.transform.rotation]} onValueChange={([rotation]) => item.onTransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
+                      </>)}
                     </div>
-                  </div>
-                  {item.showAdjust && (<>
-                    <div><Label className="text-xs">Posição X: {item.transform.x}px</Label><Slider value={[item.transform.x]} onValueChange={([x]) => item.onTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
-                    <div><Label className="text-xs">Posição Y: {item.transform.y}px</Label><Slider value={[item.transform.y]} onValueChange={([y]) => item.onTransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
-                    <div><Label className="text-xs">Zoom: {item.transform.scale.toFixed(2)}x</Label><Slider value={[item.transform.scale]} onValueChange={([scale]) => item.onTransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
-                    <div><Label className="text-xs">Rotação: {item.transform.rotation}°</Label><Slider value={[item.transform.rotation]} onValueChange={([rotation]) => item.onTransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
-                  </>)}
+                  )}
                 </div>
               )}
             </div>

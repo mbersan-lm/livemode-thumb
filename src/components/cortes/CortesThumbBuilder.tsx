@@ -96,6 +96,7 @@ export const CortesThumbBuilder = ({
   const [pip2Frame, setPip2Frame] = useState(DEFAULT_PIP2_FRAME);
   const [pip2BaseScale, setPip2BaseScale] = useState(1);
   const [customBgImage, setCustomBgImage] = useState<string | null>(null);
+  const [quadrantVisibility, setQuadrantVisibility] = useState([true, true, true, true]);
   const [logosVariant, setLogosVariant] = useState<'positiva' | 'negativa'>('positiva');
   const baseLogosImage = logosVariant === 'negativa' && logosNegativeImage ? logosNegativeImage : logosImage;
   const activeLogosImage = (thumbModel === 'thumb-principal' && thumbPrincipalLogosImage) ? thumbPrincipalLogosImage : baseLogosImage;
@@ -361,6 +362,7 @@ export const CortesThumbBuilder = ({
             highlightColor={highlightColor}
             customFontFamily={customFontFamily}
             textBoxHeight={textBoxHeight}
+            quadrantVisibility={quadrantVisibility}
           />
         </div>
       </div>
@@ -456,6 +458,8 @@ export const CortesThumbBuilder = ({
             logosVariant={logosVariant}
             onLogosVariantChange={setLogosVariant}
             hasLogosNegative={!!logosNegativeImage}
+            quadrantVisibility={quadrantVisibility}
+            onQuadrantVisibilityChange={setQuadrantVisibility}
             textBoxHeight={textBoxHeight}
             onTextBoxHeightChange={setTextBoxHeight}
             onPipFromBase64={handlePipFromBase64}
@@ -487,6 +491,7 @@ export const CortesThumbBuilder = ({
               highlightColor,
               customFontFamily,
               textBoxHeight,
+              quadrantVisibility,
             }}
           />
         </div>

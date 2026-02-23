@@ -41,6 +41,7 @@ interface CortesCanvasProps {
   highlightColor?: string;
   customFontFamily?: string;
   textBoxHeight?: number;
+  quadrantVisibility?: boolean[];
 }
 
 export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
@@ -55,7 +56,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
      divisoriaImage = '/cortes/divisoria-geral.png',
      textColor = '#F1E8D5', strokeColor = '#0C0C20', pipBorderColor = '#D02046',
      highlightColor = '#D02046', customFontFamily = "'Clash Grotesk', sans-serif",
-     textBoxHeight = 38 }, ref) => {
+     textBoxHeight = 38, quadrantVisibility = [true, true, true, true] }, ref) => {
    const showPip = thumbModel === 'pip';
    const showPipDividido = thumbModel === 'pip-dividido';
    const showPerson2 = thumbModel === 'duas-pessoas';
@@ -439,7 +440,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
             { src: person3Cutout, t: person3Transform },
             { src: person4Cutout, t: person4Transform },
           ];
-          return cutouts.map((c, i) => c.src ? (
+          return cutouts.map((c, i) => c.src && quadrantVisibility[i] ? (
             <div
               key={`tp-${i}`}
               style={{
