@@ -46,7 +46,13 @@ const CortesProgramBuilder = () => {
       programName={program!.name}
       bgImage={program!.bg_url || undefined}
       logosImage={program!.logos_url || undefined}
-      logosNegativeImage={program!.name === 'Geral CazéTv' || program!.name === 'Geral CazéTv Brasil' ? '/cortes/logos-geral-negativa.png' : undefined}
+      logosNegativeImage={
+        program!.name === 'Geral CazéTv' || program!.name === 'Geral CazéTv Brasil'
+          ? '/cortes/logos-geral-negativa.png'
+          : program!.name === 'Live CazéTv'
+            ? '/cortes/logos-live-negativa.png'
+            : undefined
+      }
       divisoriaImage={program!.name === 'Geral CazéTv Brasil' ? '/cortes/divisoria-brasil.png' : undefined}
       textColor={program!.text_color}
       strokeColor={program!.stroke_color}
