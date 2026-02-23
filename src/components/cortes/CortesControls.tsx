@@ -894,6 +894,84 @@ export const CortesControls = ({
         </>
       )}
 
+      {/* PIP Dividido — duas fotos dentro de uma moldura */}
+      {thumbModel === 'pip-dividido' && (
+        <>
+          {/* Foto esquerda */}
+          <div className="space-y-2">
+            <Label className="font-semibold">Imagem PIP esquerda</Label>
+            <input ref={pipInputRef} type="file" accept="image/*" className="hidden"
+              onChange={(e) => e.target.files?.[0] && onPipUpload(e.target.files[0])} />
+            <Button variant={pipImage ? 'secondary' : 'outline'} className="w-full"
+              onClick={() => pipInputRef.current?.click()}>
+              <Upload className="w-4 h-4 mr-2" />{pipImage ? 'Trocar foto esquerda' : 'Upload foto esquerda'}
+            </Button>
+          </div>
+          {pipImage && (
+            <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste foto esquerda</Label>
+                <button onClick={() => onPipTransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+              </div>
+              <div><Label className="text-xs">Posição X: {pipTransform.x}px</Label><Slider value={[pipTransform.x]} onValueChange={([x]) => onPipTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Posição Y: {pipTransform.y}px</Label><Slider value={[pipTransform.y]} onValueChange={([y]) => onPipTransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Zoom: {pipTransform.scale.toFixed(2)}x</Label><Slider value={[pipTransform.scale]} onValueChange={([scale]) => onPipTransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
+            </div>
+          )}
+
+          {/* Foto direita */}
+          <div className="space-y-2">
+            <Label className="font-semibold">Imagem PIP direita</Label>
+            <input ref={pip2InputRef} type="file" accept="image/*" className="hidden"
+              onChange={(e) => e.target.files?.[0] && onPip2Upload(e.target.files[0])} />
+            <Button variant={pip2Image ? 'secondary' : 'outline'} className="w-full"
+              onClick={() => pip2InputRef.current?.click()}>
+              <Upload className="w-4 h-4 mr-2" />{pip2Image ? 'Trocar foto direita' : 'Upload foto direita'}
+            </Button>
+          </div>
+          {pip2Image && (
+            <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste foto direita</Label>
+                <button onClick={() => onPip2TransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+              </div>
+              <div><Label className="text-xs">Posição X: {pip2Transform.x}px</Label><Slider value={[pip2Transform.x]} onValueChange={([x]) => onPip2TransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Posição Y: {pip2Transform.y}px</Label><Slider value={[pip2Transform.y]} onValueChange={([y]) => onPip2TransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Zoom: {pip2Transform.scale.toFixed(2)}x</Label><Slider value={[pip2Transform.scale]} onValueChange={([scale]) => onPip2TransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
+            </div>
+          )}
+
+          {/* Moldura PIP única */}
+          <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
+            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Moldura PIP</Label>
+            <div>
+              <Label className="text-xs">Posição X: {pipFrame.x.toFixed(1)}%</Label>
+              <Slider value={[pipFrame.x]} onValueChange={([x]) => onPipFrameChange({ x })} min={-20} max={80} step={0.1} className="mt-1" />
+            </div>
+            <div>
+              <Label className="text-xs">Posição Y: {pipFrame.y.toFixed(1)}%</Label>
+              <Slider value={[pipFrame.y]} onValueChange={([y]) => onPipFrameChange({ y })} min={-20} max={60} step={0.1} className="mt-1" />
+            </div>
+            <Collapsible>
+              <CollapsibleTrigger className="flex items-center gap-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors w-full">
+                <ChevronDown className="w-3 h-3" />
+                Propriedades avançadas
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-3 pt-3">
+                <div>
+                  <Label className="text-xs">Largura: {pipFrame.width.toFixed(1)}%</Label>
+                  <Slider value={[pipFrame.width]} onValueChange={([width]) => onPipFrameChange({ width })} min={10} max={90} step={0.1} className="mt-1" />
+                </div>
+                <div>
+                  <Label className="text-xs">Altura: {pipFrame.height.toFixed(1)}%</Label>
+                  <Slider value={[pipFrame.height]} onValueChange={([height]) => onPipFrameChange({ height })} min={10} max={90} step={0.1} className="mt-1" />
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          </div>
+        </>
+      )}
+
       {/* Jogo v1 — 3 cutout uploads */}
       {thumbModel === 'jogo-v1' && (
         <>
