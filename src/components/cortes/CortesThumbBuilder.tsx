@@ -230,6 +230,25 @@ export const CortesThumbBuilder = ({
     reader.readAsDataURL(file);
   };
 
+  const handleQuadrantPresetSelect = async (idx: number, url: string) => {
+    try {
+      const resp = await fetch(url);
+      const blob = await resp.blob();
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64 = e.target?.result as string;
+        if (idx === 0) setPersonCutout(base64);
+        else if (idx === 1) setPerson2Cutout(base64);
+        else if (idx === 2) setPerson3Cutout(base64);
+        else if (idx === 3) setPerson4Cutout(base64);
+      };
+      reader.readAsDataURL(blob);
+    } catch (err) {
+      console.error('Preset load error:', err);
+    }
+    reader.readAsDataURL(file);
+  };
+
   const handleUpscalePerson = async () => {
     if (!personCutout) return;
     setIsUpscalingPerson(true);
@@ -460,6 +479,7 @@ export const CortesThumbBuilder = ({
             hasLogosNegative={!!logosNegativeImage}
             quadrantVisibility={quadrantVisibility}
             onQuadrantVisibilityChange={setQuadrantVisibility}
+            onQuadrantPresetSelect={handleQuadrantPresetSelect}
             textBoxHeight={textBoxHeight}
             onTextBoxHeightChange={setTextBoxHeight}
             onPipFromBase64={handlePipFromBase64}
