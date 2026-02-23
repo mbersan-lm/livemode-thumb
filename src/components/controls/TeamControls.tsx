@@ -98,7 +98,7 @@ export const TeamControls = ({ matchData, onMatchDataChange, template }: TeamCon
       </div>
 
       <div className="flex items-center justify-between pt-4 border-t border-border">
-        <Label htmlFor="small-score-switch">Placar menor</Label>
+        <Label htmlFor="small-score-switch">Pênaltis</Label>
         <Switch
           id="small-score-switch"
           checked={matchData.showSmallScore}
