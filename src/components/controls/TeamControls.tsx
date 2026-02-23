@@ -34,13 +34,13 @@ export const TeamControls = ({ matchData, onMatchDataChange, template }: TeamCon
   return (
     <div className="space-y-6">
       <div>
-        <Label htmlFor="home-team">Home Team</Label>
+        <Label htmlFor="home-team">Time da Casa</Label>
         <Select 
           value={matchData.homeTeamId || ''} 
           onValueChange={(homeTeamId) => onMatchDataChange({ homeTeamId })}
         >
           <SelectTrigger id="home-team" className="mt-2">
-            <SelectValue placeholder="Select home team" />
+            <SelectValue placeholder="Selecionar time da casa" />
           </SelectTrigger>
           <SelectContent>
             {currentTeams.map((team) => (
@@ -53,13 +53,13 @@ export const TeamControls = ({ matchData, onMatchDataChange, template }: TeamCon
       </div>
 
       <div>
-        <Label htmlFor="away-team">Away Team</Label>
+        <Label htmlFor="away-team">Time Visitante</Label>
         <Select 
           value={matchData.awayTeamId || ''} 
           onValueChange={(awayTeamId) => onMatchDataChange({ awayTeamId })}
         >
           <SelectTrigger id="away-team" className="mt-2">
-            <SelectValue placeholder="Select away team" />
+            <SelectValue placeholder="Selecionar time visitante" />
           </SelectTrigger>
           <SelectContent>
             {currentTeams.map((team) => (
@@ -73,7 +73,7 @@ export const TeamControls = ({ matchData, onMatchDataChange, template }: TeamCon
 
       <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
         <div>
-          <Label htmlFor="home-score">Home Score</Label>
+          <Label htmlFor="home-score">Placar Casa</Label>
           <Input
             id="home-score"
             type="number"
@@ -85,7 +85,7 @@ export const TeamControls = ({ matchData, onMatchDataChange, template }: TeamCon
         </div>
 
         <div>
-          <Label htmlFor="away-score">Away Score</Label>
+          <Label htmlFor="away-score">Placar Visitante</Label>
           <Input
             id="away-score"
             type="number"
@@ -120,7 +120,7 @@ export const TeamControls = ({ matchData, onMatchDataChange, template }: TeamCon
             />
           </div>
           <div>
-            <Label htmlFor="away-score-small">Away (menor)</Label>
+            <Label htmlFor="away-score-small">Visitante (menor)</Label>
             <Input
               id="away-score-small"
               type="number"

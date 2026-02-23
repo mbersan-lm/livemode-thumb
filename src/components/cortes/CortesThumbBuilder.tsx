@@ -340,7 +340,7 @@ export const CortesThumbBuilder = ({
         <div className="p-4 md:p-6 pb-3 md:pb-4 border-b border-border flex items-center justify-between shrink-0">
           <div>
           <h1 className="text-xl font-bold tracking-tight">{programName}</h1>
-            <p className="text-xs text-muted-foreground mt-1">Thumbnail Generator</p>
+            <p className="text-xs text-muted-foreground mt-1">Gerador de Thumbnails</p>
           </div>
           <a href={backUrl} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
             ← Voltar
