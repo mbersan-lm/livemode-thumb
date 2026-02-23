@@ -150,13 +150,13 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
                   className="flex items-center gap-3 text-white font-bold"
                   style={{
                     fontFamily: config.fontFamily,
-                    fontSize: `${Math.round(parseInt(config.scoreFontSize) * 0.35)}px`,
+                    fontSize: `${Math.round(parseInt(config.scoreFontSize) * 0.245)}px`,
                     lineHeight: '1',
                     marginTop: '-14px',
                   }}
                 >
                   <span>({matchData.homeScoreSmall})</span>
-                  <span style={{ color: config.xColor || '#C9FF2E', fontFamily: config.xFontFamily || config.fontFamily, fontSize: `${Math.round(parseInt(config.xFontSize) * 0.3)}px` }}>x</span>
+                  <span style={{ color: config.xColor || '#C9FF2E', fontFamily: config.xFontFamily || config.fontFamily, fontSize: `${Math.round(parseInt(config.xFontSize) * 0.21)}px` }}>x</span>
                   <span>({matchData.awayScoreSmall})</span>
                 </div>
               )}
