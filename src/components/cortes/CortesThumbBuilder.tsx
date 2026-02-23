@@ -14,6 +14,7 @@ const DEFAULT_PIP_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
 const DEFAULT_PERSON_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
 const DEFAULT_PERSON2_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
 const DEFAULT_PERSON3_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
+const DEFAULT_PERSON4_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
 const DEFAULT_PIP_FRAME = { x: 3.0, y: 15.4, width: 56.6, height: 64.3 };
 // Para jogo-pip-duplo: ambos os PIPs compartilham width, height e y. pip2.x é calculado automaticamente.
 const DEFAULT_DUPLO_PIP_X = 3.0;
@@ -23,7 +24,7 @@ const DEFAULT_DUPLO_PIP_HEIGHT = 55.0;
 const DEFAULT_PIP1_DUPLO_FRAME = { x: DEFAULT_DUPLO_PIP_X, y: DEFAULT_DUPLO_PIP_Y, width: DEFAULT_DUPLO_PIP_WIDTH, height: DEFAULT_DUPLO_PIP_HEIGHT };
 const DEFAULT_PIP2_FRAME = { x: 100 - DEFAULT_DUPLO_PIP_X - DEFAULT_DUPLO_PIP_WIDTH, y: DEFAULT_DUPLO_PIP_Y, width: DEFAULT_DUPLO_PIP_WIDTH, height: DEFAULT_DUPLO_PIP_HEIGHT };
 
-export type ThumbModel = 'pip' | 'pip-dividido' | 'duas-pessoas' | 'meio-a-meio' | 'so-lettering' | 'jogo-v1' | 'jogo-pip-duplo';
+export type ThumbModel = 'pip' | 'pip-dividido' | 'duas-pessoas' | 'meio-a-meio' | 'so-lettering' | 'jogo-v1' | 'jogo-pip-duplo' | 'chamada-principal';
 
 interface CortesThumbBuilderProps {
   programName?: string;
@@ -39,6 +40,7 @@ interface CortesThumbBuilderProps {
   backUrl?: string;
   allowAllModels?: boolean;
   allowJogoV1?: boolean;
+  allowChamadaPrincipal?: boolean;
 }
 
 export const CortesThumbBuilder = ({
@@ -55,6 +57,7 @@ export const CortesThumbBuilder = ({
   backUrl = '/',
   allowAllModels = false,
   allowJogoV1 = false,
+  allowChamadaPrincipal = false,
 }: CortesThumbBuilderProps) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
@@ -65,12 +68,14 @@ export const CortesThumbBuilder = ({
   const [personCutout, setPersonCutout] = useState<string | null>(null);
   const [person2Cutout, setPerson2Cutout] = useState<string | null>(null);
   const [person3Cutout, setPerson3Cutout] = useState<string | null>(null);
+  const [person4Cutout, setPerson4Cutout] = useState<string | null>(null);
   const [thumbText, setThumbText] = useState('');
   const [thumbTextLeft, setThumbTextLeft] = useState('');
   const [thumbTextRight, setThumbTextRight] = useState('');
   const [isRemovingBg, setIsRemovingBg] = useState(false);
   const [isRemovingBg2, setIsRemovingBg2] = useState(false);
   const [isRemovingBg3, setIsRemovingBg3] = useState(false);
+  const [isRemovingBg4, setIsRemovingBg4] = useState(false);
   const [isUpscalingPerson, setIsUpscalingPerson] = useState(false);
   const [isUpscalingPerson2, setIsUpscalingPerson2] = useState(false);
 
@@ -78,6 +83,7 @@ export const CortesThumbBuilder = ({
   const [personTransform, setPersonTransform] = useState(DEFAULT_PERSON_TRANSFORM);
   const [person2Transform, setPerson2Transform] = useState(DEFAULT_PERSON2_TRANSFORM);
   const [person3Transform, setPerson3Transform] = useState(DEFAULT_PERSON3_TRANSFORM);
+  const [person4Transform, setPerson4Transform] = useState(DEFAULT_PERSON4_TRANSFORM);
   const [pipFrame, setPipFrame] = useState(DEFAULT_PIP_FRAME);
   const [pipBaseScale, setPipBaseScale] = useState(1);
   const [textBoxHeight, setTextBoxHeight] = useState(6);
@@ -194,6 +200,18 @@ export const CortesThumbBuilder = ({
     }
   };
 
+  const handlePerson4Upload = async (file: File) => {
+    setIsRemovingBg4(true);
+    try {
+      setPerson4Cutout(await removeBg(file));
+      toast.success('Fundo removido (pessoa 4)!');
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao remover fundo');
+    } finally {
+      setIsRemovingBg4(false);
+    }
+  };
+
   const handlePersonDirectUpload = (file: File) => {
     const reader = new FileReader();
     reader.onload = (e) => setPersonCutout(e.target?.result as string);
@@ -282,6 +300,7 @@ export const CortesThumbBuilder = ({
     setPersonCutout(null);
     setPerson2Cutout(null);
     setPerson3Cutout(null);
+    setPerson4Cutout(null);
     setThumbText('');
     setThumbTextLeft('');
     setThumbTextRight('');
@@ -290,6 +309,7 @@ export const CortesThumbBuilder = ({
     setPersonTransform(DEFAULT_PERSON_TRANSFORM);
     setPerson2Transform(DEFAULT_PERSON2_TRANSFORM);
     setPerson3Transform(DEFAULT_PERSON3_TRANSFORM);
+    setPerson4Transform(DEFAULT_PERSON4_TRANSFORM);
     setPipFrame(DEFAULT_PIP_FRAME);
     setPip2Frame(DEFAULT_PIP2_FRAME);
     setPipBaseScale(1);
@@ -315,6 +335,7 @@ export const CortesThumbBuilder = ({
             personCutout={personCutout}
             person2Cutout={person2Cutout}
             person3Cutout={person3Cutout}
+            person4Cutout={person4Cutout}
             thumbText={thumbText}
             thumbTextLeft={thumbTextLeft}
             thumbTextRight={thumbTextRight}
@@ -323,6 +344,7 @@ export const CortesThumbBuilder = ({
             personTransform={personTransform}
             person2Transform={person2Transform}
             person3Transform={person3Transform}
+            person4Transform={person4Transform}
             pipFrame={pipFrame}
             pip2Frame={pip2Frame}
             bgImage={customBgImage || bgImage}
@@ -357,17 +379,20 @@ export const CortesThumbBuilder = ({
             onThumbModelChange={setThumbModel}
             allowAllModels={allowAllModels}
             allowJogoV1={allowJogoV1}
+            allowChamadaPrincipal={allowChamadaPrincipal}
             pipImage={pipImage}
             pip2Image={pip2Image}
             personCutout={personCutout}
             person2Cutout={person2Cutout}
             person3Cutout={person3Cutout}
+            person4Cutout={person4Cutout}
             thumbText={thumbText}
             thumbTextLeft={thumbTextLeft}
             thumbTextRight={thumbTextRight}
             isRemovingBg={isRemovingBg}
             isRemovingBg2={isRemovingBg2}
             isRemovingBg3={isRemovingBg3}
+            isRemovingBg4={isRemovingBg4}
             isUpscalingPerson={isUpscalingPerson}
             isUpscalingPerson2={isUpscalingPerson2}
             onUpscalePerson={handleUpscalePerson}
@@ -377,6 +402,7 @@ export const CortesThumbBuilder = ({
             personTransform={personTransform}
             person2Transform={person2Transform}
             person3Transform={person3Transform}
+            person4Transform={person4Transform}
             pipFrame={pipFrame}
             pip2Frame={pip2Frame}
             pipBaseScale={pipBaseScale}
@@ -386,6 +412,7 @@ export const CortesThumbBuilder = ({
             onPersonUpload={handlePersonUpload}
             onPerson2Upload={handlePerson2Upload}
             onPerson3Upload={handlePerson3Upload}
+            onPerson4Upload={handlePerson4Upload}
             onPersonDirectUpload={handlePersonDirectUpload}
             onPerson2DirectUpload={handlePerson2DirectUpload}
             onTextChange={setThumbText}
@@ -396,6 +423,7 @@ export const CortesThumbBuilder = ({
             onPersonTransformChange={(t) => setPersonTransform((prev) => ({ ...prev, ...t }))}
             onPerson2TransformChange={(t) => setPerson2Transform((prev) => ({ ...prev, ...t }))}
             onPerson3TransformChange={(t) => setPerson3Transform((prev) => ({ ...prev, ...t }))}
+            onPerson4TransformChange={(t) => setPerson4Transform((prev) => ({ ...prev, ...t }))}
             onPipFrameChange={(f) => {
               if (thumbModel === 'jogo-pip-duplo') {
                 // Sincroniza width, height, y; pip2.x é sempre espelhado
@@ -433,6 +461,7 @@ export const CortesThumbBuilder = ({
               personCutout,
               person2Cutout,
               person3Cutout,
+              person4Cutout,
               thumbText,
               thumbTextLeft,
               thumbTextRight,
@@ -441,6 +470,7 @@ export const CortesThumbBuilder = ({
               personTransform,
               person2Transform,
               person3Transform,
+              person4Transform,
               pipFrame,
               pip2Frame,
               bgImage: customBgImage || bgImage,
