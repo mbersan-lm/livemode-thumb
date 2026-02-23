@@ -319,7 +319,6 @@ interface CurrentCanvasProps {
   personCutout: string | null;
   person2Cutout: string | null;
   person3Cutout?: string | null;
-  person4Cutout?: string | null;
   thumbText: string;
   thumbTextLeft: string;
   thumbTextRight: string;
@@ -328,7 +327,6 @@ interface CurrentCanvasProps {
   personTransform: TransformState;
   person2Transform: TransformState;
   person3Transform?: TransformState;
-  person4Transform?: TransformState;
   pipFrame: PipFrameState;
   pip2Frame?: PipFrameState;
   bgImage?: string;
@@ -347,20 +345,17 @@ interface CortesControlsProps {
   onThumbModelChange: (model: ThumbModel) => void;
   allowAllModels?: boolean;
   allowJogoV1?: boolean;
-  allowChamadaPrincipal?: boolean;
   pipImage: string | null;
   pip2Image?: string | null;
   personCutout: string | null;
   person2Cutout: string | null;
   person3Cutout?: string | null;
-  person4Cutout?: string | null;
   thumbText: string;
   thumbTextLeft: string;
   thumbTextRight: string;
   isRemovingBg: boolean;
   isRemovingBg2: boolean;
   isRemovingBg3?: boolean;
-  isRemovingBg4?: boolean;
   isUpscalingPerson?: boolean;
   isUpscalingPerson2?: boolean;
   onUpscalePerson?: () => void;
@@ -370,7 +365,6 @@ interface CortesControlsProps {
   personTransform: TransformState;
   person2Transform: TransformState;
   person3Transform?: TransformState;
-  person4Transform?: TransformState;
   pipFrame: PipFrameState;
   pip2Frame?: PipFrameState;
   pipBaseScale: number;
@@ -380,7 +374,6 @@ interface CortesControlsProps {
   onPersonUpload: (file: File) => void;
   onPerson2Upload: (file: File) => void;
   onPerson3Upload?: (file: File) => void;
-  onPerson4Upload?: (file: File) => void;
   onPersonDirectUpload: (file: File) => void;
   onPerson2DirectUpload: (file: File) => void;
   onTextChange: (text: string) => void;
@@ -391,7 +384,6 @@ interface CortesControlsProps {
   onPersonTransformChange: (t: Partial<TransformState>) => void;
   onPerson2TransformChange: (t: Partial<TransformState>) => void;
   onPerson3TransformChange?: (t: Partial<TransformState>) => void;
-  onPerson4TransformChange?: (t: Partial<TransformState>) => void;
   onPipFrameChange: (f: Partial<PipFrameState>) => void;
   onPip2FrameChange?: (f: Partial<PipFrameState>) => void;
   onClear: () => void;
@@ -412,20 +404,17 @@ export const CortesControls = ({
   onThumbModelChange,
   allowAllModels = false,
   allowJogoV1 = false,
-  allowChamadaPrincipal = false,
   pipImage,
   pip2Image = null,
   personCutout,
   person2Cutout,
   person3Cutout = null,
-  person4Cutout = null,
   thumbText,
   thumbTextLeft,
   thumbTextRight,
   isRemovingBg,
   isRemovingBg2,
   isRemovingBg3 = false,
-  isRemovingBg4 = false,
   isUpscalingPerson = false,
   isUpscalingPerson2 = false,
   onUpscalePerson,
@@ -435,7 +424,6 @@ export const CortesControls = ({
   personTransform,
   person2Transform,
   person3Transform = { x: 0, y: 0, scale: 1, rotation: 0 },
-  person4Transform = { x: 0, y: 0, scale: 1, rotation: 0 },
   pipFrame,
   pip2Frame = { x: 67, y: 15.4, width: 30, height: 55 },
   pipBaseScale,
@@ -445,7 +433,6 @@ export const CortesControls = ({
   onPersonUpload,
   onPerson2Upload,
   onPerson3Upload,
-  onPerson4Upload,
   onPersonDirectUpload,
   onPerson2DirectUpload,
   onTextChange,
@@ -456,7 +443,6 @@ export const CortesControls = ({
   onPersonTransformChange,
   onPerson2TransformChange,
   onPerson3TransformChange,
-  onPerson4TransformChange,
   onPipFrameChange,
   onPip2FrameChange,
   onClear,
@@ -476,7 +462,6 @@ export const CortesControls = ({
   const personInputRef = useRef<HTMLInputElement>(null);
   const person2InputRef = useRef<HTMLInputElement>(null);
   const person3InputRef = useRef<HTMLInputElement>(null);
-  const person4InputRef = useRef<HTMLInputElement>(null);
   const bgInputRef = useRef<HTMLInputElement>(null);
 
   const [showPipAdjust, setShowPipAdjust] = useState(false);
@@ -484,7 +469,6 @@ export const CortesControls = ({
   const [showPerson1Adjust, setShowPerson1Adjust] = useState(false);
   const [showPerson2Adjust, setShowPerson2Adjust] = useState(false);
   const [showPerson3Adjust, setShowPerson3Adjust] = useState(false);
-  const [showPerson4Adjust, setShowPerson4Adjust] = useState(false);
   const [showMeioLeftAdjust, setShowMeioLeftAdjust] = useState(false);
   const [showMeioRightAdjust, setShowMeioRightAdjust] = useState(false);
 
@@ -497,7 +481,7 @@ export const CortesControls = ({
       // 1. Aguardar fontes e pré-carregar imagens em paralelo
       await document.fonts.ready;
 
-      const [bgImg, logosImg, pipImg, pip2Img, personImg, person2Img, person3Img, divisoriaImg, person4Img] = await Promise.all([
+      const [bgImg, logosImg, pipImg, pip2Img, personImg, person2Img, person3Img, divisoriaImg] = await Promise.all([
         loadImage(props.bgImage || '/cortes/bg-corte.png'),
         loadImage(props.logosImage || '/cortes/logos-corte.png'),
         props.pipImage ? loadImage(props.pipImage) : Promise.resolve(null),
@@ -506,7 +490,6 @@ export const CortesControls = ({
         props.person2Cutout ? loadImage(props.person2Cutout) : Promise.resolve(null),
         props.person3Cutout ? loadImage(props.person3Cutout) : Promise.resolve(null),
         props.thumbModel === 'meio-a-meio' ? loadImage(props.divisoriaImage || '/cortes/divisoria-geral.png') : Promise.resolve(null),
-        props.person4Cutout ? loadImage(props.person4Cutout) : Promise.resolve(null),
       ]);
 
       // 2. Criar canvas 1280×720
@@ -523,7 +506,6 @@ export const CortesControls = ({
       const showSoLettering = thumbModel === 'so-lettering';
       const showJogoV1 = thumbModel === 'jogo-v1';
       const showJogoPipDuplo = thumbModel === 'jogo-pip-duplo';
-      const showChamadaPrincipal = thumbModel === 'chamada-principal';
 
       // ── Layer 1: Background ─────────────────────────────────────────────
       // object-fit: cover
@@ -679,7 +661,7 @@ export const CortesControls = ({
       }
 
       // ── Layer 3: Person cutout (pip / duas-pessoas) ─────────────────────
-      if (!showMeioAMeio && !showSoLettering && !showJogoV1 && !showJogoPipDuplo && !showChamadaPrincipal && personImg) {
+      if (!showMeioAMeio && !showSoLettering && !showJogoV1 && !showJogoPipDuplo && personImg) {
         const t = props.personTransform;
         const baseRight = showPerson2 ? -0.02 * W : -0.06 * W;
         const baseH = H * 1.08;
@@ -797,33 +779,6 @@ export const CortesControls = ({
         drawPipFrame(pip2Img, pip2FrameVal, pip2T, 1.2);
       }
 
-      // ── Layer 3e: Chamada Principal — 4 cutouts in a row ──────────────
-      if (showChamadaPrincipal) {
-        const positions = [0.125, 0.375, 0.625, 0.875];
-        const imgs = [personImg, person2Img, person3Img, person4Img];
-        const transforms = [
-          props.personTransform,
-          props.person2Transform,
-          props.person3Transform ?? { x: 0, y: 0, scale: 1, rotation: 0 },
-          props.person4Transform ?? { x: 0, y: 0, scale: 1, rotation: 0 },
-        ];
-        for (let i = 0; i < 4; i++) {
-          const img = imgs[i];
-          if (!img) continue;
-          const t = transforms[i];
-          const bH = H * 0.95;
-          const aspect = img.naturalWidth / img.naturalHeight;
-          const bW = bH * aspect;
-          const cx = W * positions[i] + t.x;
-          const cy = H - bH / 2 + t.y;
-          ctx.save();
-          ctx.translate(cx, cy);
-          ctx.rotate((t.rotation * Math.PI) / 180);
-          ctx.scale(t.scale, t.scale);
-          ctx.drawImage(img, -bW / 2, -bH / 2, bW, bH);
-          ctx.restore();
-        }
-      }
 
       // ── Layer 4: Gradiente inferior ─────────────────────────────────────
       const grad = ctx.createLinearGradient(0, H * 0.55, 0, H);
@@ -948,9 +903,6 @@ export const CortesControls = ({
                 <SelectItem value="meio-a-meio">Meio a meio</SelectItem>
                 <SelectItem value="so-lettering">Lettering simples</SelectItem>
               </>
-            )}
-            {allowChamadaPrincipal && (
-              <SelectItem value="chamada-principal">Chamada Principal</SelectItem>
             )}
           </SelectContent>
         </Select>
@@ -1428,48 +1380,9 @@ export const CortesControls = ({
         </>
       )}
 
-      {/* Chamada Principal — 4 cutout uploads */}
-      {thumbModel === 'chamada-principal' && (
-        <>
-          {[
-            { label: 'Foto 1', cutout: personCutout, inputRef: personInputRef, isRemoving: isRemovingBg, onUpload: onPersonUpload, transform: personTransform, onTransformChange: onPersonTransformChange, showAdjust: showPerson1Adjust, setShowAdjust: setShowPerson1Adjust },
-            { label: 'Foto 2', cutout: person2Cutout, inputRef: person2InputRef, isRemoving: isRemovingBg2, onUpload: onPerson2Upload, transform: person2Transform, onTransformChange: onPerson2TransformChange, showAdjust: showPerson2Adjust, setShowAdjust: setShowPerson2Adjust },
-            { label: 'Foto 3', cutout: person3Cutout, inputRef: person3InputRef, isRemoving: isRemovingBg3, onUpload: (f: File) => onPerson3Upload?.(f), transform: person3Transform, onTransformChange: (t: Partial<TransformState>) => onPerson3TransformChange?.(t), showAdjust: showPerson3Adjust, setShowAdjust: setShowPerson3Adjust },
-            { label: 'Foto 4', cutout: person4Cutout, inputRef: person4InputRef, isRemoving: isRemovingBg4, onUpload: (f: File) => onPerson4Upload?.(f), transform: person4Transform, onTransformChange: (t: Partial<TransformState>) => onPerson4TransformChange?.(t), showAdjust: showPerson4Adjust, setShowAdjust: setShowPerson4Adjust },
-          ].map((p, idx) => (
-            <div key={idx} className="space-y-2">
-              <Label className="font-semibold">{p.label}</Label>
-              <input ref={p.inputRef} type="file" accept="image/*" className="hidden"
-                onChange={(e) => e.target.files?.[0] && p.onUpload(e.target.files[0])} />
-              <Button variant={p.cutout ? 'secondary' : 'outline'} className="w-full"
-                disabled={p.isRemoving} onClick={() => p.inputRef.current?.click()}>
-                {p.isRemoving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Removendo fundo...</>
-                  : <><Upload className="w-4 h-4 mr-2" />{p.cutout ? `Trocar ${p.label.toLowerCase()}` : `Upload ${p.label.toLowerCase()}`}</>}
-              </Button>
-              {p.cutout && (
-                <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste {p.label.toLowerCase()}</Label>
-                    <div className="flex items-center gap-2">
-                      <Switch checked={p.showAdjust} onCheckedChange={p.setShowAdjust} />
-                      <button onClick={() => p.onTransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
-                    </div>
-                  </div>
-                  {p.showAdjust && (<>
-                    <div><Label className="text-xs">Posição X: {p.transform.x}px</Label><Slider value={[p.transform.x]} onValueChange={([x]) => p.onTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
-                    <div><Label className="text-xs">Posição Y: {p.transform.y}px</Label><Slider value={[p.transform.y]} onValueChange={([y]) => p.onTransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
-                    <div><Label className="text-xs">Zoom: {p.transform.scale.toFixed(2)}x</Label><Slider value={[p.transform.scale]} onValueChange={([scale]) => p.onTransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
-                    <div><Label className="text-xs">Rotação: {p.transform.rotation}°</Label><Slider value={[p.transform.rotation]} onValueChange={([rotation]) => p.onTransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
-                  </>)}
-                </div>
-              )}
-            </div>
-          ))}
-        </>
-      )}
 
       {/* Person Upload (right side / single person) — pip, pip-dividido & duas-pessoas */}
-      {thumbModel !== 'meio-a-meio' && thumbModel !== 'so-lettering' && thumbModel !== 'jogo-v1' && thumbModel !== 'jogo-pip-duplo' && thumbModel !== 'chamada-principal' && (
+      {thumbModel !== 'meio-a-meio' && thumbModel !== 'so-lettering' && thumbModel !== 'jogo-v1' && thumbModel !== 'jogo-pip-duplo' && (
         <>
           <div className="space-y-2">
             <Label className="font-semibold">{thumbModel === 'duas-pessoas' ? 'Pessoa (direita)' : 'Foto da pessoa'}</Label>
