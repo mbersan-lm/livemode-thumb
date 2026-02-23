@@ -1,41 +1,49 @@
 
 
-# Adicionar edicao de programas existentes
+# Tornar "Roda de Bobo" editavel e garantir edicao para todos os programas
 
-## O que sera feito
+## Problema
 
-Criar um dialog de edicao que reutiliza a mesma estrutura do `CreateProgramDialog`, permitindo alterar nome, cores e assets (fundo, logos, fonte) de programas ja existentes diretamente no hub, sem precisar recriar.
+O programa "Roda de Bobo" esta fixo no codigo (hardcoded) com uma rota propria (`/cortes/roda-de-bobo`) e um componente dedicado. Por isso, ele nao aparece no banco de dados e nao tem os botoes de editar/excluir. A solucao e migra-lo para o banco de dados para que seja tratado igualmente a todos os outros programas.
 
 ## Alteracoes
 
-### 1. Novo componente: `src/components/cortes/EditProgramDialog.tsx`
+### 1. Inserir "Roda de Bobo" no banco de dados
 
-- Dialog identico ao `CreateProgramDialog`, mas recebe um `program: CortesProgram` como prop
-- Inicializa os campos com os valores atuais do programa (nome, cores)
-- Para os uploads de arquivos (fundo, logos, fonte), mostra o estado atual ("Fundo atual" / "Logos atual") e permite trocar opcionalmente
-- No save, faz `UPDATE` no banco em vez de `INSERT`:
-  - Somente faz upload dos arquivos que foram alterados (novo File selecionado)
-  - Mantem as URLs existentes para os campos nao alterados
-- Reutiliza os sub-componentes `FileUploadButton` e `ColorPicker` (serao extraidos ou exportados do `CreateProgramDialog`)
+Criar uma migration que insere o programa com seus valores conhecidos:
+- name: `Roda de Bobo`
+- text_color: `#F1E8D5`
+- stroke_color: `#0C0C20`
+- pip_border_color: `#D02046`
+- highlight_color: `#D02046`
+- bg_url, logos_url, font_url: `null` (usa os assets locais fixos do projeto)
 
-### 2. Arquivo: `src/components/cortes/CreateProgramDialog.tsx`
+### 2. Remover rota hardcoded
 
-- Exportar os componentes auxiliares `FileUploadButton` e `ColorPicker` para que o `EditProgramDialog` possa reutiliza-los
+**Arquivo: `src/App.tsx`**
+- Remover a rota dedicada `/cortes/roda-de-bobo` que aponta para o componente `Cortes`
+- A rota generica `/cortes/:id` ja cobre esse caso
 
-### 3. Arquivo: `src/components/cortes/ProgramCard.tsx`
+### 3. Atualizar `src/pages/CortesProgramBuilder.tsx`
 
-- Adicionar prop `onEdit?: () => void`
-- Adicionar icone de edicao (Pencil) ao lado do icone de exclusao, visivel no hover do card
+- Adicionar logica condicional para o nome "Roda de Bobo":
+  - `allowJogoV1={true}` (prop que so esse programa usa)
+  - `logosNegativeImage="/cortes/logos-corte-negativo.png"` (logo negativa especifica)
+- Isso segue o mesmo padrao ja usado para "Geral CazeTv", "Live CazeTv", etc.
 
-### 4. Arquivo: `src/pages/CortesHub.tsx`
+### 4. Remover card hardcoded do hub
 
-- Adicionar estado para controlar o dialog de edicao (`editingProgram`)
-- Ao clicar no botao de editar de um card, abrir o `EditProgramDialog` com os dados do programa
-- Ao salvar, recarregar a lista de programas
+**Arquivo: `src/pages/CortesHub.tsx`**
+- Remover o bloco do `ProgramCard` fixo de "Roda de Bobo"
+- O programa agora vira do banco como qualquer outro e ja tera os botoes de editar e excluir automaticamente
 
-## Detalhes tecnicos
+### 5. Arquivo `src/pages/Cortes.tsx` (opcional)
 
-- O `EditProgramDialog` usara `supabase.from('cortes_programs').update({...}).eq('id', program.id)` para persistir as alteracoes
-- Uploads opcionais: se o usuario nao selecionar um novo arquivo, o campo mantem a URL existente no banco
-- Os componentes `FileUploadButton` e `ColorPicker` serao movidos para exportacao nomeada no `CreateProgramDialog` para evitar duplicacao
+- Pode ser removido, pois nao sera mais referenciado
+
+## Resultado
+
+- "Roda de Bobo" aparecera na lista vindo do banco, com botoes de editar e excluir
+- Todos os programas novos cadastrados ja tem edicao (isso ja funciona)
+- A experiencia e uniforme para todos os programas
 
