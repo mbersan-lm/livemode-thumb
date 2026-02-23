@@ -484,25 +484,6 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           }}
         />
 
-        {/* Layer 3.6: Thumb Principal — dark central circle */}
-        {showThumbPrincipal && (
-          <div
-            style={{
-              position: 'absolute',
-              left: '50%',
-              top: '50%',
-              width: 560,
-              height: 560,
-              borderRadius: '50%',
-              backgroundColor: 'rgba(12, 12, 32, 0.85)',
-              border: '6px solid #F1E8D5',
-              transform: 'translate(-50%, -50%)',
-              zIndex: 4,
-              pointerEvents: 'none',
-            }}
-          />
-        )}
-
         {/* Layer 3.8: Top-right corner gradient (behind logos) — exclusivo Geral CazéTv Brasil */}
         {divisoriaImage === '/cortes/divisoria-brasil.png' && (
           <div

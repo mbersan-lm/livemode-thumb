@@ -857,24 +857,6 @@ export const CortesControls = ({
       ctx.fillStyle = grad;
       ctx.fillRect(0, H * 0.55, W, H * 0.45);
 
-      // ── Layer 4.5: Thumb Principal — dark central circle ──────────────
-      if (showThumbPrincipal) {
-        const circleR = 280;
-        const circleCx = W / 2;
-        const circleCy = H / 2;
-        // Dark fill
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(circleCx, circleCy, circleR, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(12, 12, 32, 0.85)';
-        ctx.fill();
-        // Border
-        ctx.lineWidth = 6;
-        ctx.strokeStyle = '#F1E8D5';
-        ctx.stroke();
-        ctx.restore();
-      }
-
       // ── Layer 5: Logos ──────────────────────────────────────────────────
       ctx.drawImage(logosImg, 0, 0, W, H);
 
