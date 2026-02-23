@@ -505,7 +505,18 @@ export const CortesControls = ({
       const showJogoPipDuplo = thumbModel === 'jogo-pip-duplo';
 
       // ── Layer 1: Background ─────────────────────────────────────────────
-      ctx.drawImage(bgImg, 0, 0, W, H);
+      // object-fit: cover
+      const imgRatio = bgImg.naturalWidth / bgImg.naturalHeight;
+      const canvasRatio = W / H;
+      let sx = 0, sy = 0, sw = bgImg.naturalWidth, sh = bgImg.naturalHeight;
+      if (imgRatio > canvasRatio) {
+        sw = bgImg.naturalHeight * canvasRatio;
+        sx = (bgImg.naturalWidth - sw) / 2;
+      } else {
+        sh = bgImg.naturalWidth / canvasRatio;
+        sy = (bgImg.naturalHeight - sh) / 2;
+      }
+      ctx.drawImage(bgImg, sx, sy, sw, sh, 0, 0, W, H);
 
       // ── Layer 2: PIP ────────────────────────────────────────────────────
       if (showPip && pipImg) {
