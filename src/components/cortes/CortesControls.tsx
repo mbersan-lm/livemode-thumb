@@ -408,6 +408,7 @@ interface CortesControlsProps {
   onPipFromBase64?: (base64: string) => void;
   quadrantVisibility?: boolean[];
   onQuadrantVisibilityChange?: (v: boolean[]) => void;
+  onQuadrantPresetSelect?: (idx: number, url: string) => void;
 }
 
 export const CortesControls = ({
@@ -475,6 +476,7 @@ export const CortesControls = ({
   onPipFromBase64,
   quadrantVisibility = [true, true, true, true],
   onQuadrantVisibilityChange,
+  onQuadrantPresetSelect,
 }: CortesControlsProps) => {
   const pipInputRef = useRef<HTMLInputElement>(null);
   const pip2InputRef = useRef<HTMLInputElement>(null);
@@ -483,6 +485,14 @@ export const CortesControls = ({
   const person3InputRef = useRef<HTMLInputElement>(null);
   const person4InputRef = useRef<HTMLInputElement>(null);
   const bgInputRef = useRef<HTMLInputElement>(null);
+
+  const QUADRANT_PRESETS = [
+    { label: 'Cazé', url: '/cortes/presets/caze.png' },
+    { label: 'Donan', url: '/cortes/presets/donan.png' },
+    { label: 'Igor', url: '/cortes/presets/igor.png' },
+    { label: 'LFF', url: '/cortes/presets/lff.png' },
+    { label: 'Simões', url: '/cortes/presets/simoes.png' },
+  ];
 
   const [showPipAdjust, setShowPipAdjust] = useState(false);
   const [showPip2Adjust, setShowPip2Adjust] = useState(false);
@@ -1507,6 +1517,16 @@ export const CortesControls = ({
                 </div>
                 {quadrantVisibility[item.idx] && (
                   <div className="space-y-2">
+                    <Select onValueChange={(url) => onQuadrantPresetSelect?.(item.idx, url)}>
+                      <SelectTrigger className="w-full h-8 text-xs">
+                        <SelectValue placeholder="Selecionar preset..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {QUADRANT_PRESETS.map((p) => (
+                          <SelectItem key={p.url} value={p.url}>{p.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <input ref={item.inputRef} type="file" accept="image/*" className="hidden"
                       onChange={(e) => e.target.files?.[0] && item.onUpload(e.target.files[0])} />
                     <Button variant={item.cutout ? 'secondary' : 'outline'} className="w-full" size="sm"
