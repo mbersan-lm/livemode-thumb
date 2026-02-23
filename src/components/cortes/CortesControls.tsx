@@ -888,7 +888,7 @@ export const CortesControls = ({
         const textW = 360;
         const textH = 190;
         const textX = W / 2 - textW / 2;
-        const textY = H / 2 - 20;
+        const textY = H - H * bottomFrac - textH;
         drawAutoFitText(
           ctx, props.thumbText,
           textX, textY, textW, textH,

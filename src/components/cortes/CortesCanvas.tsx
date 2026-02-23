@@ -557,7 +557,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
             style={{
               position: 'absolute',
               left: '50%',
-              top: '50%',
+              bottom: `${textBoxHeight}%`,
               width: 380,
               maxHeight: 200,
               overflow: 'hidden',
@@ -570,7 +570,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               color: textColor,
               textShadow: strokeShadow,
               textTransform: 'uppercase',
-              transform: 'translate(-50%, 10%)',
+              transform: 'translateX(-50%)',
               transformOrigin: 'center center',
               padding: '10px',
               boxSizing: 'border-box',
