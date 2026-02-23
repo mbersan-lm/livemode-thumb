@@ -1,46 +1,44 @@
 
+# Remover "Foto de fundo" de todos os modelos exceto "Lettering Simples"
 
-# Layout 50/50 na tela de Melhores Momentos / Jogo Completo
+## O que muda
 
-## Arquivo: `src/pages/Index.tsx`
+Atualmente o campo "Foto de fundo" aparece em todos os modelos. Precisa aparecer **apenas** no modelo `so-lettering` (Lettering Simples).
 
-### 1. Calculo de escala (linha ~108)
+## Arquivo: `src/components/cortes/CortesControls.tsx`
 
-Trocar `window.innerWidth - 380 - 32` por `(window.innerWidth / 2) - 32`:
+### 1. Bloco do "duas-pessoas" (linhas ~1122-1142)
 
-```typescript
-const availableWidth = window.innerWidth >= 768
-  ? (window.innerWidth / 2) - 32
-  : window.innerWidth - 16;
+Remover o bloco de upload de fundo que aparece dentro do `thumbModel === 'duas-pessoas'`.
+
+### 2. Bloco geral (linhas ~1365-1387)
+
+Alterar a condicao de `thumbModel !== 'duas-pessoas'` para `thumbModel === 'so-lettering'`, restringindo o campo apenas ao Lettering Simples. O label tambem perde o "(opcional)" ja que agora so aparece nesse modelo.
+
+**Antes:**
+```
+{thumbModel !== 'duas-pessoas' && (
+  <div className="space-y-2">
+    <Label className="font-semibold">
+      Foto de fundo{thumbModel === 'so-lettering' ? '' : ' (opcional)'}
+    </Label>
+    ...
+  </div>
+)}
 ```
 
-### 2. Container do canvas (linha ~122)
-
-Trocar `flex-1` por `md:w-1/2`:
-
+**Depois:**
 ```
-// Antes
-className={`... ${isMobile ? '' : 'flex-1'}`}
-
-// Depois
-className={`... ${isMobile ? '' : 'md:w-1/2'}`}
-```
-
-### 3. Container do painel de controles (linha ~142)
-
-Trocar `md:w-[380px]` e `md:flex-none` por `md:w-1/2`:
-
-```
-// Antes
-className="w-full md:w-[380px] ... flex-1 md:flex-none"
-
-// Depois
-className="w-full md:w-1/2 ... flex-1 md:flex-none"
+{thumbModel === 'so-lettering' && (
+  <div className="space-y-2">
+    <Label className="font-semibold">Foto de fundo</Label>
+    ...
+  </div>
+)}
 ```
 
 ## Resultado
 
-- Desktop: preview e controles divididos igualmente em 50/50
-- Mobile: sem alteracao
-- Apenas `src/pages/Index.tsx` e modificado
-
+- "Foto de fundo" aparece **somente** no modelo "Lettering Simples"
+- Todos os outros modelos (PIP, Duas pessoas, Meio a meio, Jogo v1, PIP duplo) nao mostram mais esse campo
+- Nenhum outro arquivo e modificado
