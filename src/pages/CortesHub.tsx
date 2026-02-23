@@ -64,8 +64,10 @@ const CortesHub = () => {
             <h1 className="text-3xl font-bold tracking-tight text-foreground">Cortes</h1>
             <p className="text-sm text-muted-foreground mt-1">Escolha um programa para gerar thumbnails</p>
           </div>
-          <a href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
-            <ArrowLeft className="w-4 h-4" /> Melhores Momentos
+          <a href="/">
+            <Button variant="outline" size="sm" className="gap-1.5">
+              <ArrowLeft className="w-3.5 h-3.5" /> Melhores Momentos
+            </Button>
           </a>
         </div>
 

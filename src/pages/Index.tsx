@@ -10,6 +10,8 @@ import { ViewControls, ActiveCanvas } from '@/components/controls/ViewControls';
 import { ThumbnailState } from '@/types/thumbnail';
 import { TemplateType } from '@/data/templates';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
 
 const CANVAS_WIDTH = 1280;
 const CANVAS_HEIGHT = 720;
@@ -165,8 +167,10 @@ const Index = () => {
               Gerador de Thumbnails
             </p>
           </div>
-          <a href="/cortes" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-            Cortes →
+          <a href="/cortes">
+            <Button variant="outline" size="sm" className="gap-1.5">
+              Cortes <ArrowRight className="w-3.5 h-3.5" />
+            </Button>
           </a>
         </div>
 
