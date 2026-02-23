@@ -11,6 +11,9 @@ export interface MatchData {
   awayTeamId: string | null;
   homeScore: number;
   awayScore: number;
+  homeScoreSmall: number;
+  awayScoreSmall: number;
+  showSmallScore: boolean;
 }
 
 export interface ThumbnailState {
