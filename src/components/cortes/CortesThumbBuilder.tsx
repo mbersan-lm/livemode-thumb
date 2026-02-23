@@ -4,6 +4,8 @@ import { CortesControls } from './CortesControls';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 
 const CANVAS_WIDTH = 1280;
 const CANVAS_HEIGHT = 720;
@@ -342,8 +344,10 @@ export const CortesThumbBuilder = ({
           <h1 className="text-xl font-bold tracking-tight">{programName}</h1>
             <p className="text-xs text-muted-foreground mt-1">Gerador de Thumbnails</p>
           </div>
-          <a href={backUrl} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-            ← Voltar
+          <a href={backUrl}>
+            <Button variant="outline" size="sm" className="gap-1.5">
+              <ArrowLeft className="w-3.5 h-3.5" /> Voltar
+            </Button>
           </a>
         </div>
 
