@@ -109,7 +109,7 @@ const Index = () => {
   useEffect(() => {
     const updateScale = () => {
       const availableWidth = window.innerWidth >= 768
-        ? window.innerWidth - 380 - 32
+        ? (window.innerWidth / 2) - 32
         : window.innerWidth - 16;
       const scale = Math.min(availableWidth / CANVAS_WIDTH, 0.85);
       setMobileScale(scale);
@@ -126,7 +126,7 @@ const Index = () => {
     <div className="min-h-screen bg-background flex flex-col md:flex-row">
       {/* Main Canvas Area */}
       <div
-        className={`flex items-center justify-center overflow-hidden bg-[hsl(240_10%_6%)] ${isMobile ? '' : 'flex-1'}`}
+        className={`flex items-center justify-center overflow-hidden bg-[hsl(240_10%_6%)] ${isMobile ? '' : 'md:w-1/2'}`}
         style={isMobile ? { height: scaledHeight + 8, minHeight: scaledHeight + 8 } : undefined}
       >
         <div className="flex items-center justify-center">
@@ -154,7 +154,7 @@ const Index = () => {
         </div>
       </div>
 
-      <div className="w-full md:w-[380px] bg-card border-t md:border-t-0 md:border-l border-border overflow-y-auto flex flex-col flex-1 md:flex-none">
+      <div className="w-full md:w-1/2 bg-card border-t md:border-t-0 md:border-l border-border overflow-y-auto flex flex-col flex-1 md:flex-none">
         <div className="p-4 md:p-6 pb-3 md:pb-4 border-b border-border flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold tracking-tight">Melhores Momentos</h1>
