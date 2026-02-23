@@ -1,35 +1,54 @@
 
-# Remoção automática de fundo após Gemini Upscale
+
+# Gerar imagem PIP com IA (Gemini 3 Pro Image)
 
 ## Objetivo
-Após o Gemini melhorar a foto da pessoa (upscale), o sistema deve automaticamente remover o fundo da imagem resultante usando a API do PhotoRoom, garantindo que o recorte sempre fique com fundo transparente.
+Adicionar nos controles do PIP uma ferramenta para gerar imagens via IA usando o modelo `google/gemini-3-pro-image-preview` (Nano Banana Pro). O usuario digita um prompt, opcionalmente anexa imagens de referencia, e recebe uma imagem 16:9 gerada pela IA diretamente no PIP.
 
-## O que muda
+## O que sera criado/alterado
 
-Arquivo: **src/components/cortes/CortesThumbBuilder.tsx**
+### 1. Nova Edge Function: `supabase/functions/gemini-generate-pip/index.ts`
+- Recebe `prompt` (string) e `reference_images` (array opcional de strings base64)
+- Chama a Lovable AI Gateway com o modelo **`google/gemini-3-pro-image-preview`**
+- Inclui instrucao de sistema para gerar imagem em proporcao 16:9 (1280x720), alta qualidade, estilo fotografico
+- Retorna a imagem gerada em base64
+- Tratamento de erros 429 (rate limit) e 402 (creditos insuficientes)
 
-### 1. Criar função auxiliar `removeBgFromBase64`
-Uma nova função que aceita uma string base64 (ao invés de um File) e chama a edge function `photoroom-remove-bg` para remover o fundo. Isso é necessário porque o resultado do Gemini já vem em base64.
+### 2. Novo componente: `src/components/cortes/PipAiGenerator.tsx`
+- Textarea para digitar o prompt
+- Botao de anexar imagens de referencia (multiplas imagens aceitas)
+- Preview das imagens anexadas com botao de remover cada uma
+- Botao "Gerar com IA" que chama a edge function
+- Loading state com spinner durante a geracao
+- Callback `onImageGenerated(base64DataUrl)` para alimentar o PIP
 
-### 2. Atualizar `handleUpscalePerson`
-Após receber a imagem melhorada do Gemini, chamar `removeBgFromBase64` antes de definir o estado. O toast de sucesso será atualizado para refletir as duas etapas ("Imagem melhorada e fundo removido!").
+### 3. Alterar `src/components/cortes/CortesThumbBuilder.tsx`
+- Adicionar funcao `handlePipFromBase64(base64: string)` que recebe o data URL gerado pela IA, define como `pipImage` e calcula o auto-scale reutilizando a mesma logica do `handlePipUpload`
+- Passar esse handler como nova prop `onPipFromBase64` para `CortesControls`
 
-### 3. Atualizar `handleUpscalePerson2`
-Mesma lógica aplicada para a pessoa 2 -- após o upscale do Gemini, remover o fundo automaticamente antes de salvar o cutout.
+### 4. Alterar `src/components/cortes/CortesControls.tsx`
+- Receber nova prop `onPipFromBase64`
+- Nos modelos que usam PIP (`pip`, `pip-dividido`, `jogo-pip-duplo`), renderizar o componente `PipAiGenerator` abaixo do botao de upload do PIP
+- Conectar o callback do gerador ao `onPipFromBase64`
 
-## Fluxo atualizado
+## Fluxo do usuario
 
 ```text
-Usuário clica "Melhorar com Gemini"
-  --> Envia imagem para edge function gemini-upscale
-  --> Recebe imagem melhorada (com fundo)
-  --> Automaticamente envia para photoroom-remove-bg
-  --> Recebe imagem sem fundo
-  --> Atualiza o estado do cutout
+1. Usuario esta em um modelo com PIP (pip, pip-dividido, jogo-pip-duplo)
+2. Abaixo do botao "Upload PIP", ve a secao "Gerar PIP com IA"
+3. Digita o prompt (ex: "campo de futebol lotado a noite com luzes")
+4. Opcionalmente anexa imagens de referencia clicando no icone de anexo
+5. Clica em "Gerar com IA"
+6. Aguarda o loading (pode levar alguns segundos -- o modelo Pro e mais lento porem com maior qualidade)
+7. A imagem gerada e automaticamente inserida como imagem do PIP
 ```
 
-## Detalhes Tecicos
+## Detalhes tecnicos
 
-- A nova funcao `removeBgFromBase64(base64: string): Promise<string>` reutiliza a mesma edge function `photoroom-remove-bg` que ja existe, apenas passando o base64 diretamente sem precisar converter de File.
-- Os estados de loading (`isUpscalingPerson` / `isUpscalingPerson2`) continuam cobrindo todo o processo (upscale + remocao de fundo).
-- Em caso de erro na remocao de fundo, o sistema ainda salva a imagem melhorada do Gemini (com fundo) como fallback, exibindo um aviso.
+- **Modelo**: `google/gemini-3-pro-image-preview` -- maior qualidade de geracao de imagens, mais lento que o flash
+- **Prompt do sistema**: Instrui o modelo a gerar imagem em 16:9, alta qualidade, estilo fotografico/realista
+- **Imagens de referencia**: Enviadas como partes `image_url` no array de content, junto com o texto do prompt
+- **Auto-scale**: Reutiliza a mesma logica de calculo de escala que existe no `handlePipUpload` (baseada na proporcao container vs imagem)
+- **Secret**: Usa `LOVABLE_API_KEY` que ja esta configurado
+- **config.toml**: Nao precisa ser editado manualmente (gerenciado automaticamente)
+
