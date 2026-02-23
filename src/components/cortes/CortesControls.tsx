@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -7,6 +7,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Upload, Trash2, Download, Loader2, ChevronDown, RotateCcw } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { Switch } from '@/components/ui/switch';
 import type { ThumbModel } from './CortesThumbBuilder';
 
 // ─── Canvas Export Helpers ────────────────────────────────────────────────────
@@ -379,6 +380,13 @@ export const CortesControls = ({
   const person3InputRef = useRef<HTMLInputElement>(null);
   const bgInputRef = useRef<HTMLInputElement>(null);
 
+  const [showPipAdjust, setShowPipAdjust] = useState(false);
+  const [showPip2Adjust, setShowPip2Adjust] = useState(false);
+  const [showPerson1Adjust, setShowPerson1Adjust] = useState(false);
+  const [showPerson2Adjust, setShowPerson2Adjust] = useState(false);
+  const [showPerson3Adjust, setShowPerson3Adjust] = useState(false);
+  const [showMeioLeftAdjust, setShowMeioLeftAdjust] = useState(false);
+  const [showMeioRightAdjust, setShowMeioRightAdjust] = useState(false);
 
   const handleExport = async () => {
     const toastId = toast.loading('Gerando JPG...');
@@ -832,10 +840,15 @@ export const CortesControls = ({
             <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste da imagem PIP</Label>
-                <button onClick={() => onPipTransformChange({ x: 0, y: 0, scale: pipBaseScale, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
-                  <RotateCcw className="w-3.5 h-3.5" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <Switch checked={showPipAdjust} onCheckedChange={setShowPipAdjust} />
+                  <button onClick={() => onPipTransformChange({ x: 0, y: 0, scale: pipBaseScale, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
+                    <RotateCcw className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
+              {showPipAdjust && (
+                <>
               <div>
                 <Label className="text-xs">Posição X: {pipTransform.x}px</Label>
                 <Slider value={[pipTransform.x]} onValueChange={([x]) => onPipTransformChange({ x })} min={-500} max={500} step={1} className="mt-1" />
@@ -852,6 +865,8 @@ export const CortesControls = ({
                 <Label className="text-xs">Rotação: {pipTransform.rotation}°</Label>
                 <Slider value={[pipTransform.rotation]} onValueChange={([rotation]) => onPipTransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" />
               </div>
+                </>
+              )}
             </div>
           )}
 
@@ -911,11 +926,18 @@ export const CortesControls = ({
             <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste foto esquerda</Label>
-                <button onClick={() => onPipTransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                <div className="flex items-center gap-2">
+                  <Switch checked={showPipAdjust} onCheckedChange={setShowPipAdjust} />
+                  <button onClick={() => onPipTransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                </div>
               </div>
+              {showPipAdjust && (
+                <>
               <div><Label className="text-xs">Posição X: {pipTransform.x}px</Label><Slider value={[pipTransform.x]} onValueChange={([x]) => onPipTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Posição Y: {pipTransform.y}px</Label><Slider value={[pipTransform.y]} onValueChange={([y]) => onPipTransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Zoom: {pipTransform.scale.toFixed(2)}x</Label><Slider value={[pipTransform.scale]} onValueChange={([scale]) => onPipTransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
+                </>
+               )}
             </div>
           )}
 
@@ -933,11 +955,18 @@ export const CortesControls = ({
             <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste foto direita</Label>
-                <button onClick={() => onPip2TransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                <div className="flex items-center gap-2">
+                  <Switch checked={showPip2Adjust} onCheckedChange={setShowPip2Adjust} />
+                  <button onClick={() => onPip2TransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                </div>
               </div>
+              {showPip2Adjust && (
+                <>
               <div><Label className="text-xs">Posição X: {pip2Transform.x}px</Label><Slider value={[pip2Transform.x]} onValueChange={([x]) => onPip2TransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Posição Y: {pip2Transform.y}px</Label><Slider value={[pip2Transform.y]} onValueChange={([y]) => onPip2TransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Zoom: {pip2Transform.scale.toFixed(2)}x</Label><Slider value={[pip2Transform.scale]} onValueChange={([scale]) => onPip2TransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
+                </>
+               )}
             </div>
           )}
 
@@ -990,12 +1019,19 @@ export const CortesControls = ({
             <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste foto 1</Label>
-                <button onClick={() => onPersonTransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                <div className="flex items-center gap-2">
+                  <Switch checked={showPerson1Adjust} onCheckedChange={setShowPerson1Adjust} />
+                  <button onClick={() => onPersonTransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                </div>
               </div>
+              {showPerson1Adjust && (
+                <>
               <div><Label className="text-xs">Posição X: {personTransform.x}px</Label><Slider value={[personTransform.x]} onValueChange={([x]) => onPersonTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Posição Y: {personTransform.y}px</Label><Slider value={[personTransform.y]} onValueChange={([y]) => onPersonTransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Zoom: {personTransform.scale.toFixed(2)}x</Label><Slider value={[personTransform.scale]} onValueChange={([scale]) => onPersonTransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
               <div><Label className="text-xs">Rotação: {personTransform.rotation}°</Label><Slider value={[personTransform.rotation]} onValueChange={([rotation]) => onPersonTransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
+                </>
+               )}
             </div>
           )}
 
@@ -1014,12 +1050,17 @@ export const CortesControls = ({
             <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste foto 2</Label>
-                <button onClick={() => onPerson2TransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                <div className="flex items-center gap-2">
+                  <Switch checked={showPerson2Adjust} onCheckedChange={setShowPerson2Adjust} />
+                  <button onClick={() => onPerson2TransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                </div>
               </div>
+              {showPerson2Adjust && (<>
               <div><Label className="text-xs">Posição X: {person2Transform.x}px</Label><Slider value={[person2Transform.x]} onValueChange={([x]) => onPerson2TransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Posição Y: {person2Transform.y}px</Label><Slider value={[person2Transform.y]} onValueChange={([y]) => onPerson2TransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Zoom: {person2Transform.scale.toFixed(2)}x</Label><Slider value={[person2Transform.scale]} onValueChange={([scale]) => onPerson2TransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
               <div><Label className="text-xs">Rotação: {person2Transform.rotation}°</Label><Slider value={[person2Transform.rotation]} onValueChange={([rotation]) => onPerson2TransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
+              </>)}
             </div>
           )}
 
@@ -1038,12 +1079,17 @@ export const CortesControls = ({
             <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste foto 3</Label>
-                <button onClick={() => onPerson3TransformChange?.({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                <div className="flex items-center gap-2">
+                  <Switch checked={showPerson3Adjust} onCheckedChange={setShowPerson3Adjust} />
+                  <button onClick={() => onPerson3TransformChange?.({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                </div>
               </div>
+              {showPerson3Adjust && (<>
               <div><Label className="text-xs">Posição X: {person3Transform.x}px</Label><Slider value={[person3Transform.x]} onValueChange={([x]) => onPerson3TransformChange?.({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Posição Y: {person3Transform.y}px</Label><Slider value={[person3Transform.y]} onValueChange={([y]) => onPerson3TransformChange?.({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Zoom: {person3Transform.scale.toFixed(2)}x</Label><Slider value={[person3Transform.scale]} onValueChange={([scale]) => onPerson3TransformChange?.({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
               <div><Label className="text-xs">Rotação: {person3Transform.rotation}°</Label><Slider value={[person3Transform.rotation]} onValueChange={([rotation]) => onPerson3TransformChange?.({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
+              </>)}
             </div>
           )}
         </>
@@ -1067,12 +1113,17 @@ export const CortesControls = ({
             <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste foto 1</Label>
-                <button onClick={() => onPersonTransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                <div className="flex items-center gap-2">
+                  <Switch checked={showPerson1Adjust} onCheckedChange={setShowPerson1Adjust} />
+                  <button onClick={() => onPersonTransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                </div>
               </div>
+              {showPerson1Adjust && (<>
               <div><Label className="text-xs">Posição X: {personTransform.x}px</Label><Slider value={[personTransform.x]} onValueChange={([x]) => onPersonTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Posição Y: {personTransform.y}px</Label><Slider value={[personTransform.y]} onValueChange={([y]) => onPersonTransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Zoom: {personTransform.scale.toFixed(2)}x</Label><Slider value={[personTransform.scale]} onValueChange={([scale]) => onPersonTransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
               <div><Label className="text-xs">Rotação: {personTransform.rotation}°</Label><Slider value={[personTransform.rotation]} onValueChange={([rotation]) => onPersonTransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
+              </>)}
             </div>
           )}
 
@@ -1091,12 +1142,17 @@ export const CortesControls = ({
             <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste foto 2</Label>
-                <button onClick={() => onPerson2TransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                <div className="flex items-center gap-2">
+                  <Switch checked={showPerson2Adjust} onCheckedChange={setShowPerson2Adjust} />
+                  <button onClick={() => onPerson2TransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                </div>
               </div>
+              {showPerson2Adjust && (<>
               <div><Label className="text-xs">Posição X: {person2Transform.x}px</Label><Slider value={[person2Transform.x]} onValueChange={([x]) => onPerson2TransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Posição Y: {person2Transform.y}px</Label><Slider value={[person2Transform.y]} onValueChange={([y]) => onPerson2TransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Zoom: {person2Transform.scale.toFixed(2)}x</Label><Slider value={[person2Transform.scale]} onValueChange={([scale]) => onPerson2TransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
               <div><Label className="text-xs">Rotação: {person2Transform.rotation}°</Label><Slider value={[person2Transform.rotation]} onValueChange={([rotation]) => onPerson2TransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
+              </>)}
             </div>
           )}
 
@@ -1115,12 +1171,17 @@ export const CortesControls = ({
             <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste foto 3</Label>
-                <button onClick={() => onPerson3TransformChange?.({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                <div className="flex items-center gap-2">
+                  <Switch checked={showPerson3Adjust} onCheckedChange={setShowPerson3Adjust} />
+                  <button onClick={() => onPerson3TransformChange?.({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                </div>
               </div>
+              {showPerson3Adjust && (<>
               <div><Label className="text-xs">Posição X: {person3Transform.x}px</Label><Slider value={[person3Transform.x]} onValueChange={([x]) => onPerson3TransformChange?.({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Posição Y: {person3Transform.y}px</Label><Slider value={[person3Transform.y]} onValueChange={([y]) => onPerson3TransformChange?.({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Zoom: {person3Transform.scale.toFixed(2)}x</Label><Slider value={[person3Transform.scale]} onValueChange={([scale]) => onPerson3TransformChange?.({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
               <div><Label className="text-xs">Rotação: {person3Transform.rotation}°</Label><Slider value={[person3Transform.rotation]} onValueChange={([rotation]) => onPerson3TransformChange?.({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
+              </>)}
             </div>
           )}
 
@@ -1138,11 +1199,16 @@ export const CortesControls = ({
             <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste PIP esquerdo</Label>
-                <button onClick={() => onPipTransformChange({ x: 0, y: 0, scale: pipBaseScale, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                <div className="flex items-center gap-2">
+                  <Switch checked={showPipAdjust} onCheckedChange={setShowPipAdjust} />
+                  <button onClick={() => onPipTransformChange({ x: 0, y: 0, scale: pipBaseScale, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                </div>
               </div>
+              {showPipAdjust && (<>
               <div><Label className="text-xs">Posição X: {pipTransform.x}px</Label><Slider value={[pipTransform.x]} onValueChange={([x]) => onPipTransformChange({ x })} min={-500} max={500} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Posição Y: {pipTransform.y}px</Label><Slider value={[pipTransform.y]} onValueChange={([y]) => onPipTransformChange({ y })} min={-500} max={500} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Zoom: {pipTransform.scale.toFixed(2)}x</Label><Slider value={[pipTransform.scale]} onValueChange={([scale]) => onPipTransformChange({ scale })} min={0.5} max={3} step={0.01} className="mt-1" /></div>
+              </>)}
             </div>
           )}
 
@@ -1179,11 +1245,16 @@ export const CortesControls = ({
             <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste PIP direito</Label>
-                <button onClick={() => onPip2TransformChange?.({ x: 0, y: 0, scale: pip2BaseScale, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                <div className="flex items-center gap-2">
+                  <Switch checked={showPip2Adjust} onCheckedChange={setShowPip2Adjust} />
+                  <button onClick={() => onPip2TransformChange?.({ x: 0, y: 0, scale: pip2BaseScale, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                </div>
               </div>
+              {showPip2Adjust && (<>
               <div><Label className="text-xs">Posição X: {pip2Transform.x}px</Label><Slider value={[pip2Transform.x]} onValueChange={([x]) => onPip2TransformChange?.({ x })} min={-500} max={500} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Posição Y: {pip2Transform.y}px</Label><Slider value={[pip2Transform.y]} onValueChange={([y]) => onPip2TransformChange?.({ y })} min={-500} max={500} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Zoom: {pip2Transform.scale.toFixed(2)}x</Label><Slider value={[pip2Transform.scale]} onValueChange={([scale]) => onPip2TransformChange?.({ scale })} min={0.5} max={3} step={0.01} className="mt-1" /></div>
+              </>)}
             </div>
           )}
         </>
@@ -1245,10 +1316,15 @@ export const CortesControls = ({
             <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{thumbModel === 'duas-pessoas' ? 'Ajuste pessoa (direita)' : 'Ajuste da pessoa'}</Label>
-                <button onClick={() => onPersonTransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
-                  <RotateCcw className="w-3.5 h-3.5" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <Switch checked={showPerson1Adjust} onCheckedChange={setShowPerson1Adjust} />
+                  <button onClick={() => onPersonTransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
+                    <RotateCcw className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
+              {showPerson1Adjust && (
+                <>
               <div>
                 <Label className="text-xs">Posição X: {personTransform.x}px</Label>
                 <Slider value={[personTransform.x]} onValueChange={([x]) => onPersonTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" />
@@ -1265,6 +1341,8 @@ export const CortesControls = ({
                 <Label className="text-xs">Rotação: {personTransform.rotation}°</Label>
                 <Slider value={[personTransform.rotation]} onValueChange={([rotation]) => onPersonTransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" />
               </div>
+                </>
+              )}
             </div>
           )}
         </>
@@ -1323,10 +1401,15 @@ export const CortesControls = ({
             <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste pessoa (esquerda)</Label>
-                <button onClick={() => onPerson2TransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
-                  <RotateCcw className="w-3.5 h-3.5" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <Switch checked={showPerson2Adjust} onCheckedChange={setShowPerson2Adjust} />
+                  <button onClick={() => onPerson2TransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
+                    <RotateCcw className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
+              {showPerson2Adjust && (
+                <>
               <div>
                 <Label className="text-xs">Posição X: {person2Transform.x}px</Label>
                 <Slider value={[person2Transform.x]} onValueChange={([x]) => onPerson2TransformChange({ x })} min={-800} max={800} step={1} className="mt-1" />
@@ -1343,6 +1426,8 @@ export const CortesControls = ({
                 <Label className="text-xs">Rotação: {person2Transform.rotation}°</Label>
                 <Slider value={[person2Transform.rotation]} onValueChange={([rotation]) => onPerson2TransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" />
               </div>
+                </>
+              )}
             </div>
           )}
         </>
@@ -1376,10 +1461,15 @@ export const CortesControls = ({
             <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste imagem esquerda</Label>
-                <button onClick={() => onPersonTransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
-                  <RotateCcw className="w-3.5 h-3.5" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <Switch checked={showMeioLeftAdjust} onCheckedChange={setShowMeioLeftAdjust} />
+                  <button onClick={() => onPersonTransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
+                    <RotateCcw className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
+              {showMeioLeftAdjust && (
+                <>
               <div>
                 <Label className="text-xs">Posição X: {personTransform.x}px</Label>
                 <Slider value={[personTransform.x]} onValueChange={([x]) => onPersonTransformChange({ x })} min={-640} max={640} step={1} className="mt-1" />
@@ -1392,6 +1482,8 @@ export const CortesControls = ({
                 <Label className="text-xs">Zoom: {personTransform.scale.toFixed(2)}x</Label>
                 <Slider value={[personTransform.scale]} onValueChange={([scale]) => onPersonTransformChange({ scale })} min={0.5} max={3} step={0.01} className="mt-1" />
               </div>
+                </>
+              )}
             </div>
           )}
 
@@ -1420,10 +1512,15 @@ export const CortesControls = ({
             <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste imagem direita</Label>
-                <button onClick={() => onPerson2TransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
-                  <RotateCcw className="w-3.5 h-3.5" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <Switch checked={showMeioRightAdjust} onCheckedChange={setShowMeioRightAdjust} />
+                  <button onClick={() => onPerson2TransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors" title="Redefinir">
+                    <RotateCcw className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
+              {showMeioRightAdjust && (
+                <>
               <div>
                 <Label className="text-xs">Posição X: {person2Transform.x}px</Label>
                 <Slider value={[person2Transform.x]} onValueChange={([x]) => onPerson2TransformChange({ x })} min={-640} max={640} step={1} className="mt-1" />
@@ -1436,6 +1533,8 @@ export const CortesControls = ({
                 <Label className="text-xs">Zoom: {person2Transform.scale.toFixed(2)}x</Label>
                 <Slider value={[person2Transform.scale]} onValueChange={([scale]) => onPerson2TransformChange({ scale })} min={0.5} max={3} step={0.01} className="mt-1" />
               </div>
+                </>
+              )}
             </div>
           )}
 
