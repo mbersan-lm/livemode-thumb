@@ -1,13 +1,12 @@
 
-# Diminuir placar de penaltis em 30%
+# Ajustar posicao do placar de penaltis
 
 ## Alteracao
 
-Apenas o tamanho da fonte do placar de penaltis sera reduzido em 30%, sem mover o placar principal.
+O `marginTop` atual e `-14px`, o que deixa o placar de penaltis muito proximo (grudado) ao placar principal. A alteracao sera mudar de `-14px` para `4px`, criando um pequeno espacamento entre os dois placares sem afastar demais.
 
-### `src/components/ThumbnailCanvas.tsx`
+### `src/components/ThumbnailCanvas.tsx` (linha 155)
 
-- Linha 153: Alterar o fator de `0.35` para `0.245` (reducao de 30%)
-- Linha 159: Alterar o fator do "x" de `0.3` para `0.21` (reducao de 30%)
+- Alterar `marginTop: '-14px'` para `marginTop: '4px'`
 
-Nenhuma outra alteracao sera feita -- o placar principal permanece exatamente na mesma posicao e tamanho.
+Isso adiciona 4px de espaco abaixo do placar principal, separando visualmente os dois sem distanciar demais.
