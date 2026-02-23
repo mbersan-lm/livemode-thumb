@@ -92,7 +92,7 @@ export const CortesThumbBuilder = ({
   useEffect(() => {
     const updateScale = () => {
       const availableWidth = window.innerWidth >= 768
-        ? (window.innerWidth / 2) - 32
+        ? window.innerWidth - 380 - 32
         : window.innerWidth - 16;
       setCanvasScale(Math.min(availableWidth / CANVAS_WIDTH, 0.85));
     };
@@ -187,29 +187,17 @@ export const CortesThumbBuilder = ({
     reader.readAsDataURL(file);
   };
 
-  const removeBgFromBase64 = async (base64: string): Promise<string> => {
-    const { data, error } = await supabase.functions.invoke('photoroom-remove-bg', {
-      body: { image_base64: base64 },
-    });
-    if (error) throw error;
-    if (data?.error) throw new Error(data.error);
-    return data.result_base64;
-  };
-
   const handleUpscalePerson = async () => {
     if (!personCutout) return;
     setIsUpscalingPerson(true);
     try {
-      toast.info('Melhorando imagem...');
       const { data, error } = await supabase.functions.invoke('gemini-upscale', {
         body: { image_base64: personCutout },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      toast.info('Removendo fundo...');
-      const cleanBase64 = await removeBgFromBase64(data.result_base64);
-      setPersonCutout(cleanBase64);
-      toast.success('Imagem melhorada e fundo removido!');
+      setPersonCutout(data.result_base64);
+      toast.success('Imagem melhorada com Gemini!');
     } catch (err: any) {
       toast.error(err.message || 'Erro ao melhorar imagem com Gemini');
     } finally {
@@ -221,16 +209,13 @@ export const CortesThumbBuilder = ({
     if (!person2Cutout) return;
     setIsUpscalingPerson2(true);
     try {
-      toast.info('Melhorando imagem (pessoa 2)...');
       const { data, error } = await supabase.functions.invoke('gemini-upscale', {
         body: { image_base64: person2Cutout },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      toast.info('Removendo fundo (pessoa 2)...');
-      const cleanBase64 = await removeBgFromBase64(data.result_base64);
-      setPerson2Cutout(cleanBase64);
-      toast.success('Imagem da pessoa 2 melhorada e fundo removido!');
+      setPerson2Cutout(data.result_base64);
+      toast.success('Imagem da pessoa 2 melhorada com Gemini!');
     } catch (err: any) {
       toast.error(err.message || 'Erro ao melhorar imagem com Gemini');
     } finally {
@@ -285,7 +270,7 @@ export const CortesThumbBuilder = ({
   return (
     <div className="h-screen bg-background flex flex-col md:flex-row overflow-hidden">
       <div
-        className={`flex items-center justify-center overflow-hidden bg-[hsl(240_10%_6%)] shrink-0 ${isMobile ? '' : 'w-1/2'}`}
+        className={`flex items-center justify-center overflow-hidden bg-[hsl(240_10%_6%)] shrink-0 ${isMobile ? '' : 'flex-1'}`}
         style={isMobile ? { height: scaledHeight + 8, minHeight: scaledHeight + 8 } : undefined}
       >
         <div style={{ transform: `scale(${canvasScale})`, transformOrigin: 'center' }}>
@@ -320,7 +305,7 @@ export const CortesThumbBuilder = ({
         </div>
       </div>
 
-      <div className="w-full md:w-1/2 bg-card border-t md:border-t-0 md:border-l border-border flex flex-col flex-1 md:flex-none overflow-hidden">
+      <div className="w-full md:w-[380px] bg-card border-t md:border-t-0 md:border-l border-border flex flex-col flex-1 md:flex-none overflow-hidden">
         <div className="p-4 md:p-6 pb-3 md:pb-4 border-b border-border flex items-center justify-between shrink-0">
           <div>
           <h1 className="text-xl font-bold tracking-tight">{programName}</h1>
