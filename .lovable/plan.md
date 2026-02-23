@@ -1,62 +1,81 @@
 
-# Correcao: Imagens de referencia na geracao de PIP com IA
+# Novo Modelo: Thumb Principal (4 fotos em linha + lettering)
 
-## Problema
-Quando imagens de referencia sao anexadas, o modelo `gemini-3-pro-image-preview` recebe as imagens diretamente e retorna `IMAGE_OTHER` (recusa gerar). Alem disso, imagens grandes geram payloads enormes que podem causar timeout.
+## Resumo
+Criar um novo modelo de thumbnail chamado "Thumb Principal" que exibe 4 pessoas recortadas (com remocao de fundo automatica) posicionadas em linha horizontal sobre o KV enviado, com lettering dinamico na parte inferior.
 
-## Solucao: Dois estagios + compressao no cliente
-
-### Fluxo corrigido
+## Layout (1280x720)
 
 ```text
-Cliente                          Edge Function
-  |                                    |
-  |-- comprime imagens (512px) ------->|
-  |                                    |-- Estagio 1: gemini-2.5-flash
-  |                                    |   descreve as imagens de referencia
-  |                                    |   (retorna texto descritivo)
-  |                                    |
-  |                                    |-- Estagio 2: gemini-3-pro-image-preview
-  |                                    |   gera imagem usando APENAS o prompt
-  |                                    |   + descricao textual (sem imagens)
-  |                                    |
-  |<-- imagem gerada (base64) ---------|
++----------------------------------------------+
+|            KV de fundo (THUMB_GERAL.jpg)      |
+|                                               |
+|  [Foto1]  [Foto2]  [Foto3]  [Foto4]          |
+|  ~25%     ~25%     ~25%     ~25%              |
+|  (ancoradas no bottom do canvas)              |
+|                                               |
+|  ========= GRADIENTE INFERIOR =========       |
+|  [Logos]                                      |
+|       TEXTO AUTO-FIT (lettering)              |
++----------------------------------------------+
 ```
-
-### 1. Compressao no cliente
-**Arquivo:** `src/components/cortes/PipAiGenerator.tsx`
-- Ao anexar imagens, redimensionar para max 512px (largura ou altura) usando canvas
-- Converter para JPEG com qualidade 0.7
-- Isso reduz drasticamente o tamanho do payload (de varios MB para ~50-100KB por imagem)
-
-### 2. Fluxo de dois estagios na edge function
-**Arquivo:** `supabase/functions/gemini-generate-pip/index.ts`
-- **Estagio 1**: Enviar as imagens de referencia ao modelo `google/gemini-2.5-flash` pedindo uma descricao textual detalhada (cores, composicao, estilo, objetos)
-- **Estagio 2**: Usar o prompt do usuario + a descricao textual para gerar a imagem com `google/gemini-3-pro-image-preview` (SEM enviar as imagens, apenas texto)
-- Adicionar logs para debug (`console.log` com tamanho do payload, comprimento da descricao)
-- Tratar erros de rate limit (429) e creditos (402) em ambos os estagios
-
-## Detalhes tecnicos
-
-### Compressao de imagem no cliente (canvas resize)
-```text
-Imagem original (ex: 3000x2000, 4MB base64)
-  -> Canvas resize para 512x341
-  -> JPEG quality 0.7
-  -> ~50-100KB base64
-```
-
-### Prompt do estagio 1 (descricao)
-Sistema pede ao modelo de texto para descrever as imagens em detalhe: estilo visual, cores dominantes, composicao, objetos, iluminacao, atmosfera. Retorna apenas texto.
-
-### Prompt do estagio 2 (geracao)
-Combina o prompt do usuario com a descricao das referencias em um unico prompt textual. O modelo de imagem recebe apenas texto, evitando o erro `IMAGE_OTHER`.
 
 ## Arquivos alterados
-1. `src/components/cortes/PipAiGenerator.tsx` -- adicionar funcao de compressao de imagem
-2. `supabase/functions/gemini-generate-pip/index.ts` -- implementar fluxo de dois estagios
+
+### 1. Novo asset: `public/cortes/bg-thumb-principal.jpg`
+- Copiar a imagem enviada (`THUMB_GERAL.jpg`) para uso como fundo padrao deste modelo
+
+### 2. `src/components/cortes/CortesThumbBuilder.tsx`
+- Adicionar `'thumb-principal'` ao tipo `ThumbModel`
+- Adicionar estado para `person4Cutout`, `person4Transform`, `isRemovingBg4`
+- Adicionar handler `handlePerson4Upload` (com remocao de fundo via PhotoRoom)
+- Adicionar `DEFAULT_PERSON4_TRANSFORM`
+- Passar `person4Cutout`, `person4Transform`, `isRemovingBg4` para `CortesCanvas` e `CortesControls`
+- Limpar `person4Cutout` no `handleClear`
+- Adicionar prop `allowThumbPrincipal` para controlar visibilidade no seletor
+
+### 3. `src/components/cortes/CortesCanvas.tsx` (preview)
+- Adicionar props `person4Cutout` e `person4Transform`
+- Adicionar `showThumbPrincipal = thumbModel === 'thumb-principal'`
+- Renderizar 4 pessoas recortadas em linha:
+  - Foto 1: centroX ~16% da largura
+  - Foto 2: centroX ~37%
+  - Foto 3: centroX ~63%
+  - Foto 4: centroX ~84%
+  - Cada foto: height ~95% do canvas, ancorada no bottom
+  - Controles individuais de X, Y, Zoom e Rotacao
+- Excluir este modelo da renderizacao de pessoa do modelo "pip"/"duas-pessoas" (adicionar `!showThumbPrincipal` nas condicoes)
+
+### 4. `src/components/cortes/CortesControls.tsx` (controles + export)
+**Controles:**
+- Adicionar `'thumb-principal'` ao seletor de modelos (visivel quando `allowAllModels` ou nova prop)
+- Adicionar 4 blocos de upload de foto (reutilizando o padrao existente: upload + removendo fundo + sliders de ajuste)
+- Adicionar `person4InputRef`, `showPerson4Adjust` states
+- Receber props: `person4Cutout`, `person4Transform`, `onPerson4Upload`, `onPerson4TransformChange`, `isRemovingBg4`
+
+**Export (Canvas API):**
+- Adicionar bloco `if (showThumbPrincipal)` na funcao `handleExport`
+- Carregar `person4Img` em paralelo com as demais imagens
+- Desenhar as 4 pessoas em linha, cada uma com centroX nos pontos definidos acima
+- Reutilizar gradiente, logos e `drawAutoFitText` existentes
+
+### 5. `src/pages/CortesProgramBuilder.tsx`
+- Ativar o modelo para os programas "Geral CazeTv" e "Geral CazeTv Brasil" (passando `allowThumbPrincipal={true}`)
+
+## Posicionamento das 4 fotos (detalhes tecnicos)
+
+Cada foto recortada:
+- height: 95% do canvas (684px)
+- largura: automatica pelo aspect ratio da imagem
+- ancorada no bottom (base da imagem alinhada com a base do canvas)
+- centroX distribuido uniformemente: 16%, 37%, 63%, 84% da largura
+
+No preview (HTML/CSS), cada foto sera renderizada como `<img>` com `position: absolute`, `bottom: 0`, `height: 95%`, e `left` calculado para centrar no ponto adequado.
+
+No export (Canvas API), a funcao `drawJogoCutout` sera reutilizada/adaptada para desenhar cada pessoa no posicionamento correto.
 
 ## O que NAO muda
-- Interface do usuario (botoes, layout, fluxo de uso)
-- Modelos de thumbnail existentes
-- Outras edge functions
+- Nenhum modelo existente (pip, pip-dividido, duas-pessoas, meio-a-meio, so-lettering, jogo-v1, jogo-pip-duplo)
+- Nenhuma logica de remocao de fundo ou upscale
+- Nenhuma edge function
+- Nenhuma cor, fonte ou estilo base
