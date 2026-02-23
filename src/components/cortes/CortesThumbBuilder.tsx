@@ -347,7 +347,7 @@ export const CortesThumbBuilder = ({
             person4Transform={person4Transform}
             pipFrame={pipFrame}
             pip2Frame={pip2Frame}
-            bgImage={customBgImage || bgImage}
+            bgImage={thumbModel === 'thumb-principal' ? (customBgImage || '/cortes/bg-thumb-principal.jpg') : (customBgImage || bgImage)}
             logosImage={activeLogosImage}
             divisoriaImage={divisoriaImage}
             textColor={textColor}
@@ -473,7 +473,7 @@ export const CortesThumbBuilder = ({
               person4Transform,
               pipFrame,
               pip2Frame,
-              bgImage: customBgImage || bgImage,
+              bgImage: thumbModel === 'thumb-principal' ? (customBgImage || '/cortes/bg-thumb-principal.jpg') : (customBgImage || bgImage),
               logosImage: activeLogosImage,
               divisoriaImage,
               textColor,
