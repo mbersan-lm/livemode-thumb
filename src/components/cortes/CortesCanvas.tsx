@@ -484,6 +484,25 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           }}
         />
 
+        {/* Layer 3.6: Thumb Principal — dark central circle */}
+        {showThumbPrincipal && (
+          <div
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: '50%',
+              width: 560,
+              height: 560,
+              borderRadius: '50%',
+              backgroundColor: 'rgba(12, 12, 32, 0.85)',
+              border: '6px solid #F1E8D5',
+              transform: 'translate(-50%, -50%)',
+              zIndex: 4,
+              pointerEvents: 'none',
+            }}
+          />
+        )}
+
         {/* Layer 3.8: Top-right corner gradient (behind logos) — exclusivo Geral CazéTv Brasil */}
         {divisoriaImage === '/cortes/divisoria-brasil.png' && (
           <div
@@ -515,8 +534,8 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           }}
         />
 
-        {/* Layer 5: Text — single (pip/duas-pessoas/so-lettering) */}
-        {!showMeioAMeio && thumbText && (
+        {/* Layer 5: Text — single (pip/duas-pessoas/so-lettering) — NOT thumb-principal */}
+        {!showMeioAMeio && !showThumbPrincipal && thumbText && (
           <div
             ref={textRef}
             style={{
@@ -547,6 +566,46 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
                 ? <span key={i} style={{ color: highlightColor, marginLeft: '0.15em', marginRight: '0.15em' }}>{part.slice(1, -1)}</span>
                 : part
             )}
+          </div>
+        )}
+
+        {/* Layer 5tp: Text inside central circle — thumb-principal only */}
+        {showThumbPrincipal && thumbText && (
+          <div
+            ref={textRef}
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: '50%',
+              width: 380,
+              maxHeight: 200,
+              overflow: 'hidden',
+              zIndex: 6,
+              fontFamily: customFontFamily.includes(',') ? customFontFamily : `'${customFontFamily}', sans-serif`,
+              fontWeight: 800,
+              fontSize: `${fontSize}px`,
+              lineHeight: 1.15,
+              textAlign: 'center',
+              color: textColor,
+              textShadow: strokeShadow,
+              textTransform: 'uppercase',
+              transform: 'translate(-50%, 10%)',
+              transformOrigin: 'center center',
+              padding: '10px',
+              boxSizing: 'border-box',
+              wordBreak: 'break-word',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            } as React.CSSProperties}
+          >
+            <span>
+              {thumbText.split(/(\*[^*]+\*)/g).map((part, i) =>
+                part.startsWith('*') && part.endsWith('*')
+                  ? <span key={i} style={{ color: highlightColor, marginLeft: '0.15em', marginRight: '0.15em' }}>{part.slice(1, -1)}</span>
+                  : part
+              )}
+            </span>
           </div>
         )}
 
