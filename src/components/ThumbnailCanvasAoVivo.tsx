@@ -225,8 +225,8 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
         {homeTeam && awayTeam && (
           <div 
             id="MATCH_ROW_AV"
-            className="absolute left-[22px] top-[360px] flex items-center gap-[34px]"
-            style={{ zIndex: 25, transform: 'none' }}
+            className="absolute left-1/2 top-1/2 flex items-center justify-center gap-[34px]"
+            style={{ zIndex: 50, transform: 'translate(-50%, -50%)' }}
           >
             <img 
               src={homeTeam.crest_url}
