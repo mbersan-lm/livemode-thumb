@@ -1,22 +1,37 @@
 
 
-# Corrigir Posicao Y do Texto no Modelo Thumb Principal
+# Corrigir exportacao do texto em todos os modelos com "Texto da thumbnail"
 
 ## Problema
-O slider de "Posicao Y" do texto nao tem efeito no modelo **Thumb Principal** (Roda de Bobo). Isso acontece porque o texto esta posicionado com valores fixos (`top: 50%`, `transform: translate(-50%, 10%)`) em vez de usar a variavel `textBoxHeight` que o slider controla.
+O JPG exportado esta cortando o texto (faltando o `"` final) porque ha diferencas entre o preview (HTML/CSS) e o export (Canvas API). Isso afeta o modelo **Thumb Principal** e potencialmente outros modelos.
+
+## Diferencas encontradas
+
+| Propriedade | Preview (CSS) | Export (Canvas) |
+|---|---|---|
+| Largura texto (Thumb Principal) | 380px | 360px |
+| Altura texto (Thumb Principal) | 200px | 190px |
+| Line-height | 1.15 | 1.2 (fixo) |
+| Font size inicial (Thumb Principal) | auto-fit grande | 120px |
+
+Essas diferencas fazem com que o auto-fit calcule um tamanho de fonte diferente no export, resultando em texto que nao cabe e e cortado.
 
 ## Correcao
 
-### Arquivo 1: `src/components/cortes/CortesCanvas.tsx` (preview)
+### Arquivo: `src/components/cortes/CortesControls.tsx`
 
-Na secao "Layer 5tp" (linha ~554-590), o texto do thumb-principal sera ajustado para usar `textBoxHeight` no posicionamento vertical:
+**1. Funcao `drawAutoFitText` (linha ~230):**
+- Adicionar parametro opcional `lineHeightRatio` (default `1.2`)
+- Usar esse parametro em vez do valor fixo `1.2` na linha 238
 
-- Trocar `top: '50%'` e `transform: 'translate(-50%, 10%)'` por um posicionamento baseado em `bottom` + `textBoxHeight`, similar ao que os outros modelos ja fazem
-- O texto continuara centralizado horizontalmente, mas a posicao vertical sera controlada pelo slider
+**2. Thumb Principal export (linhas 886-899):**
+- Mudar `textW` de `360` para `380` (igualar ao preview)
+- Mudar `textH` de `190` para `200` (igualar ao preview)
+- Mudar `startFontSize` de `120` para `200` (mesmo ponto de partida do auto-fit)
+- Passar `lineHeightRatio: 1.15` para igualar ao CSS do preview
 
-### Arquivo 2: `src/components/cortes/CortesControls.tsx` (export)
-
-Na secao "Thumb Principal -- text inside circle" (linha ~886-899), o calculo de `textY` sera atualizado para usar `bottomFrac` (derivado de `textBoxHeight`) em vez do valor fixo `H / 2 - 20`.
+**3. Modelo padrao (linhas 872-883):**
+- Verificar se o line-height do preview tambem e `1.15` e, se for, passar o mesmo ratio na chamada
 
 ## Resultado
-O slider de Posicao Y passara a mover o texto verticalmente no modelo Thumb Principal, tanto no preview quanto no JPG exportado.
+O export passara a usar as mesmas dimensoes e proporcoes do preview, garantindo que o texto completo (incluindo aspas e caracteres finais) apareca no JPG exportado em todos os modelos.
