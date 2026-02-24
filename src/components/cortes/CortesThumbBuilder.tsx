@@ -230,6 +230,10 @@ export const CortesThumbBuilder = ({
     reader.readAsDataURL(file);
   };
 
+  const PRESET_TRANSFORMS: Record<string, { x: number; y: number; scale: number; rotation: number }> = {
+    '/cortes/presets/caze.png': { x: -127, y: 50, scale: 1.27, rotation: -1 },
+  };
+
   const handleQuadrantPresetSelect = async (idx: number, url: string) => {
     try {
       const resp = await fetch(url);
@@ -237,10 +241,11 @@ export const CortesThumbBuilder = ({
       const reader = new FileReader();
       reader.onload = (e) => {
         const base64 = e.target?.result as string;
-        if (idx === 0) setPersonCutout(base64);
-        else if (idx === 1) setPerson2Cutout(base64);
-        else if (idx === 2) setPerson3Cutout(base64);
-        else if (idx === 3) setPerson4Cutout(base64);
+        const transform = PRESET_TRANSFORMS[url] || { x: 0, y: 0, scale: 1, rotation: 0 };
+        if (idx === 0) { setPersonCutout(base64); setPersonTransform(prev => ({ ...prev, ...transform })); }
+        else if (idx === 1) { setPerson2Cutout(base64); setPerson2Transform(prev => ({ ...prev, ...transform })); }
+        else if (idx === 2) { setPerson3Cutout(base64); setPerson3Transform(prev => ({ ...prev, ...transform })); }
+        else if (idx === 3) { setPerson4Cutout(base64); setPerson4Transform(prev => ({ ...prev, ...transform })); }
       };
       reader.readAsDataURL(blob);
     } catch (err) {
