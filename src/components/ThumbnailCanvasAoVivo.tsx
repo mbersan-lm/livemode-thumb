@@ -149,7 +149,7 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
             left: '-30px',
             bottom: '-5%',
             width: '280px',
-            height: '120px',
+            height: '132px',
             backgroundColor: '#00000033',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
