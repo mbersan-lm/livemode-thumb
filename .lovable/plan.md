@@ -1,22 +1,23 @@
 
-# Posicionar Escudos Dentro dos Paineis Glass
+
+# Ajustar Escudos no Modelo Ao Vivo
 
 ## O que sera feito
 
-Cada escudo sera posicionado individualmente no centro do seu respectivo painel glass, em vez de ficarem juntos no centro do canvas.
+1. **Subir todos os escudos em 10px** - Alterar o `top` de `537px` para `527px` em ambos os escudos (home e away).
+
+2. **Diminuir escudos do Brann e Celta de Vigo em 70%** - Adicionar logica condicional para que, quando o time selecionado for Brann (id: `av5`) ou Celta de Vigo (id: `av6`), o escudo tenha `maxWidth` e `maxHeight` de `150px` (30% de 500px) em vez dos `500px` padrao.
 
 ## Detalhes Tecnicos
 
 **Arquivo:** `src/components/ThumbnailCanvasAoVivo.tsx`
 
-Os paineis glass possuem estas coordenadas:
-- **Painel esquerdo:** left 291px, top 319px, 334x437px (centro: 458px, 537px)
-- **Painel direito:** left 655px, top 319px, 334x437px (centro: 822px, 537px)
+1. Linhas 232 e 249: alterar `top: '537px'` para `top: '527px'`
 
-Alteracoes no container `MATCH_ROW_AV` (linhas 224-244):
+2. Adicionar logica para calcular tamanho do escudo com base no time:
+   - IDs afetados: `av5` (Brann) e `av6` (Celta de Vigo)
+   - Times com esses IDs terao `maxWidth/maxHeight: '150px'`
+   - Demais times mantem `maxWidth/maxHeight: '500px'`
 
-1. **Separar os escudos** em dois elementos independentes, cada um posicionado no centro do seu painel glass
-2. **Escudo home:** posicao absoluta centralizada no painel esquerdo (left: 458px, top: 537px, transform translate -50% -50%)
-3. **Escudo away:** posicao absoluta centralizada no painel direito (left: 822px, top: 537px, transform translate -50% -50%)
-4. **zIndex 50** mantido para ambos, acima de todos os elementos
-5. **Tamanho maximo** dos escudos ajustado para caber dentro dos paineis (max 250px)
+3. Aplicar a mesma logica para ambos os escudos (home e away), verificando o ID do time correspondente
+
