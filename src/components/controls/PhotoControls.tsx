@@ -7,6 +7,7 @@ import { PhotoTransform } from '@/types/thumbnail';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { ActiveCanvas } from '@/components/controls/ViewControls';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface PhotoControlsProps {
   activeCanvas: ActiveCanvas;
@@ -22,26 +23,39 @@ interface PhotoControlsProps {
   onJogoCompletoPhotoUpload: (file: File) => void;
   onPlayerPhotoReplace: (dataUrl: string) => void;
   onJogoCompletoPhotoReplace: (dataUrl: string) => void;
+  // Ao Vivo left/right
+  aoVivoPhotoLeft?: string | null;
+  aoVivoPhotoLeftTransform?: PhotoTransform;
+  initialScaleAoVivoLeft?: number;
+  onAoVivoPhotoLeftUpload?: (file: File) => void;
+  onAoVivoPhotoLeftTransformChange?: (transform: Partial<PhotoTransform>) => void;
+  onAoVivoPhotoLeftReplace?: (dataUrl: string) => void;
+  aoVivoPhotoRight?: string | null;
+  aoVivoPhotoRightTransform?: PhotoTransform;
+  initialScaleAoVivoRight?: number;
+  onAoVivoPhotoRightUpload?: (file: File) => void;
+  onAoVivoPhotoRightTransformChange?: (transform: Partial<PhotoTransform>) => void;
+  onAoVivoPhotoRightReplace?: (dataUrl: string) => void;
 }
 
-export const PhotoControls = ({ 
-  activeCanvas,
-  photoTransform, 
+const PhotoSliders = ({
+  transform,
   initialScale,
   onTransformChange,
-  onPhotoUpload,
-  playerPhoto,
-  jogoCompletoPhoto,
-  jogoCompletoPhotoTransform,
-  initialScaleJogoCompleto,
-  onJogoCompletoTransformChange,
-  onJogoCompletoPhotoUpload,
-  onPlayerPhotoReplace,
-  onJogoCompletoPhotoReplace,
-}: PhotoControlsProps) => {
+  photo,
+  onReplace,
+  label,
+}: {
+  transform: PhotoTransform;
+  initialScale: number;
+  onTransformChange: (t: Partial<PhotoTransform>) => void;
+  photo: string | null;
+  onReplace: (dataUrl: string) => void;
+  label: string;
+}) => {
   const [isExpanding, setIsExpanding] = useState(false);
 
-  const handleAiExpand = async (photo: string | null, setter: (url: string) => void, resetTransform: () => void) => {
+  const handleAiExpand = async () => {
     if (!photo) {
       toast.error('Faça upload de uma foto primeiro');
       return;
@@ -53,8 +67,8 @@ export const PhotoControls = ({
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      setter(data.result_base64);
-      resetTransform();
+      onReplace(data.result_base64);
+      onTransformChange({ x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 });
       toast.success('Imagem expandida com IA!');
     } catch (err: any) {
       toast.error(err.message || 'Erro ao expandir imagem');
@@ -63,106 +77,122 @@ export const PhotoControls = ({
     }
   };
 
-  // Determine which set of controls to show
-  const isMM = activeCanvas === 'mm';
-  const currentPhoto = isMM ? playerPhoto : jogoCompletoPhoto;
-  const currentTransform = isMM ? photoTransform : jogoCompletoPhotoTransform;
-  const currentInitialScale = isMM ? initialScale : initialScaleJogoCompleto;
-  const currentOnTransformChange = isMM ? onTransformChange : onJogoCompletoTransformChange;
-  const currentOnUpload = isMM ? onPhotoUpload : onJogoCompletoPhotoUpload;
-  const currentOnReplace = isMM ? onPlayerPhotoReplace : onJogoCompletoPhotoReplace;
-  const currentResetTransform = () => currentOnTransformChange({ x: 0, y: 0, scale: currentInitialScale, scaleX: 1, scaleY: 1 });
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) currentOnUpload(file);
-  };
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div>
-        <Label htmlFor="photo-upload" className="cursor-pointer">
-          <div className="flex items-center justify-center gap-2 p-4 border-2 border-dashed border-border rounded-lg hover:border-primary transition-colors">
-            <Upload className="w-5 h-5" />
-            <span>Enviar Foto do Jogador</span>
-          </div>
-          <input 
-            id="photo-upload"
-            type="file" 
-            accept="image/png,image/jpeg,image/jpg"
-            className="hidden"
-            onChange={handleFileUpload}
-            key={activeCanvas}
-          />
-        </Label>
+        <Label>Posição X: {transform.x}px</Label>
+        <Slider value={[transform.x]} onValueChange={([x]) => onTransformChange({ x })} min={-1500} max={1500} step={1} className="mt-2" />
       </div>
-
-      <div className="space-y-4">
-        <div>
-          <Label>Posição X: {currentTransform.x}px</Label>
-          <Slider
-            value={[currentTransform.x]}
-            onValueChange={([x]) => currentOnTransformChange({ x })}
-            min={-1500}
-            max={1500}
-            step={1}
-            className="mt-2"
-          />
-        </div>
-
-        <div>
-          <Label>Posição Y: {currentTransform.y}px</Label>
-          <Slider
-            value={[currentTransform.y]}
-            onValueChange={([y]) => currentOnTransformChange({ y })}
-            min={-1500}
-            max={1500}
-            step={1}
-            className="mt-2"
-          />
-        </div>
-
-        <div>
-          <Label>Zoom: {currentTransform.scale.toFixed(2)}x</Label>
-          <Slider
-            value={[currentTransform.scale]}
-            onValueChange={([scale]) => currentOnTransformChange({ scale })}
-            min={Math.min(currentInitialScale * 0.9, 0.1)}
-            max={2.5}
-            step={0.01}
-            className="mt-2"
-          />
-        </div>
+      <div>
+        <Label>Posição Y: {transform.y}px</Label>
+        <Slider value={[transform.y]} onValueChange={([y]) => onTransformChange({ y })} min={-1500} max={1500} step={1} className="mt-2" />
       </div>
-
+      <div>
+        <Label>Zoom: {transform.scale.toFixed(2)}x</Label>
+        <Slider value={[transform.scale]} onValueChange={([scale]) => onTransformChange({ scale })} min={Math.min(initialScale * 0.9, 0.1)} max={2.5} step={0.01} className="mt-2" />
+      </div>
       <div className="pt-4 border-t border-border space-y-2">
-        <h4 className="text-sm font-semibold mb-3">Ações Rápidas</h4>
-        <Button
-          onClick={() => handleAiExpand(
-            currentPhoto,
-            currentOnReplace,
-            () => currentOnTransformChange({ x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 }),
-          )}
-          variant="outline"
-          className="w-full"
-          disabled={isExpanding || !currentPhoto}
-        >
-          {isExpanding ? (
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-          ) : (
-            <Expand className="w-4 h-4 mr-2" />
-          )}
+        <Button onClick={handleAiExpand} variant="outline" className="w-full" disabled={isExpanding || !photo}>
+          {isExpanding ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Expand className="w-4 h-4 mr-2" />}
           {isExpanding ? 'Expandindo...' : 'Expandir com IA (1280×720)'}
         </Button>
-        <Button onClick={() => currentOnTransformChange({ x: 0, y: 0 })} variant="outline" className="w-full">
+        <Button onClick={() => onTransformChange({ x: 0, y: 0 })} variant="outline" className="w-full">
           <Maximize2 className="w-4 h-4 mr-2" />
           Centralizar
         </Button>
-        <Button onClick={currentResetTransform} variant="outline" className="w-full">
+        <Button onClick={() => onTransformChange({ x: 0, y: 0, scale: initialScale, scaleX: 1, scaleY: 1 })} variant="outline" className="w-full">
           <RotateCcw className="w-4 h-4 mr-2" />
           Redefinir Tudo
         </Button>
       </div>
+    </div>
+  );
+};
+
+export const PhotoControls = (props: PhotoControlsProps) => {
+  const {
+    activeCanvas,
+    photoTransform, initialScale, onTransformChange, onPhotoUpload, playerPhoto, onPlayerPhotoReplace,
+    jogoCompletoPhoto, jogoCompletoPhotoTransform, initialScaleJogoCompleto, onJogoCompletoTransformChange, onJogoCompletoPhotoUpload, onJogoCompletoPhotoReplace,
+    aoVivoPhotoLeft, aoVivoPhotoLeftTransform, initialScaleAoVivoLeft, onAoVivoPhotoLeftUpload, onAoVivoPhotoLeftTransformChange, onAoVivoPhotoLeftReplace,
+    aoVivoPhotoRight, aoVivoPhotoRightTransform, initialScaleAoVivoRight, onAoVivoPhotoRightUpload, onAoVivoPhotoRightTransformChange, onAoVivoPhotoRightReplace,
+  } = props;
+
+  // For MM and JC canvases, use the existing single-photo flow
+  if (activeCanvas !== 'av') {
+    const isMM = activeCanvas === 'mm';
+    const currentPhoto = isMM ? playerPhoto : jogoCompletoPhoto;
+    const currentTransform = isMM ? photoTransform : jogoCompletoPhotoTransform;
+    const currentInitialScale = isMM ? initialScale : initialScaleJogoCompleto;
+    const currentOnTransformChange = isMM ? onTransformChange : onJogoCompletoTransformChange;
+    const currentOnUpload = isMM ? onPhotoUpload : onJogoCompletoPhotoUpload;
+    const currentOnReplace = isMM ? onPlayerPhotoReplace : onJogoCompletoPhotoReplace;
+
+    return (
+      <div className="space-y-6">
+        <div>
+          <Label htmlFor="photo-upload" className="cursor-pointer">
+            <div className="flex items-center justify-center gap-2 p-4 border-2 border-dashed border-border rounded-lg hover:border-primary transition-colors">
+              <Upload className="w-5 h-5" />
+              <span>Enviar Foto do Jogador</span>
+            </div>
+            <input id="photo-upload" type="file" accept="image/png,image/jpeg,image/jpg" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) currentOnUpload(f); }} key={activeCanvas} />
+          </Label>
+        </div>
+        <PhotoSliders transform={currentTransform} initialScale={currentInitialScale} onTransformChange={currentOnTransformChange} photo={currentPhoto} onReplace={currentOnReplace} label="" />
+      </div>
+    );
+  }
+
+  // Ao Vivo: two photo slots (left & right)
+  const defaultTransform: PhotoTransform = { x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 };
+
+  const UploadBox = ({ id, label, onUpload }: { id: string; label: string; onUpload: (f: File) => void }) => (
+    <Label htmlFor={id} className="cursor-pointer">
+      <div className="flex items-center justify-center gap-2 p-3 border-2 border-dashed border-border rounded-lg hover:border-primary transition-colors">
+        <Upload className="w-4 h-4" />
+        <span className="text-sm">{label}</span>
+      </div>
+      <input id={id} type="file" accept="image/png,image/jpeg,image/jpg" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(f); }} key={id} />
+    </Label>
+  );
+
+  return (
+    <div className="space-y-4">
+      <Tabs defaultValue="left" className="w-full">
+        <TabsList className="w-full grid grid-cols-2 h-9">
+          <TabsTrigger value="left" className="text-xs">Foto Esquerda</TabsTrigger>
+          <TabsTrigger value="right" className="text-xs">Foto Direita</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="left" className="mt-4 space-y-4">
+          {onAoVivoPhotoLeftUpload && <UploadBox id="photo-left" label="Enviar Foto Esquerda" onUpload={onAoVivoPhotoLeftUpload} />}
+          {onAoVivoPhotoLeftTransformChange && onAoVivoPhotoLeftReplace && (
+            <PhotoSliders
+              transform={aoVivoPhotoLeftTransform ?? defaultTransform}
+              initialScale={initialScaleAoVivoLeft ?? 0.5}
+              onTransformChange={onAoVivoPhotoLeftTransformChange}
+              photo={aoVivoPhotoLeft ?? null}
+              onReplace={onAoVivoPhotoLeftReplace}
+              label="Esquerda"
+            />
+          )}
+        </TabsContent>
+
+        <TabsContent value="right" className="mt-4 space-y-4">
+          {onAoVivoPhotoRightUpload && <UploadBox id="photo-right" label="Enviar Foto Direita" onUpload={onAoVivoPhotoRightUpload} />}
+          {onAoVivoPhotoRightTransformChange && onAoVivoPhotoRightReplace && (
+            <PhotoSliders
+              transform={aoVivoPhotoRightTransform ?? defaultTransform}
+              initialScale={initialScaleAoVivoRight ?? 0.5}
+              onTransformChange={onAoVivoPhotoRightTransformChange}
+              photo={aoVivoPhotoRight ?? null}
+              onReplace={onAoVivoPhotoRightReplace}
+              label="Direita"
+            />
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

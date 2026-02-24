@@ -11,6 +11,10 @@ import { templates, TemplateType } from '@/data/templates';
 interface ThumbnailCanvasAoVivoProps {
   playerPhoto: string | null;
   photoTransform: PhotoTransform;
+  photoLeft: string | null;
+  photoLeftTransform: PhotoTransform;
+  photoRight: string | null;
+  photoRightTransform: PhotoTransform;
   matchData: MatchData;
   template: TemplateType;
   gradientLeftColor: string;
@@ -20,7 +24,7 @@ interface ThumbnailCanvasAoVivoProps {
 }
 
 export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasAoVivoProps>(
-  ({ playerPhoto, photoTransform, matchData, template, gradientLeftColor, gradientRightColor, panelLeftColor, panelRightColor }, ref) => {
+  ({ playerPhoto, photoTransform, photoLeft, photoLeftTransform, photoRight, photoRightTransform, matchData, template, gradientLeftColor, gradientRightColor, panelLeftColor, panelRightColor }, ref) => {
     const config = templates[template];
     const currentTeams = 
       template === 'brasileirao' ? teamsBrasileirao : 
@@ -45,6 +49,28 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
         WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 150px)',
         maskImage: 'linear-gradient(to right, transparent 0%, black 150px)',
       })
+    };
+
+    const photoLeftStyle = {
+      transform: `
+        translate(-50%, -50%)
+        translateX(${photoLeftTransform.x}px)
+        translateY(${photoLeftTransform.y}px)
+        scale(${photoLeftTransform.scale})
+        scaleX(${photoLeftTransform.scaleX})
+        scaleY(${photoLeftTransform.scaleY})
+      `.replace(/\s+/g, ' ').trim(),
+    };
+
+    const photoRightStyle = {
+      transform: `
+        translate(-50%, -50%)
+        translateX(${photoRightTransform.x}px)
+        translateY(${photoRightTransform.y}px)
+        scale(${photoRightTransform.scale})
+        scaleX(${photoRightTransform.scaleX})
+        scaleY(${photoRightTransform.scaleY})
+      `.replace(/\s+/g, ' ').trim(),
     };
 
     return (
@@ -76,6 +102,44 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
               transformOrigin: 'center center',
               zIndex: 0,
               ...photoStyle,
+            }}
+          />
+        )}
+
+        {/* Left Photo Layer - behind panels, above base */}
+        {photoLeft && (
+          <img 
+            src={photoLeft}
+            alt="Left player"
+            className="absolute"
+            style={{
+              left: '25%',
+              top: '50%',
+              maxWidth: 'none',
+              maxHeight: 'none',
+              objectFit: 'unset',
+              transformOrigin: 'center center',
+              zIndex: 5,
+              ...photoLeftStyle,
+            }}
+          />
+        )}
+
+        {/* Right Photo Layer - behind panels, above base */}
+        {photoRight && (
+          <img 
+            src={photoRight}
+            alt="Right player"
+            className="absolute"
+            style={{
+              left: '75%',
+              top: '50%',
+              maxWidth: 'none',
+              maxHeight: 'none',
+              objectFit: 'unset',
+              transformOrigin: 'center center',
+              zIndex: 5,
+              ...photoRightStyle,
             }}
           />
         )}

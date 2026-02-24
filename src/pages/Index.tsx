@@ -9,7 +9,7 @@ import { ExportControls } from '@/components/controls/ExportControls';
 import { AoVivoGradientControls } from '@/components/controls/AoVivoGradientControls';
 import { TemplateControls } from '@/components/controls/TemplateControls';
 import { ViewControls, ActiveCanvas } from '@/components/controls/ViewControls';
-import { ThumbnailState } from '@/types/thumbnail';
+import { ThumbnailState, PhotoTransform } from '@/types/thumbnail';
 import { TemplateType } from '@/data/templates';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
@@ -56,6 +56,22 @@ const Index = () => {
       scaleX: 1,
       scaleY: 1,
     },
+    aoVivoPhotoLeft: null,
+    aoVivoPhotoLeftTransform: {
+      x: 0,
+      y: 0,
+      scale: 1,
+      scaleX: 1,
+      scaleY: 1,
+    },
+    aoVivoPhotoRight: null,
+    aoVivoPhotoRightTransform: {
+      x: 0,
+      y: 0,
+      scale: 1,
+      scaleX: 1,
+      scaleY: 1,
+    },
     matchData: {
       homeTeamId: null,
       awayTeamId: null,
@@ -68,6 +84,8 @@ const Index = () => {
     initialScale: 0.5,
     initialScaleJogoCompleto: 0.5,
     initialScaleAoVivo: 0.5,
+    initialScaleAoVivoLeft: 0.5,
+    initialScaleAoVivoRight: 0.5,
     template: 'brasileirao',
   });
 
@@ -107,12 +125,56 @@ const Index = () => {
     reader.readAsDataURL(file);
   };
 
+  const handleAoVivoLeftPhotoUpload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const scale0 = Math.min(640 / img.naturalWidth, 720 / img.naturalHeight);
+        setState(prev => ({
+          ...prev,
+          aoVivoPhotoLeft: e.target?.result as string,
+          initialScaleAoVivoLeft: scale0,
+          aoVivoPhotoLeftTransform: { x: 0, y: 0, scale: scale0, scaleX: 1, scaleY: 1 },
+        }));
+      };
+      img.src = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleAoVivoRightPhotoUpload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const scale0 = Math.min(640 / img.naturalWidth, 720 / img.naturalHeight);
+        setState(prev => ({
+          ...prev,
+          aoVivoPhotoRight: e.target?.result as string,
+          initialScaleAoVivoRight: scale0,
+          aoVivoPhotoRightTransform: { x: 0, y: 0, scale: scale0, scaleX: 1, scaleY: 1 },
+        }));
+      };
+      img.src = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleTransformChange = (transform: Partial<typeof state.photoTransform>) => {
     setState(prev => ({ ...prev, photoTransform: { ...prev.photoTransform, ...transform } }));
   };
 
   const handleJogoCompletoTransformChange = (transform: Partial<typeof state.jogoCompletoPhotoTransform>) => {
     setState(prev => ({ ...prev, jogoCompletoPhotoTransform: { ...prev.jogoCompletoPhotoTransform, ...transform } }));
+  };
+
+  const handleAoVivoLeftTransformChange = (transform: Partial<PhotoTransform>) => {
+    setState(prev => ({ ...prev, aoVivoPhotoLeftTransform: { ...prev.aoVivoPhotoLeftTransform, ...transform } }));
+  };
+
+  const handleAoVivoRightTransformChange = (transform: Partial<PhotoTransform>) => {
+    setState(prev => ({ ...prev, aoVivoPhotoRightTransform: { ...prev.aoVivoPhotoRightTransform, ...transform } }));
   };
 
   const handleMatchDataChange = (data: Partial<typeof state.matchData>) => {
@@ -177,6 +239,10 @@ const Index = () => {
                 ref={canvasRefAoVivo}
                 playerPhoto={state.aoVivoPhoto}
                 photoTransform={state.aoVivoPhotoTransform}
+                photoLeft={state.aoVivoPhotoLeft}
+                photoLeftTransform={state.aoVivoPhotoLeftTransform}
+                photoRight={state.aoVivoPhotoRight}
+                photoRightTransform={state.aoVivoPhotoRightTransform}
                 matchData={state.matchData}
                 template={state.template}
                 gradientLeftColor={gradientLeftColor}
@@ -254,6 +320,18 @@ const Index = () => {
                 onJogoCompletoPhotoUpload={handleJogoCompletoPhotoUpload}
                 onPlayerPhotoReplace={(dataUrl) => setState(prev => ({ ...prev, playerPhoto: dataUrl, photoTransform: { x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 } }))}
                 onJogoCompletoPhotoReplace={(dataUrl) => setState(prev => ({ ...prev, jogoCompletoPhoto: dataUrl, jogoCompletoPhotoTransform: { x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 } }))}
+                aoVivoPhotoLeft={state.aoVivoPhotoLeft}
+                aoVivoPhotoLeftTransform={state.aoVivoPhotoLeftTransform}
+                initialScaleAoVivoLeft={state.initialScaleAoVivoLeft}
+                onAoVivoPhotoLeftUpload={handleAoVivoLeftPhotoUpload}
+                onAoVivoPhotoLeftTransformChange={handleAoVivoLeftTransformChange}
+                onAoVivoPhotoLeftReplace={(dataUrl) => setState(prev => ({ ...prev, aoVivoPhotoLeft: dataUrl, aoVivoPhotoLeftTransform: { x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 } }))}
+                aoVivoPhotoRight={state.aoVivoPhotoRight}
+                aoVivoPhotoRightTransform={state.aoVivoPhotoRightTransform}
+                initialScaleAoVivoRight={state.initialScaleAoVivoRight}
+                onAoVivoPhotoRightUpload={handleAoVivoRightPhotoUpload}
+                onAoVivoPhotoRightTransformChange={handleAoVivoRightTransformChange}
+                onAoVivoPhotoRightReplace={(dataUrl) => setState(prev => ({ ...prev, aoVivoPhotoRight: dataUrl, aoVivoPhotoRightTransform: { x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 } }))}
               />
             </TabsContent>
 
