@@ -270,6 +270,15 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
             style={{ width: '1280px', height: '720px', objectFit: 'cover', zIndex: 60 }}
           />
         )}
+        {/* Logos Ao Vivo Conference League */}
+        {aoVivoTemplate === 'conferenceleague' && (
+          <img
+            src="/kv/logos-ao-vivo-conference.png"
+            alt="Logos Ao Vivo Conference League"
+            className="absolute left-0 top-0 pointer-events-none"
+            style={{ width: '1280px', height: '720px', objectFit: 'cover', zIndex: 60 }}
+          />
+        )}
 
         {/* Som Ambiente Overlay */}
         {showSomAmbiente && (
