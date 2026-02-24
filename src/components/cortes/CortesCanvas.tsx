@@ -460,8 +460,9 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
                   position: 'absolute',
                   left: '50%',
                   top: '50%',
-                  height: '240%',
-                  width: 'auto',
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover' as const,
                   transform: `translate(-50%, -50%) translate(${c.t.x}px, ${c.t.y}px) scale(${c.t.scale}) rotate(${c.t.rotation}deg)`,
                   transformOrigin: 'center center',
                 }}
