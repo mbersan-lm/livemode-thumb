@@ -13,10 +13,12 @@ interface ThumbnailCanvasAoVivoProps {
   photoTransform: PhotoTransform;
   matchData: MatchData;
   template: TemplateType;
+  gradientLeftColor: string;
+  gradientRightColor: string;
 }
 
 export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasAoVivoProps>(
-  ({ playerPhoto, photoTransform, matchData, template }, ref) => {
+  ({ playerPhoto, photoTransform, matchData, template, gradientLeftColor, gradientRightColor }, ref) => {
     const config = templates[template];
     const currentTeams = 
       template === 'brasileirao' ? teamsBrasileirao : 
@@ -75,6 +77,24 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
             }}
           />
         )}
+
+        {/* Left Gradient Overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            zIndex: 5,
+            background: `linear-gradient(to right, ${gradientLeftColor} 0%, transparent 50%)`,
+          }}
+        />
+
+        {/* Right Gradient Overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            zIndex: 5,
+            background: `linear-gradient(to left, ${gradientRightColor} 0%, transparent 50%)`,
+          }}
+        />
 
         {/* KV Background - Ao Vivo */}
         <img 
