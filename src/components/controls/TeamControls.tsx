@@ -75,66 +75,70 @@ export const TeamControls = ({ matchData, onMatchDataChange, template, activeCan
         </Select>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
-        <div>
-          <Label htmlFor="home-score">Placar Casa</Label>
-          <Input
-            id="home-score"
-            type="number"
-            min="0"
-            value={matchData.homeScore}
-            onChange={(e) => onMatchDataChange({ homeScore: parseInt(e.target.value) || 0 })}
-            className="mt-2"
-          />
-        </div>
+      {activeCanvas !== 'av' && (
+        <>
+          <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
+            <div>
+              <Label htmlFor="home-score">Placar Casa</Label>
+              <Input
+                id="home-score"
+                type="number"
+                min="0"
+                value={matchData.homeScore}
+                onChange={(e) => onMatchDataChange({ homeScore: parseInt(e.target.value) || 0 })}
+                className="mt-2"
+              />
+            </div>
 
-        <div>
-          <Label htmlFor="away-score">Placar Visitante</Label>
-          <Input
-            id="away-score"
-            type="number"
-            min="0"
-            value={matchData.awayScore}
-            onChange={(e) => onMatchDataChange({ awayScore: parseInt(e.target.value) || 0 })}
-            className="mt-2"
-          />
-        </div>
-      </div>
+            <div>
+              <Label htmlFor="away-score">Placar Visitante</Label>
+              <Input
+                id="away-score"
+                type="number"
+                min="0"
+                value={matchData.awayScore}
+                onChange={(e) => onMatchDataChange({ awayScore: parseInt(e.target.value) || 0 })}
+                className="mt-2"
+              />
+            </div>
+          </div>
 
-      <div className="flex items-center justify-between pt-4 border-t border-border">
-        <Label htmlFor="small-score-switch">Pênaltis</Label>
-        <Switch
-          id="small-score-switch"
-          checked={matchData.showSmallScore}
-          onCheckedChange={(checked) => onMatchDataChange({ showSmallScore: checked })}
-        />
-      </div>
-
-      {matchData.showSmallScore && (
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="home-score-small">Home (menor)</Label>
-            <Input
-              id="home-score-small"
-              type="number"
-              min="0"
-              value={matchData.homeScoreSmall}
-              onChange={(e) => onMatchDataChange({ homeScoreSmall: parseInt(e.target.value) || 0 })}
-              className="mt-2"
+          <div className="flex items-center justify-between pt-4 border-t border-border">
+            <Label htmlFor="small-score-switch">Pênaltis</Label>
+            <Switch
+              id="small-score-switch"
+              checked={matchData.showSmallScore}
+              onCheckedChange={(checked) => onMatchDataChange({ showSmallScore: checked })}
             />
           </div>
-          <div>
-            <Label htmlFor="away-score-small">Visitante (menor)</Label>
-            <Input
-              id="away-score-small"
-              type="number"
-              min="0"
-              value={matchData.awayScoreSmall}
-              onChange={(e) => onMatchDataChange({ awayScoreSmall: parseInt(e.target.value) || 0 })}
-              className="mt-2"
-            />
-          </div>
-        </div>
+
+          {matchData.showSmallScore && (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="home-score-small">Home (menor)</Label>
+                <Input
+                  id="home-score-small"
+                  type="number"
+                  min="0"
+                  value={matchData.homeScoreSmall}
+                  onChange={(e) => onMatchDataChange({ homeScoreSmall: parseInt(e.target.value) || 0 })}
+                  className="mt-2"
+                />
+              </div>
+              <div>
+                <Label htmlFor="away-score-small">Visitante (menor)</Label>
+                <Input
+                  id="away-score-small"
+                  type="number"
+                  min="0"
+                  value={matchData.awayScoreSmall}
+                  onChange={(e) => onMatchDataChange({ awayScoreSmall: parseInt(e.target.value) || 0 })}
+                  className="mt-2"
+                />
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
