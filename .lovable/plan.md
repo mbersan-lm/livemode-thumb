@@ -1,37 +1,23 @@
 
-## Hub Inicial - Tela de Seleção de Modelo
 
-Criar uma tela inicial (landing page) onde o usuário escolhe qual ferramenta deseja usar antes de entrar no editor.
+# Remover "Selecionar Template" na aba Ao Vivo
 
-### O que vai mudar
+## Problema
 
-1. **Nova página `src/pages/Hub.tsx`** -- Tela inicial com 4 cards grandes para o usuário escolher entre:
-   - **Melhores Momentos** (vai para `/melhores-momentos`)
-   - **Jogo Completo** (vai para `/jogo-completo`)
-   - **Ao Vivo** (vai para `/ao-vivo`)
-   - **Cortes** (vai para `/cortes`)
+Quando o usuario seleciona "Ao Vivo", a aba "Template" na TabsList esta oculta, mas o conteudo do "Selecionar Template" (com o dropdown "Brasileirao") ainda aparece na parte inferior porque o `Tabs` tem `defaultValue="template"` e o `TabsContent` continua sendo renderizado.
 
-   Cada card terá o nome do modelo, um icone representativo (usando Lucide icons) e uma breve descrição. Layout responsivo em grid (2x2 no desktop, 1 coluna no mobile).
+## Solucao
 
-2. **Atualização de rotas em `src/App.tsx`**:
-   - `/` -- Nova página Hub (seleção de modelo)
-   - `/melhores-momentos` -- Página Index com canvas "mm" pré-selecionado
-   - `/jogo-completo` -- Página Index com canvas "jc" pré-selecionado
-   - `/ao-vivo` -- Página Index com canvas "av" pré-selecionado
-   - `/cortes` -- CortesHub (sem alteração)
-   - `/cortes/:id` -- CortesProgramBuilder (sem alteração)
+Modificar o arquivo `src/pages/Index.tsx` para:
 
-3. **Atualização de `src/pages/Index.tsx`**:
-   - Receber o modelo ativo via parâmetro de rota ou prop
-   - Remover o seletor "Thumbnail Ativa" (ViewControls), já que o modelo é definido pela rota escolhida no Hub
-   - Adicionar botão "Voltar" para retornar ao Hub
+1. **Esconder o `TabsContent` de template** quando `activeCanvas === 'av'`, adicionando uma condicao para nao renderizar esse conteudo.
+2. **Ajustar o `defaultValue` do Tabs** para que, quando o usuario estiver em Ao Vivo, o tab ativo padrao seja "teams" em vez de "template" (que nao existe nesse modo).
 
-4. **Atualização de `src/pages/CortesHub.tsx`**:
-   - Trocar o link "Melhores Momentos" por um link "Voltar" apontando para `/`
+## Detalhes Tecnicos
 
-### Detalhes Técnicos
+**Arquivo:** `src/pages/Index.tsx`
 
-- A página Hub usará `react-router-dom` `useNavigate` para navegar
-- O `Index.tsx` usará `useParams` ou a rota atual para determinar qual `ActiveCanvas` exibir (`mm`, `jc` ou `av`)
-- O componente `ViewControls` será removido da página Index, simplificando a interface
-- Nenhuma dependencia nova necessaria
+- Alterar o `Tabs` para usar um `defaultValue` dinamico: `defaultValue={activeCanvas === 'av' ? 'teams' : 'template'}`
+- Envolver o `TabsContent value="template"` com `{activeCanvas !== 'av' && (...)}`  para que ele nao seja renderizado no modo Ao Vivo
+
+Isso garante que o menu "Template Ao Vivo" (Europa League / Conference League) continue visivel, enquanto o "Selecionar Template" geral (Brasileirao, etc.) desaparece completamente.
