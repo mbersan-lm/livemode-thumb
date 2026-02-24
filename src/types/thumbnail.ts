@@ -1,3 +1,5 @@
+export type ActiveCanvas = 'mm' | 'jc' | 'av';
+
 export interface PhotoTransform {
   x: number;
   y: number;
