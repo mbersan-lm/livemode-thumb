@@ -839,9 +839,9 @@ export const CortesControls = ({
           ctx.beginPath();
           ctx.rect(q.x, q.y, qW, qH);
           ctx.clip();
-          const drawH = qH * 1.92;
+          const drawH = qH * 2.112;
           const drawW = drawH * (c.img.naturalWidth / c.img.naturalHeight);
-          const hOffset = (i === 0 || i === 2) ? -40 : 40;
+          const hOffset = (i === 0 || i === 2) ? -40 : 80;
           const dx = q.x + c.t.x + hOffset;
           const dy = q.y + c.t.y;
           ctx.translate(dx, dy);

@@ -458,9 +458,9 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
                 alt=""
                 style={{
                   position: 'absolute',
-                  left: (i === 0 || i === 2) ? -20 : 20,
+                  left: (i === 0 || i === 2) ? -20 : 40,
                   top: 0,
-                  height: '192%',
+                  height: '211.2%',
                   width: 'auto',
                   transform: `translate(${c.t.x}px, ${c.t.y}px) scale(${c.t.scale}) rotate(${c.t.rotation}deg)`,
                   transformOrigin: '0 0',
