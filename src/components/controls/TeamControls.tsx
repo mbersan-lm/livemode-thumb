@@ -11,6 +11,7 @@ import { teamsAoVivo } from '@/data/teamsAoVivo';
 import { MatchData } from '@/types/thumbnail';
 import { TemplateType } from '@/data/templates';
 import { ActiveCanvas } from '@/components/controls/ViewControls';
+import { AoVivoTemplate } from '@/components/ThumbnailCanvasAoVivo';
 import {
   Select,
   SelectContent,
@@ -24,9 +25,10 @@ interface TeamControlsProps {
   onMatchDataChange: (data: Partial<MatchData>) => void;
   template: TemplateType;
   activeCanvas?: ActiveCanvas;
+  aoVivoTemplate?: AoVivoTemplate;
 }
 
-export const TeamControls = ({ matchData, onMatchDataChange, template, activeCanvas }: TeamControlsProps) => {
+export const TeamControls = ({ matchData, onMatchDataChange, template, activeCanvas, aoVivoTemplate }: TeamControlsProps) => {
   const currentTeams = activeCanvas === 'av'
     ? teamsAoVivo
     : template === 'brasileirao' ? teamsBrasileirao : 
@@ -35,6 +37,15 @@ export const TeamControls = ({ matchData, onMatchDataChange, template, activeCan
       template === 'paulistao' ? teamsPaulistao :
       template === 'europaleague' ? teamsEuropaLeague :
       teamsLigue1;
+
+  if (activeCanvas === 'av' && aoVivoTemplate === 'conferenceleague') {
+    return (
+      <div className="text-sm text-muted-foreground text-center py-4">
+        Seletores de time desabilitados no modelo Conference League.
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div>
