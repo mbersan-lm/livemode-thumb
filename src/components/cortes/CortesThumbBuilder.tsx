@@ -119,6 +119,30 @@ export const CortesThumbBuilder = ({
     return () => window.removeEventListener('resize', updateScale);
   }, []);
 
+  // Auto-load Cazé preset into all quadrants for Roda de Bobo thumb-principal
+  useEffect(() => {
+    if (thumbModel === 'thumb-principal' && programName === 'Roda de Bobo') {
+      const loadCazePreset = async () => {
+        try {
+          const resp = await fetch('/cortes/presets/caze.png');
+          const blob = await resp.blob();
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const base64 = e.target?.result as string;
+            if (!personCutout) setPersonCutout(base64);
+            if (!person2Cutout) setPerson2Cutout(base64);
+            if (!person3Cutout) setPerson3Cutout(base64);
+            if (!person4Cutout) setPerson4Cutout(base64);
+          };
+          reader.readAsDataURL(blob);
+        } catch (err) {
+          console.error('Failed to load Cazé preset:', err);
+        }
+      };
+      loadCazePreset();
+    }
+  }, [thumbModel, programName]);
+
   const applyPipAutoScale = (dataUrl: string) => {
     setPipImage(dataUrl);
     const img = new window.Image();
