@@ -1,6 +1,7 @@
 import { forwardRef } from 'react';
 import { Team } from '@/data/teams';
 import { teamsAoVivo } from '@/data/teamsAoVivo';
+import { teamsConferenceLeague } from '@/data/teamsConferenceLeague';
 import { PhotoTransform, MatchData } from '@/types/thumbnail';
 import { templates, TemplateType } from '@/data/templates';
 
@@ -26,7 +27,7 @@ interface ThumbnailCanvasAoVivoProps {
 export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasAoVivoProps>(
   ({ playerPhoto, photoTransform, photoLeft, photoLeftTransform, photoRight, photoRightTransform, matchData, template, aoVivoTemplate = 'europaleague', gradientLeftColor, gradientRightColor, panelLeftColor, panelRightColor, showSomAmbiente = false }, ref) => {
     const config = templates[template];
-    const currentTeams = teamsAoVivo;
+    const currentTeams = aoVivoTemplate === 'conferenceleague' ? teamsConferenceLeague : teamsAoVivo;
     const homeTeam = currentTeams.find(t => t.id === matchData.homeTeamId) as Team | undefined;
     const awayTeam = currentTeams.find(t => t.id === matchData.awayTeamId) as Team | undefined;
 
@@ -256,6 +257,40 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
               transform: 'translate(-50%, -50%)', 
               maxWidth: matchData.awayTeamId === 'av5' ? '248px' : matchData.awayTeamId === 'av6' ? '315px' : matchData.awayTeamId === 'av29' ? '400px' : matchData.awayTeamId === 'av21' ? '450px' : matchData.awayTeamId === 'av24' ? '360px' : '500px', 
               maxHeight: matchData.awayTeamId === 'av5' ? '248px' : matchData.awayTeamId === 'av6' ? '315px' : matchData.awayTeamId === 'av29' ? '400px' : matchData.awayTeamId === 'av21' ? '450px' : matchData.awayTeamId === 'av24' ? '360px' : '500px', 
+              zIndex: 50 
+            }}
+          />
+        )}
+
+        {/* Home Crest - Conference League */}
+        {aoVivoTemplate === 'conferenceleague' && homeTeam && (
+          <img 
+            src={homeTeam.crest_url}
+            alt={homeTeam.name}
+            className="absolute h-auto w-auto object-contain"
+            style={{ 
+              left: '458px', 
+              top: '527px', 
+              transform: 'translate(-50%, -50%)', 
+              maxWidth: '500px', 
+              maxHeight: '500px', 
+              zIndex: 50 
+            }}
+          />
+        )}
+
+        {/* Away Crest - Conference League */}
+        {aoVivoTemplate === 'conferenceleague' && awayTeam && (
+          <img 
+            src={awayTeam.crest_url}
+            alt={awayTeam.name}
+            className="absolute h-auto w-auto object-contain"
+            style={{ 
+              left: '822px', 
+              top: '527px', 
+              transform: 'translate(-50%, -50%)', 
+              maxWidth: '500px', 
+              maxHeight: '500px', 
               zIndex: 50 
             }}
           />
