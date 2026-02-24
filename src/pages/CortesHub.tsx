@@ -66,7 +66,7 @@ const CortesHub = () => {
           </div>
           <a href="/">
             <Button variant="outline" size="sm" className="gap-1.5">
-              <ArrowLeft className="w-3.5 h-3.5" /> Voltar
+              <ArrowLeft className="w-3.5 h-3.5" /> Melhores Momentos
             </Button>
           </a>
         </div>

@@ -8,38 +8,25 @@ import { TeamControls } from '@/components/controls/TeamControls';
 import { ExportControls } from '@/components/controls/ExportControls';
 import { AoVivoGradientControls } from '@/components/controls/AoVivoGradientControls';
 import { TemplateControls } from '@/components/controls/TemplateControls';
-import { ActiveCanvas } from '@/components/controls/ViewControls';
+import { ViewControls, ActiveCanvas } from '@/components/controls/ViewControls';
 import { ThumbnailState, PhotoTransform } from '@/types/thumbnail';
 import { TemplateType } from '@/data/templates';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft } from 'lucide-react';
-import { AoVivoTemplate } from '@/components/ThumbnailCanvasAoVivo';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { ArrowRight } from 'lucide-react';
 
 const CANVAS_WIDTH = 1280;
 const CANVAS_HEIGHT = 720;
 
-interface IndexProps {
-  mode: ActiveCanvas;
-}
-
-const Index = ({ mode }: IndexProps) => {
+const Index = () => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const canvasRefJogoCompleto = useRef<HTMLDivElement>(null);
   const canvasRefAoVivo = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   
-  const activeCanvas = mode;
-  const [aoVivoTemplate, setAoVivoTemplate] = useState<AoVivoTemplate>('europaleague');
+  const [activeCanvas, setActiveCanvas] = useState<ActiveCanvas>('mm');
   const [mobileScale, setMobileScale] = useState(0.3);
   const [gradientLeftColor, setGradientLeftColor] = useState('#000000');
   const [gradientRightColor, setGradientRightColor] = useState('#000000');
@@ -261,7 +248,6 @@ const Index = ({ mode }: IndexProps) => {
                 photoRightTransform={state.aoVivoPhotoRightTransform}
                 matchData={state.matchData}
                 template="europaleague"
-                aoVivoTemplate={aoVivoTemplate}
                 gradientLeftColor={gradientLeftColor}
                 gradientRightColor={gradientRightColor}
                 panelLeftColor={gradientLeftColor}
@@ -276,42 +262,29 @@ const Index = ({ mode }: IndexProps) => {
       <div className="w-full md:w-1/2 bg-card border-t md:border-t-0 md:border-l border-border overflow-y-auto flex flex-col flex-1 md:flex-none">
         <div className="p-4 md:p-6 pb-3 md:pb-4 border-b border-border flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold tracking-tight">
-              {activeCanvas === 'mm' ? 'Melhores Momentos' : activeCanvas === 'jc' ? 'Jogo Completo' : 'Ao Vivo'}
-            </h1>
+            <h1 className="text-xl font-bold tracking-tight">Melhores Momentos</h1>
             <p className="text-xs text-muted-foreground mt-1">
               Gerador de Thumbnails
             </p>
           </div>
-          <a href="/">
+          <a href="/cortes">
             <Button variant="outline" size="sm" className="gap-1.5">
-              <ArrowLeft className="w-3.5 h-3.5" /> Voltar
+              Cortes <ArrowRight className="w-3.5 h-3.5" />
             </Button>
           </a>
         </div>
 
         <div className="p-3 md:p-5 flex-1">
+          {/* Canvas Switcher */}
+          <div className="mb-5">
+            <ViewControls
+              activeCanvas={activeCanvas}
+              onActiveCanvasChange={setActiveCanvas}
+            />
+          </div>
 
           {activeCanvas === 'av' && (
             <div className="mb-5 space-y-4">
-              <div>
-                <Label className="text-xs font-medium mb-2 block">Template Ao Vivo</Label>
-                <Select
-                  value={aoVivoTemplate}
-                  onValueChange={(val: AoVivoTemplate) => {
-                    setAoVivoTemplate(val);
-                    handleMatchDataChange({ homeTeamId: null, awayTeamId: null });
-                  }}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="europaleague">Europa League</SelectItem>
-                    <SelectItem value="conferenceleague">Conference League</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
               <AoVivoGradientControls
                 gradientLeftColor={gradientLeftColor}
                 gradientRightColor={gradientRightColor}
@@ -329,7 +302,7 @@ const Index = ({ mode }: IndexProps) => {
             </div>
           )}
 
-          <Tabs defaultValue={activeCanvas === 'av' ? 'teams' : 'template'} className="w-full">
+          <Tabs defaultValue="template" className="w-full">
             <TabsList className={`w-full grid h-10 ${activeCanvas === 'av' ? 'grid-cols-2' : 'grid-cols-4'}`}>
               {activeCanvas !== 'av' && <TabsTrigger value="template" className="text-xs">Template</TabsTrigger>}
               {activeCanvas !== 'av' && <TabsTrigger value="photo" className="text-xs">Foto</TabsTrigger>}
@@ -337,14 +310,12 @@ const Index = ({ mode }: IndexProps) => {
               <TabsTrigger value="export" className="text-xs">Exportar</TabsTrigger>
             </TabsList>
 
-            {activeCanvas !== 'av' && (
-              <TabsContent value="template" className="mt-5">
-                <TemplateControls
-                  currentTemplate={state.template}
-                  onTemplateChange={handleTemplateChange}
-                />
-              </TabsContent>
-            )}
+            <TabsContent value="template" className="mt-5">
+              <TemplateControls
+                currentTemplate={state.template}
+                onTemplateChange={handleTemplateChange}
+              />
+            </TabsContent>
 
             <TabsContent value="photo" className="mt-5">
               <PhotoControls
@@ -382,7 +353,6 @@ const Index = ({ mode }: IndexProps) => {
                 onMatchDataChange={handleMatchDataChange}
                 template={state.template}
                 activeCanvas={activeCanvas}
-                aoVivoTemplate={aoVivoTemplate}
               />
             </TabsContent>
 
