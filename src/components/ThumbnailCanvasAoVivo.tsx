@@ -15,10 +15,12 @@ interface ThumbnailCanvasAoVivoProps {
   template: TemplateType;
   gradientLeftColor: string;
   gradientRightColor: string;
+  panelLeftColor: string;
+  panelRightColor: string;
 }
 
 export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasAoVivoProps>(
-  ({ playerPhoto, photoTransform, matchData, template, gradientLeftColor, gradientRightColor }, ref) => {
+  ({ playerPhoto, photoTransform, matchData, template, gradientLeftColor, gradientRightColor, panelLeftColor, panelRightColor }, ref) => {
     const config = templates[template];
     const currentTeams = 
       template === 'brasileirao' ? teamsBrasileirao : 
@@ -98,12 +100,38 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
           }}
         />
 
-        {/* Fixed Overlay Image - above gradients */}
-        <img 
-          src="/kv/overlay-ao-vivo.png"
-          alt="Overlay Ao Vivo"
-          className="absolute left-0 top-0 pointer-events-none"
-          style={{ width: '1280px', height: '720px', objectFit: 'cover', zIndex: 16 }}
+        {/* Glass Panel Left */}
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '24px',
+            top: '340px',
+            width: '600px',
+            height: '356px',
+            backgroundColor: `${panelLeftColor}33`,
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid white',
+            borderRadius: '12px',
+            zIndex: 16,
+          }}
+        />
+
+        {/* Glass Panel Right */}
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            right: '24px',
+            top: '340px',
+            width: '600px',
+            height: '356px',
+            backgroundColor: `${panelRightColor}33`,
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid white',
+            borderRadius: '12px',
+            zIndex: 16,
+          }}
         />
 
         {/* KV Background - Ao Vivo */}
