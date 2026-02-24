@@ -8,144 +8,91 @@ import { toast } from 'sonner';
 interface ExportControlsProps {
   canvasRef: React.RefObject<HTMLDivElement>;
   canvasRefJogoCompleto: React.RefObject<HTMLDivElement>;
+  canvasRefAoVivo: React.RefObject<HTMLDivElement>;
   matchData: MatchData;
 }
 
-export const ExportControls = ({ canvasRef, canvasRefJogoCompleto, matchData }: ExportControlsProps) => {
+export const ExportControls = ({ canvasRef, canvasRefJogoCompleto, canvasRefAoVivo, matchData }: ExportControlsProps) => {
   const handleExportMelhoresMomentos = async () => {
-    if (!canvasRef.current) {
-      toast.error('Canvas não está pronto');
-      return;
-    }
-
+    if (!canvasRef.current) { toast.error('Canvas não está pronto'); return; }
     try {
       toast.loading('Gerando JPG Melhores Momentos...');
-      
       await document.fonts.ready;
-      
       const canvas = await html2canvas(canvasRef.current, {
-        width: 1280,
-        height: 720,
-        scale: 1,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#000000',
-        logging: false,
-        scrollX: 0,
-        scrollY: 0,
-        x: 0,
-        y: 0,
+        width: 1280, height: 720, scale: 1, useCORS: true, allowTaint: true,
+        backgroundColor: '#000000', logging: false, scrollX: 0, scrollY: 0, x: 0, y: 0,
         foreignObjectRendering: false,
         onclone: (clonedDoc) => {
           const canvas = clonedDoc.getElementById('CANVAS_1280x720');
           if (!canvas) return;
-          
           let parent = canvas.parentElement;
-          while (parent) {
-            parent.style.transform = 'none';
-            (parent.style as any).zoom = '1';
-            (parent.style as any).scale = '1';
-            parent = parent.parentElement;
-          }
-          
+          while (parent) { parent.style.transform = 'none'; (parent.style as any).zoom = '1'; (parent.style as any).scale = '1'; parent = parent.parentElement; }
           const homeScore = clonedDoc.getElementById('HOME_SCORE') as HTMLElement;
           const xChar = clonedDoc.getElementById('X_CHAR') as HTMLElement;
           const awayScore = clonedDoc.getElementById('AWAY_SCORE') as HTMLElement;
-          
           const verticalAdjust = '-41px';
-          
-          if (homeScore) {
-            homeScore.style.transform = `translateY(${verticalAdjust})`;
-          }
-          if (xChar) {
-            xChar.style.transform = `translateY(${verticalAdjust})`;
-          }
-          if (awayScore) {
-            awayScore.style.transform = `translateY(${verticalAdjust})`;
-          }
+          if (homeScore) homeScore.style.transform = `translateY(${verticalAdjust})`;
+          if (xChar) xChar.style.transform = `translateY(${verticalAdjust})`;
+          if (awayScore) awayScore.style.transform = `translateY(${verticalAdjust})`;
         },
       });
-
       const homeTeam = teams.find(t => t.id === matchData.homeTeamId);
       const awayTeam = teams.find(t => t.id === matchData.awayTeamId);
-      
       const filename = `MM_${homeTeam?.slug || 'home'}_${awayTeam?.slug || 'away'}_${matchData.homeScore}x${matchData.awayScore}.jpg`;
-
       canvas.toBlob((blob) => {
-        if (blob) {
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = filename;
-          link.click();
-          URL.revokeObjectURL(url);
-          toast.success('JPG Melhores Momentos exportado!');
-        }
+        if (blob) { const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = filename; link.click(); URL.revokeObjectURL(url); toast.success('JPG Melhores Momentos exportado!'); }
       }, 'image/jpeg', 0.9);
-    } catch (error) {
-      console.error('Export error:', error);
-      toast.error('Falha ao exportar JPG');
-    }
+    } catch (error) { console.error('Export error:', error); toast.error('Falha ao exportar JPG'); }
   };
 
   const handleExportJogoCompleto = async () => {
-    if (!canvasRefJogoCompleto.current) {
-      toast.error('Canvas não está pronto');
-      return;
-    }
-
+    if (!canvasRefJogoCompleto.current) { toast.error('Canvas não está pronto'); return; }
     try {
       toast.loading('Gerando JPG Jogo Completo...');
-      
       await document.fonts.ready;
-      
       const canvas = await html2canvas(canvasRefJogoCompleto.current, {
-        width: 1280,
-        height: 720,
-        scale: 1,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#000000',
-        logging: false,
-        scrollX: 0,
-        scrollY: 0,
-        x: 0,
-        y: 0,
+        width: 1280, height: 720, scale: 1, useCORS: true, allowTaint: true,
+        backgroundColor: '#000000', logging: false, scrollX: 0, scrollY: 0, x: 0, y: 0,
         foreignObjectRendering: false,
         onclone: (clonedDoc) => {
           const canvas = clonedDoc.getElementById('CANVAS_JOGO_COMPLETO');
           if (!canvas) return;
-          
           let parent = canvas.parentElement;
-          while (parent) {
-            parent.style.transform = 'none';
-            (parent.style as any).zoom = '1';
-            (parent.style as any).scale = '1';
-            parent = parent.parentElement;
-          }
+          while (parent) { parent.style.transform = 'none'; (parent.style as any).zoom = '1'; (parent.style as any).scale = '1'; parent = parent.parentElement; }
         },
       });
-
       const homeTeam = teams.find(t => t.id === matchData.homeTeamId);
       const awayTeam = teams.find(t => t.id === matchData.awayTeamId);
-      
       const filename = `JC_${homeTeam?.slug || 'home'}_${awayTeam?.slug || 'away'}.jpg`;
-
       canvas.toBlob((blob) => {
-        if (blob) {
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = filename;
-          link.click();
-          URL.revokeObjectURL(url);
-          toast.success('JPG Jogo Completo exportado!');
-        }
+        if (blob) { const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = filename; link.click(); URL.revokeObjectURL(url); toast.success('JPG Jogo Completo exportado!'); }
       }, 'image/jpeg', 0.9);
-    } catch (error) {
-      console.error('Export error:', error);
-      toast.error('Falha ao exportar JPG Jogo Completo');
-    }
+    } catch (error) { console.error('Export error:', error); toast.error('Falha ao exportar JPG Jogo Completo'); }
+  };
+
+  const handleExportAoVivo = async () => {
+    if (!canvasRefAoVivo.current) { toast.error('Canvas não está pronto'); return; }
+    try {
+      toast.loading('Gerando JPG AO VIVO...');
+      await document.fonts.ready;
+      const canvas = await html2canvas(canvasRefAoVivo.current, {
+        width: 1280, height: 720, scale: 1, useCORS: true, allowTaint: true,
+        backgroundColor: '#000000', logging: false, scrollX: 0, scrollY: 0, x: 0, y: 0,
+        foreignObjectRendering: false,
+        onclone: (clonedDoc) => {
+          const c = clonedDoc.getElementById('CANVAS_AO_VIVO');
+          if (!c) return;
+          let parent = c.parentElement;
+          while (parent) { parent.style.transform = 'none'; (parent.style as any).zoom = '1'; (parent.style as any).scale = '1'; parent = parent.parentElement; }
+        },
+      });
+      const homeTeam = teams.find(t => t.id === matchData.homeTeamId);
+      const awayTeam = teams.find(t => t.id === matchData.awayTeamId);
+      const filename = `AO_VIVO_${homeTeam?.slug || 'home'}_${awayTeam?.slug || 'away'}.jpg`;
+      canvas.toBlob((blob) => {
+        if (blob) { const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = filename; link.click(); URL.revokeObjectURL(url); toast.success('JPG AO VIVO exportado!'); }
+      }, 'image/jpeg', 0.9);
+    } catch (error) { console.error('Export error:', error); toast.error('Falha ao exportar JPG AO VIVO'); }
   };
 
   return (
@@ -160,23 +107,14 @@ export const ExportControls = ({ canvasRef, canvasRefJogoCompleto, matchData }: 
       </div>
 
       <div className="space-y-2">
-        <Button 
-          onClick={handleExportMelhoresMomentos}
-          className="w-full"
-          size="lg"
-        >
-          <Download className="w-4 h-4 mr-2" />
-          Exportar Melhores Momentos
+        <Button onClick={handleExportMelhoresMomentos} className="w-full" size="lg">
+          <Download className="w-4 h-4 mr-2" /> Exportar Melhores Momentos
         </Button>
-
-        <Button 
-          onClick={handleExportJogoCompleto}
-          className="w-full"
-          size="lg"
-          variant="secondary"
-        >
-          <Download className="w-4 h-4 mr-2" />
-          Exportar Jogo Completo
+        <Button onClick={handleExportJogoCompleto} className="w-full" size="lg" variant="secondary">
+          <Download className="w-4 h-4 mr-2" /> Exportar Jogo Completo
+        </Button>
+        <Button onClick={handleExportAoVivo} className="w-full" size="lg" variant="outline">
+          <Download className="w-4 h-4 mr-2" /> Exportar AO VIVO
         </Button>
       </div>
     </div>

@@ -21,6 +21,12 @@ export interface ThumbnailState {
   photoTransform: PhotoTransform;
   jogoCompletoPhoto: string | null;
   jogoCompletoPhotoTransform: PhotoTransform;
+  aoVivoImage1: string | null;
+  aoVivoImage2: string | null;
+  aoVivoTransform1: PhotoTransform;
+  aoVivoTransform2: PhotoTransform;
+  initialScaleAoVivo1: number;
+  initialScaleAoVivo2: number;
   matchData: MatchData;
   initialScale: number;
   initialScaleJogoCompleto: number;
