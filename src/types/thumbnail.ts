@@ -21,8 +21,11 @@ export interface ThumbnailState {
   photoTransform: PhotoTransform;
   jogoCompletoPhoto: string | null;
   jogoCompletoPhotoTransform: PhotoTransform;
+  aoVivoPhoto: string | null;
+  aoVivoPhotoTransform: PhotoTransform;
   matchData: MatchData;
   initialScale: number;
   initialScaleJogoCompleto: number;
+  initialScaleAoVivo: number;
   template: 'brasileirao' | 'ligue1' | 'bundesliga' | 'seriea' | 'paulistao' | 'europaleague';
 }
