@@ -28,11 +28,13 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
       <div className="max-w-4xl w-full">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold tracking-tight text-foreground">
-            Gerador de Thumbnails
-          </h1>
-          <p className="text-muted-foreground mt-3 text-lg">
+        <div className="text-center mb-12 flex flex-col items-center">
+          <img
+            src="/images/thumb-the-creator-logo.png"
+            alt="Thumb The Creator"
+            className="max-w-[360px] w-full mb-6"
+          />
+          <p className="text-muted-foreground text-lg">
             Escolha o modelo para começar
           </p>
         </div>
