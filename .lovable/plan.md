@@ -1,25 +1,24 @@
 
 
-# Corrigir distorção das fotos no preview do Thumb Principal
+# Diminuir opacidade da borda dos painéis de escudos para 35%
 
-## Problema
-A correção anterior alterou os offsets horizontais das fotos no preview de `-20px`/`40px` para `-40px`/`80px`, tentando igualar aos valores do export. Porém, o preview já estava funcionando corretamente com os valores originais. O export continua correto com seus próprios valores.
+## Resumo
+Alterar a borda branca dos dois retângulos glass (esquerdo e direito) onde ficam os escudos dos times, de 100% de opacidade para 35% (`rgba(255,255,255,0.35)`). A alteração será feita tanto no preview quanto no export para manter paridade visual.
 
-## Alteração
+## Alterações
 
-### `src/components/cortes/CortesCanvas.tsx` (linha 461)
+### 1. Preview — `src/components/ThumbnailCanvasAoVivo.tsx`
 
-Reverter os offsets do preview para os valores originais:
+Nos dois painéis glass (left e right), trocar:
+- `border: '1px solid white'` por `border: '1px solid rgba(255,255,255,0.35)'`
 
-```text
-// Antes (atual - distorcido):
-left: (i === 0 || i === 2) ? -40 : 80,
+Linhas afetadas: ~183 (painel esquerdo) e ~200 (painel direito).
 
-// Depois (corrigido):
-left: (i === 0 || i === 2) ? -20 : 40,
-```
+### 2. Export — `src/pages/AoVivo.tsx`
 
-## Detalhes
-- O export em `CortesControls.tsx` permanece inalterado com `-40`/`80` (funcionando corretamente)
-- Apenas o preview em `CortesCanvas.tsx` é revertido para `-20`/`40`
-- Nenhuma outra alteração necessária
+Na função `drawGlassPanel`, trocar:
+- `ctx.strokeStyle = 'white'` por `ctx.strokeStyle = 'rgba(255,255,255,0.35)'`
+
+Linha afetada: ~209.
+
+O painel glass preto (bottom-left) permanece inalterado.
