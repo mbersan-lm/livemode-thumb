@@ -839,9 +839,16 @@ export const CortesControls = ({
           ctx.beginPath();
           ctx.rect(q.x, q.y, qW, qH);
           ctx.clip();
-          const aspect = c.img.naturalWidth / c.img.naturalHeight;
-          const drawH = qH * 2.4;
-          const drawW = drawH * aspect;
+          const imgAspect = c.img.naturalWidth / c.img.naturalHeight;
+          const qAspect = qW / qH;
+          let drawW, drawH;
+          if (imgAspect > qAspect) {
+            drawH = qH;
+            drawW = qH * imgAspect;
+          } else {
+            drawW = qW;
+            drawH = qW / imgAspect;
+          }
           const cx = q.x + qW / 2 + c.t.x;
           const cy = q.y + qH / 2 + c.t.y;
           ctx.translate(cx, cy);
