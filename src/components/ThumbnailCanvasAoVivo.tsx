@@ -4,6 +4,8 @@ import { teamsAoVivo } from '@/data/teamsAoVivo';
 import { PhotoTransform, MatchData } from '@/types/thumbnail';
 import { templates, TemplateType } from '@/data/templates';
 
+export type AoVivoTemplate = 'europaleague' | 'conferenceleague';
+
 interface ThumbnailCanvasAoVivoProps {
   playerPhoto: string | null;
   photoTransform: PhotoTransform;
@@ -13,6 +15,7 @@ interface ThumbnailCanvasAoVivoProps {
   photoRightTransform: PhotoTransform;
   matchData: MatchData;
   template: TemplateType;
+  aoVivoTemplate?: AoVivoTemplate;
   gradientLeftColor: string;
   gradientRightColor: string;
   panelLeftColor: string;
@@ -21,7 +24,7 @@ interface ThumbnailCanvasAoVivoProps {
 }
 
 export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasAoVivoProps>(
-  ({ playerPhoto, photoTransform, photoLeft, photoLeftTransform, photoRight, photoRightTransform, matchData, template, gradientLeftColor, gradientRightColor, panelLeftColor, panelRightColor, showSomAmbiente = false }, ref) => {
+  ({ playerPhoto, photoTransform, photoLeft, photoLeftTransform, photoRight, photoRightTransform, matchData, template, aoVivoTemplate = 'europaleague', gradientLeftColor, gradientRightColor, panelLeftColor, panelRightColor, showSomAmbiente = false }, ref) => {
     const config = templates[template];
     const currentTeams = teamsAoVivo;
     const homeTeam = currentTeams.find(t => t.id === matchData.homeTeamId) as Team | undefined;
@@ -225,7 +228,7 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
         />
 
         {/* Home Crest - centered in left glass panel */}
-        {homeTeam && (
+        {aoVivoTemplate === 'europaleague' && homeTeam && (
           <img 
             src={homeTeam.crest_url}
             alt={homeTeam.name}
@@ -242,7 +245,7 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
         )}
 
         {/* Away Crest - centered in right glass panel */}
-        {awayTeam && (
+        {aoVivoTemplate === 'europaleague' && awayTeam && (
           <img 
             src={awayTeam.crest_url}
             alt={awayTeam.name}
@@ -258,14 +261,15 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
           />
         )}
 
-        {/* Som Ambiente Overlay */}
         {/* Logos Ao Vivo Europa League */}
-        <img
-          src="/kv/logos-ao-vivo-europa.png"
-          alt="Logos Ao Vivo Europa League"
-          className="absolute left-0 top-0 pointer-events-none"
-          style={{ width: '1280px', height: '720px', objectFit: 'cover', zIndex: 60 }}
-        />
+        {aoVivoTemplate === 'europaleague' && (
+          <img
+            src="/kv/logos-ao-vivo-europa.png"
+            alt="Logos Ao Vivo Europa League"
+            className="absolute left-0 top-0 pointer-events-none"
+            style={{ width: '1280px', height: '720px', objectFit: 'cover', zIndex: 60 }}
+          />
+        )}
 
         {/* Som Ambiente Overlay */}
         {showSomAmbiente && (

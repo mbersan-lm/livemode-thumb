@@ -16,6 +16,14 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { ArrowRight } from 'lucide-react';
+import { AoVivoTemplate } from '@/components/ThumbnailCanvasAoVivo';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const CANVAS_WIDTH = 1280;
 const CANVAS_HEIGHT = 720;
@@ -27,6 +35,7 @@ const Index = () => {
   const isMobile = useIsMobile();
   
   const [activeCanvas, setActiveCanvas] = useState<ActiveCanvas>('mm');
+  const [aoVivoTemplate, setAoVivoTemplate] = useState<AoVivoTemplate>('europaleague');
   const [mobileScale, setMobileScale] = useState(0.3);
   const [gradientLeftColor, setGradientLeftColor] = useState('#000000');
   const [gradientRightColor, setGradientRightColor] = useState('#000000');
@@ -248,6 +257,7 @@ const Index = () => {
                 photoRightTransform={state.aoVivoPhotoRightTransform}
                 matchData={state.matchData}
                 template="europaleague"
+                aoVivoTemplate={aoVivoTemplate}
                 gradientLeftColor={gradientLeftColor}
                 gradientRightColor={gradientRightColor}
                 panelLeftColor={gradientLeftColor}
@@ -285,6 +295,24 @@ const Index = () => {
 
           {activeCanvas === 'av' && (
             <div className="mb-5 space-y-4">
+              <div>
+                <Label className="text-xs font-medium mb-2 block">Template Ao Vivo</Label>
+                <Select
+                  value={aoVivoTemplate}
+                  onValueChange={(val: AoVivoTemplate) => {
+                    setAoVivoTemplate(val);
+                    handleMatchDataChange({ homeTeamId: null, awayTeamId: null });
+                  }}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="europaleague">Europa League</SelectItem>
+                    <SelectItem value="conferenceleague">Conference League</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <AoVivoGradientControls
                 gradientLeftColor={gradientLeftColor}
                 gradientRightColor={gradientRightColor}
@@ -353,6 +381,7 @@ const Index = () => {
                 onMatchDataChange={handleMatchDataChange}
                 template={state.template}
                 activeCanvas={activeCanvas}
+                aoVivoTemplate={aoVivoTemplate}
               />
             </TabsContent>
 
