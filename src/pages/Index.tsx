@@ -247,7 +247,7 @@ const Index = () => {
                 photoRight={state.aoVivoPhotoRight}
                 photoRightTransform={state.aoVivoPhotoRightTransform}
                 matchData={state.matchData}
-                template={state.template}
+                template="europaleague"
                 gradientLeftColor={gradientLeftColor}
                 gradientRightColor={gradientRightColor}
                 panelLeftColor={gradientLeftColor}
@@ -303,8 +303,8 @@ const Index = () => {
           )}
 
           <Tabs defaultValue="template" className="w-full">
-            <TabsList className={`w-full grid h-10 ${activeCanvas === 'av' ? 'grid-cols-3' : 'grid-cols-4'}`}>
-              <TabsTrigger value="template" className="text-xs">Template</TabsTrigger>
+            <TabsList className={`w-full grid h-10 ${activeCanvas === 'av' ? 'grid-cols-2' : 'grid-cols-4'}`}>
+              {activeCanvas !== 'av' && <TabsTrigger value="template" className="text-xs">Template</TabsTrigger>}
               {activeCanvas !== 'av' && <TabsTrigger value="photo" className="text-xs">Foto</TabsTrigger>}
               <TabsTrigger value="teams" className="text-xs">Times</TabsTrigger>
               <TabsTrigger value="export" className="text-xs">Exportar</TabsTrigger>
