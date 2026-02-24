@@ -146,8 +146,8 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '0px',
-            bottom: '0px',
+            left: '-30px',
+            bottom: '-5%',
             width: '280px',
             height: '120px',
             backgroundColor: '#00000033',
