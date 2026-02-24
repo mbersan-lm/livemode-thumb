@@ -11,7 +11,7 @@ import { teamsAoVivo } from '@/data/teamsAoVivo';
 import { teamsConferenceLeague } from '@/data/teamsConferenceLeague';
 import { MatchData } from '@/types/thumbnail';
 import { TemplateType } from '@/data/templates';
-import { ActiveCanvas } from '@/components/controls/ViewControls';
+import { ActiveCanvas } from '@/types/thumbnail';
 import { AoVivoTemplate } from '@/components/ThumbnailCanvasAoVivo';
 import {
   Select,
