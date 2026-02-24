@@ -142,6 +142,23 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
           }}
         />
 
+        {/* Glass Panel Bottom-Left (Black) */}
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: '0px',
+            bottom: '0px',
+            width: '280px',
+            height: '120px',
+            backgroundColor: '#00000033',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid white',
+            borderRadius: '12px',
+            zIndex: 16,
+          }}
+        />
+
         {/* KV Background - Ao Vivo */}
         <img 
           src="/kv/kv-ao-vivo.png"
