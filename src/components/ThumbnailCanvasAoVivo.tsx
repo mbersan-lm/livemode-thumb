@@ -15,12 +15,10 @@ interface ThumbnailCanvasAoVivoProps {
   template: TemplateType;
   gradientLeftColor: string;
   gradientRightColor: string;
-  gradientLeftBlend?: string;
-  gradientRightBlend?: string;
 }
 
 export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasAoVivoProps>(
-  ({ playerPhoto, photoTransform, matchData, template, gradientLeftColor, gradientRightColor, gradientLeftBlend = 'normal', gradientRightBlend = 'normal' }, ref) => {
+  ({ playerPhoto, photoTransform, matchData, template, gradientLeftColor, gradientRightColor }, ref) => {
     const config = templates[template];
     const currentTeams = 
       template === 'brasileirao' ? teamsBrasileirao : 
@@ -86,7 +84,7 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
           style={{
             zIndex: 15,
             background: `linear-gradient(to right, ${gradientLeftColor} 0%, transparent 50%)`,
-            mixBlendMode: gradientLeftBlend as any,
+            mixBlendMode: 'overlay',
           }}
         />
 
@@ -96,7 +94,7 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
           style={{
             zIndex: 15,
             background: `linear-gradient(to left, ${gradientRightColor} 0%, transparent 50%)`,
-            mixBlendMode: gradientRightBlend as any,
+            mixBlendMode: 'overlay',
           }}
         />
 
