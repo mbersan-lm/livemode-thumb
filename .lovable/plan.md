@@ -1,44 +1,27 @@
 
 
-# Reposicionar paineis glass conforme referencia
+# Atualizar dimensoes dos paineis glass para 529x607
 
 ## O que muda
-Os dois paineis glass serao reposicionados para ficarem na metade inferior do canvas, lado a lado com um gap entre eles, conforme a imagem de referencia.
-
-## Estimativa de posicao (canvas 1280x720)
-
-Pela referencia, os retangulos comecam aproximadamente no centro vertical e vao ate proximo ao fundo, com largura moderada e gap entre eles.
-
-```text
-Canvas 1280x720:
-
-       245px              555px
-        |                   |
-  270px +------280------+   +------280------+
-        |               |   |               |
-        |   Painel L    |   |   Painel R    |
-        |               |   |               |
-        |               |   |               |
-  680px +---------------+   +---------------+
-```
+Os dois paineis glass no modelo "Ao Vivo" terao suas dimensoes atualizadas para **529px de largura** e **607px de altura**, mantendo a posicao centralizada no canvas.
 
 ## Detalhe tecnico
 
 ### `src/components/ThumbnailCanvasAoVivo.tsx`
 
-Atualizar o posicionamento e dimensoes dos dois paineis glass:
+Com paineis de 529px de largura, o espaco total ocupado seria 529 + 30 (gap) + 529 = 1088px. Para centralizar no canvas de 1280px: margem lateral = (1280 - 1088) / 2 = 96px.
 
 **Painel esquerdo:**
-- `left: '245px'`
-- `top: '270px'`
-- `width: '280px'`
-- `height: '410px'`
+- `left: '96px'`
+- `top: '100px'`
+- `width: '529px'`
+- `height: '607px'`
 
 **Painel direito:**
-- `left: '555px'`
-- `top: '270px'`
-- `width: '280px'`
-- `height: '410px'`
+- `left: '655px'` (96 + 529 + 30)
+- `top: '100px'`
+- `width: '529px'`
+- `height: '607px'`
 
-Os paineis ficam verticais (mais altos que largos), posicionados na metade inferior do canvas com um gap de ~30px entre eles.
+O topo foi ajustado para ~100px para que os paineis de 607px caibam verticalmente no canvas de 720px (100 + 607 = 707px, com 13px de margem inferior).
 
