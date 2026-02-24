@@ -17,10 +17,11 @@ interface ThumbnailCanvasAoVivoProps {
   gradientRightColor: string;
   panelLeftColor: string;
   panelRightColor: string;
+  showSomAmbiente?: boolean;
 }
 
 export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasAoVivoProps>(
-  ({ playerPhoto, photoTransform, photoLeft, photoLeftTransform, photoRight, photoRightTransform, matchData, template, gradientLeftColor, gradientRightColor, panelLeftColor, panelRightColor }, ref) => {
+  ({ playerPhoto, photoTransform, photoLeft, photoLeftTransform, photoRight, photoRightTransform, matchData, template, gradientLeftColor, gradientRightColor, panelLeftColor, panelRightColor, showSomAmbiente = false }, ref) => {
     const config = templates[template];
     const currentTeams = teamsAoVivo;
     const homeTeam = currentTeams.find(t => t.id === matchData.homeTeamId) as Team | undefined;
@@ -252,6 +253,16 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
               maxHeight: matchData.awayTeamId === 'av5' ? '248px' : matchData.awayTeamId === 'av6' ? '315px' : matchData.awayTeamId === 'av29' ? '400px' : matchData.awayTeamId === 'av21' ? '450px' : matchData.awayTeamId === 'av24' ? '360px' : '500px', 
               zIndex: 50 
             }}
+          />
+        )}
+
+        {/* Som Ambiente Overlay */}
+        {showSomAmbiente && (
+          <img
+            src="/kv/overlay-som-ambiente.png"
+            alt="Som ambiente"
+            className="absolute left-0 top-0 pointer-events-none"
+            style={{ width: '1280px', height: '720px', objectFit: 'cover', zIndex: 100 }}
           />
         )}
       </div>

@@ -13,6 +13,8 @@ import { ThumbnailState, PhotoTransform } from '@/types/thumbnail';
 import { TemplateType } from '@/data/templates';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { ArrowRight } from 'lucide-react';
 
 const CANVAS_WIDTH = 1280;
@@ -30,6 +32,7 @@ const Index = () => {
   const [gradientRightColor, setGradientRightColor] = useState('#000000');
   const [panelLeftColor, setPanelLeftColor] = useState('#c0c0c0');
   const [panelRightColor, setPanelRightColor] = useState('#c0c0c0');
+  const [showSomAmbiente, setShowSomAmbiente] = useState(false);
   
   const [state, setState] = useState<ThumbnailState>({
     playerPhoto: null,
@@ -249,6 +252,7 @@ const Index = () => {
                 gradientRightColor={gradientRightColor}
                 panelLeftColor={gradientLeftColor}
                 panelRightColor={gradientRightColor}
+                showSomAmbiente={showSomAmbiente}
               />
             </div>
           )}
@@ -280,13 +284,21 @@ const Index = () => {
           </div>
 
           {activeCanvas === 'av' && (
-            <div className="mb-5">
+            <div className="mb-5 space-y-4">
               <AoVivoGradientControls
                 gradientLeftColor={gradientLeftColor}
                 gradientRightColor={gradientRightColor}
                 onGradientLeftColorChange={setGradientLeftColor}
                 onGradientRightColorChange={setGradientRightColor}
               />
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="som-ambiente"
+                  checked={showSomAmbiente}
+                  onCheckedChange={setShowSomAmbiente}
+                />
+                <Label htmlFor="som-ambiente" className="text-sm cursor-pointer">Som ambiente</Label>
+              </div>
             </div>
           )}
 
