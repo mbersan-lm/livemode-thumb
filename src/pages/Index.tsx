@@ -291,9 +291,9 @@ const Index = () => {
           )}
 
           <Tabs defaultValue="template" className="w-full">
-            <TabsList className="w-full grid grid-cols-4 h-10">
+            <TabsList className={`w-full grid h-10 ${activeCanvas === 'av' ? 'grid-cols-3' : 'grid-cols-4'}`}>
               <TabsTrigger value="template" className="text-xs">Template</TabsTrigger>
-              <TabsTrigger value="photo" className="text-xs">Foto</TabsTrigger>
+              {activeCanvas !== 'av' && <TabsTrigger value="photo" className="text-xs">Foto</TabsTrigger>}
               <TabsTrigger value="teams" className="text-xs">Times</TabsTrigger>
               <TabsTrigger value="export" className="text-xs">Exportar</TabsTrigger>
             </TabsList>
