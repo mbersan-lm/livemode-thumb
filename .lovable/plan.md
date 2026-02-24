@@ -1,37 +1,86 @@
 
 
-# Corrigir exportacao do texto em todos os modelos com "Texto da thumbnail"
+# Novo modelo "AO VIVO" na aba Thumbnail Ativa
 
-## Problema
-O JPG exportado esta cortando o texto (faltando o `"` final) porque ha diferencas entre o preview (HTML/CSS) e o export (Canvas API). Isso afeta o modelo **Thumb Principal** e potencialmente outros modelos.
+## Resumo
 
-## Diferencas encontradas
+Adicionar uma terceira aba "AO VIVO" ao seletor de Thumbnail Ativa (ao lado de "Melhores Momentos" e "Jogo Completo") na pagina principal. O layout replica fielmente a imagem de referencia enviada.
 
-| Propriedade | Preview (CSS) | Export (Canvas) |
-|---|---|---|
-| Largura texto (Thumb Principal) | 380px | 360px |
-| Altura texto (Thumb Principal) | 200px | 190px |
-| Line-height | 1.15 | 1.2 (fixo) |
-| Font size inicial (Thumb Principal) | auto-fit grande | 120px |
+## Layout da thumbnail (1280x720)
 
-Essas diferencas fazem com que o auto-fit calcule um tamanho de fonte diferente no export, resultando em texto que nao cabe e e cortado.
+```text
++------------------------------------------+
+|                                          |
+|           AO VIVO  (texto grande)        |
+|                                          |
+|   +----------------+ +----------------+ |
+|   |                | |                |  |
+|   |   Imagem 1     | |   Imagem 2     |  |
+|   |   (upload)     | |   (upload)     |  |
+|   |                | |                |  |
+|   +----------------+ +----------------+ |
+|                                          |
+|  [logos-live-negativa.png]               |
++------------------------------------------+
+```
 
-## Correcao
+- Fundo preto
+- Texto "AO VIVO" centralizado no topo, branco, bold, fonte Tusker Grotesk (~160-180px)
+- Dois paineis lado a lado com bordas arredondadas (16px), fundo semi-transparente (`rgba(255,255,255,0.08)`), borda sutil (`rgba(255,255,255,0.15)`)
+- Cada painel recebe uma imagem via upload independente, com controles de X, Y e Zoom
+- Logos usando `logos-live-negativa.png` no canto inferior
 
-### Arquivo: `src/components/cortes/CortesControls.tsx`
+## Arquivos a criar
 
-**1. Funcao `drawAutoFitText` (linha ~230):**
-- Adicionar parametro opcional `lineHeightRatio` (default `1.2`)
-- Usar esse parametro em vez do valor fixo `1.2` na linha 238
+### `src/components/ThumbnailCanvasAoVivo.tsx`
+- Componente `forwardRef` (1280x720) seguindo o padrao de `ThumbnailCanvas.tsx`
+- Props: `image1`, `image2`, `image1Transform`, `image2Transform` (cada um com x, y, scale), `matchData`, `template`
+- Camadas:
+  1. Fundo preto
+  2. Texto "AO VIVO" centralizado no topo (~y=80px), fonte Tusker Grotesk, 160px, branco, bold
+  3. Dois paineis retangulares arredondados (~540x380px cada, gap de ~40px entre eles, centralizados verticalmente)
+  4. Dentro de cada painel, a imagem com overflow hidden e transform do usuario
+  5. Overlay com logos (`logos-live-negativa.png`) cobrindo o canvas inteiro (como nos outros modelos)
+- Os escudos dos times selecionados (homeTeam/awayTeam) podem ser exibidos dentro dos paineis como fallback quando nao ha imagem
 
-**2. Thumb Principal export (linhas 886-899):**
-- Mudar `textW` de `360` para `380` (igualar ao preview)
-- Mudar `textH` de `190` para `200` (igualar ao preview)
-- Mudar `startFontSize` de `120` para `200` (mesmo ponto de partida do auto-fit)
-- Passar `lineHeightRatio: 1.15` para igualar ao CSS do preview
+## Arquivos a modificar
 
-**3. Modelo padrao (linhas 872-883):**
-- Verificar se o line-height do preview tambem e `1.15` e, se for, passar o mesmo ratio na chamada
+### `src/components/controls/ViewControls.tsx`
+- Expandir `ActiveCanvas` para `'mm' | 'jc' | 'av'`
+- Mudar grid de 2 para 3 colunas
+- Adicionar tab "AO VIVO" com value `'av'`
 
-## Resultado
-O export passara a usar as mesmas dimensoes e proporcoes do preview, garantindo que o texto completo (incluindo aspas e caracteres finais) apareca no JPG exportado em todos os modelos.
+### `src/types/thumbnail.ts`
+- Adicionar ao `ThumbnailState`:
+  - `aoVivoImage1: string | null`
+  - `aoVivoImage2: string | null`
+  - `aoVivoTransform1: PhotoTransform`
+  - `aoVivoTransform2: PhotoTransform`
+  - `initialScaleAoVivo1: number`
+  - `initialScaleAoVivo2: number`
+
+### `src/pages/Index.tsx`
+- Importar `ThumbnailCanvasAoVivo`
+- Adicionar ref `canvasRefAoVivo`
+- Adicionar estado para as duas imagens e transforms do AO VIVO no `ThumbnailState`
+- Adicionar handlers de upload e transform para ambas as imagens
+- No bloco de renderizacao do canvas, adicionar `activeCanvas === 'av'` renderizando `ThumbnailCanvasAoVivo`
+- Passar `canvasRefAoVivo` para `ExportControls`
+
+### `src/components/controls/PhotoControls.tsx`
+- Quando `activeCanvas === 'av'`, exibir DUAS areas de upload ("Imagem 1" e "Imagem 2") com sliders independentes de X, Y e Zoom para cada uma
+- Adicionar props para as duas imagens e transforms do AO VIVO
+
+### `src/components/controls/ExportControls.tsx`
+- Adicionar prop `canvasRefAoVivo`
+- Adicionar botao "Exportar AO VIVO" que usa `html2canvas` no ref do canvas
+- Nome do arquivo: `AO_VIVO_home_away.jpg`
+
+## Detalhes visuais (fiel a referencia)
+
+- Fundo: `#000000` (preto solido)
+- Texto "AO VIVO": `color: #FFFFFF`, `font-family: 'Tusker Grotesk'`, `font-size: 160px`, `font-weight: 600`, `text-align: center`, posicao `top: 40px`
+- Paineis: `width: 540px`, `height: 380px`, `border-radius: 16px`, `background: rgba(255,255,255,0.08)`, `border: 1px solid rgba(255,255,255,0.15)`, centralizados horizontalmente com gap de 40px entre eles, posicao vertical centralizada (~y: 200px)
+- Imagens dentro dos paineis: `overflow: hidden`, `object-fit: cover`, com transforms do usuario
+- Logos: `logos-live-negativa.png` como overlay full-canvas (posicao absoluta, inset 0, z-index alto)
+
