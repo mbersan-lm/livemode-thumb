@@ -231,44 +231,14 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
             <img 
               src={homeTeam.crest_url}
               alt={homeTeam.name}
-              className="h-auto w-auto object-contain -mr-[42px]"
+              className="h-auto w-auto object-contain"
               style={{ maxWidth: `${homeTeam.maxSize ?? 216}px`, maxHeight: `${homeTeam.maxSize ?? 216}px` }}
             />
-
-            <div className="flex flex-col items-center">
-              <div className="flex items-center gap-4">
-                <div className="text-white font-bold" style={{ fontFamily: config.fontFamily, fontSize: config.scoreFontSize, lineHeight: '1', letterSpacing: '-0.01em' }}>
-                  {matchData.homeScore}
-                </div>
-                <div className="font-bold" style={{ fontFamily: config.xFontFamily || config.fontFamily, fontSize: config.xFontSize, lineHeight: '1', letterSpacing: '-0.01em', color: config.xColor || '#C9FF2E' }}>
-                  x
-                </div>
-                <div className="text-white font-bold" style={{ fontFamily: config.fontFamily, fontSize: config.scoreFontSize, lineHeight: '1', letterSpacing: '-0.01em' }}>
-                  {matchData.awayScore}
-                </div>
-              </div>
-
-              {matchData.showSmallScore && (
-                <div 
-                  className="flex items-center gap-3 text-white font-bold"
-                  style={{
-                    fontFamily: config.fontFamily,
-                    fontSize: `${Math.round(parseInt(config.scoreFontSize) * 0.245)}px`,
-                    lineHeight: '1',
-                    marginTop: '4px',
-                  }}
-                >
-                  <span>({matchData.homeScoreSmall})</span>
-                  <span style={{ color: config.xColor || '#C9FF2E', fontFamily: config.xFontFamily || config.fontFamily, fontSize: `${Math.round(parseInt(config.xFontSize) * 0.21)}px` }}>x</span>
-                  <span>({matchData.awayScoreSmall})</span>
-                </div>
-              )}
-            </div>
 
             <img 
               src={awayTeam.crest_url}
               alt={awayTeam.name}
-              className="h-auto w-auto object-contain -ml-[42px]"
+              className="h-auto w-auto object-contain"
               style={{ maxWidth: `${awayTeam.maxSize ?? 216}px`, maxHeight: `${awayTeam.maxSize ?? 216}px` }}
             />
           </div>
