@@ -330,7 +330,7 @@ const Index = () => {
             </div>
           )}
 
-          <Tabs defaultValue="template" className="w-full">
+          <Tabs defaultValue={activeCanvas === 'av' ? 'teams' : 'template'} className="w-full">
             <TabsList className={`w-full grid h-10 ${activeCanvas === 'av' ? 'grid-cols-2' : 'grid-cols-4'}`}>
               {activeCanvas !== 'av' && <TabsTrigger value="template" className="text-xs">Template</TabsTrigger>}
               {activeCanvas !== 'av' && <TabsTrigger value="photo" className="text-xs">Foto</TabsTrigger>}
@@ -338,12 +338,14 @@ const Index = () => {
               <TabsTrigger value="export" className="text-xs">Exportar</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="template" className="mt-5">
-              <TemplateControls
-                currentTemplate={state.template}
-                onTemplateChange={handleTemplateChange}
-              />
-            </TabsContent>
+            {activeCanvas !== 'av' && (
+              <TabsContent value="template" className="mt-5">
+                <TemplateControls
+                  currentTemplate={state.template}
+                  onTemplateChange={handleTemplateChange}
+                />
+              </TabsContent>
+            )}
 
             <TabsContent value="photo" className="mt-5">
               <PhotoControls
