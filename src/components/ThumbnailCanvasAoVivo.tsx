@@ -1,15 +1,18 @@
 import { forwardRef } from 'react';
 import { PhotoTransform } from '@/types/thumbnail';
+import { TemplateType, templates } from '@/data/templates';
 
 interface ThumbnailCanvasAoVivoProps {
   image1: string | null;
   image2: string | null;
   image1Transform: PhotoTransform;
   image2Transform: PhotoTransform;
+  template: TemplateType;
 }
 
 export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasAoVivoProps>(
-  ({ image1, image2, image1Transform, image2Transform }, ref) => {
+  ({ image1, image2, image1Transform, image2Transform, template }, ref) => {
+    const currentTemplate = templates[template];
 
     const makePhotoStyle = (t: PhotoTransform) => ({
       transform: `translate(-50%, -50%) translateX(${t.x}px) translateY(${t.y}px) scale(${t.scale}) scaleX(${t.scaleX}) scaleY(${t.scaleY})`,
@@ -29,6 +32,20 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
           background: '#000000',
         }}
       >
+        {/* KV Background */}
+        <img
+          src={currentTemplate.kvPath}
+          alt="Background"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '1280px',
+            height: '720px',
+            objectFit: 'cover',
+            zIndex: 0,
+          }}
+        />
+
         {/* AO VIVO text */}
         <div
           style={{
