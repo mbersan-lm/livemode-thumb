@@ -119,7 +119,7 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
               maxHeight: 'none',
               objectFit: 'unset',
               transformOrigin: 'center center',
-              zIndex: 14,
+              zIndex: 15.5,
               ...photoLeftStyle,
             }}
           />
@@ -138,7 +138,7 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
               maxHeight: 'none',
               objectFit: 'unset',
               transformOrigin: 'center center',
-              zIndex: 14,
+              zIndex: 15.5,
               ...photoRightStyle,
             }}
           />
