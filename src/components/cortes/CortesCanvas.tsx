@@ -471,18 +471,20 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
         })()}
 
         {/* Layer 3.5: Bottom gradient overlay */}
-        <div
-          style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            bottom: 0,
-            height: '45%',
-            background: 'linear-gradient(to top, rgba(34,34,34,0.7) 0%, rgba(34,34,34,0) 100%)',
-            zIndex: 4,
-            pointerEvents: 'none',
-          }}
-        />
+        {!showThumbPrincipal && (
+          <div
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: '45%',
+              background: 'linear-gradient(to top, rgba(34,34,34,0.7) 0%, rgba(34,34,34,0) 100%)',
+              zIndex: 4,
+              pointerEvents: 'none',
+            }}
+          />
+        )}
 
         {/* Layer 3.8: Top-right corner gradient (behind logos) — exclusivo Geral CazéTv Brasil */}
         {divisoriaImage === '/cortes/divisoria-brasil.png' && (

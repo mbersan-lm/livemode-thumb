@@ -853,11 +853,13 @@ export const CortesControls = ({
       }
 
       // ── Layer 4: Gradiente inferior ─────────────────────────────────────
-      const grad = ctx.createLinearGradient(0, H * 0.55, 0, H);
-      grad.addColorStop(0, 'rgba(34,34,34,0)');
-      grad.addColorStop(1, 'rgba(34,34,34,0.7)');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, H * 0.55, W, H * 0.45);
+      if (!showThumbPrincipal) {
+        const grad = ctx.createLinearGradient(0, H * 0.55, 0, H);
+        grad.addColorStop(0, 'rgba(34,34,34,0)');
+        grad.addColorStop(1, 'rgba(34,34,34,0.7)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, H * 0.55, W, H * 0.45);
+      }
 
       // ── Layer 5: Logos ──────────────────────────────────────────────────
       ctx.drawImage(logosImg, 0, 0, W, H);
