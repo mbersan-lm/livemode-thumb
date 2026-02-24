@@ -6,6 +6,7 @@ import { ThumbnailCanvasAoVivo } from '@/components/ThumbnailCanvasAoVivo';
 import { PhotoControls } from '@/components/controls/PhotoControls';
 import { TeamControls } from '@/components/controls/TeamControls';
 import { ExportControls } from '@/components/controls/ExportControls';
+import { AoVivoGradientControls } from '@/components/controls/AoVivoGradientControls';
 import { TemplateControls } from '@/components/controls/TemplateControls';
 import { ViewControls, ActiveCanvas } from '@/components/controls/ViewControls';
 import { ThumbnailState } from '@/types/thumbnail';
@@ -25,6 +26,8 @@ const Index = () => {
   
   const [activeCanvas, setActiveCanvas] = useState<ActiveCanvas>('mm');
   const [mobileScale, setMobileScale] = useState(0.3);
+  const [gradientLeftColor, setGradientLeftColor] = useState('#000000');
+  const [gradientRightColor, setGradientRightColor] = useState('#000000');
   
   const [state, setState] = useState<ThumbnailState>({
     playerPhoto: null,
@@ -174,6 +177,8 @@ const Index = () => {
                 photoTransform={state.aoVivoPhotoTransform}
                 matchData={state.matchData}
                 template={state.template}
+                gradientLeftColor={gradientLeftColor}
+                gradientRightColor={gradientRightColor}
               />
             </div>
           )}
@@ -203,6 +208,17 @@ const Index = () => {
               onActiveCanvasChange={setActiveCanvas}
             />
           </div>
+
+          {activeCanvas === 'av' && (
+            <div className="mb-5">
+              <AoVivoGradientControls
+                gradientLeftColor={gradientLeftColor}
+                gradientRightColor={gradientRightColor}
+                onGradientLeftColorChange={setGradientLeftColor}
+                onGradientRightColorChange={setGradientRightColor}
+              />
+            </div>
+          )}
 
           <Tabs defaultValue="template" className="w-full">
             <TabsList className="w-full grid grid-cols-4 h-10">
