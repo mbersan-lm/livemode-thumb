@@ -231,8 +231,8 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
               left: '458px', 
               top: '527px', 
               transform: 'translate(-50%, -50%)', 
-              maxWidth: matchData.homeTeamId === 'av5' ? '248px' : matchData.homeTeamId === 'av6' ? '315px' : '500px', 
-              maxHeight: matchData.homeTeamId === 'av5' ? '248px' : matchData.homeTeamId === 'av6' ? '315px' : '500px', 
+              maxWidth: matchData.homeTeamId === 'av5' ? '248px' : matchData.homeTeamId === 'av6' ? '315px' : matchData.homeTeamId === 'av29' ? '400px' : '500px', 
+              maxHeight: matchData.homeTeamId === 'av5' ? '248px' : matchData.homeTeamId === 'av6' ? '315px' : matchData.homeTeamId === 'av29' ? '400px' : '500px', 
               zIndex: 50 
             }}
           />
@@ -248,8 +248,8 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
               left: '822px', 
               top: '527px', 
               transform: 'translate(-50%, -50%)', 
-              maxWidth: matchData.awayTeamId === 'av5' ? '248px' : matchData.awayTeamId === 'av6' ? '315px' : '500px', 
-              maxHeight: matchData.awayTeamId === 'av5' ? '248px' : matchData.awayTeamId === 'av6' ? '315px' : '500px', 
+              maxWidth: matchData.awayTeamId === 'av5' ? '248px' : matchData.awayTeamId === 'av6' ? '315px' : matchData.awayTeamId === 'av29' ? '400px' : '500px', 
+              maxHeight: matchData.awayTeamId === 'av5' ? '248px' : matchData.awayTeamId === 'av6' ? '315px' : matchData.awayTeamId === 'av29' ? '400px' : '500px', 
               zIndex: 50 
             }}
           />
