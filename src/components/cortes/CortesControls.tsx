@@ -488,11 +488,12 @@ export const CortesControls = ({
   const bgInputRef = useRef<HTMLInputElement>(null);
 
   const QUADRANT_PRESETS = [
-    { label: 'Cazé', url: '/cortes/presets/caze.png' },
-    { label: 'Donan', url: '/cortes/presets/donan.png' },
-    { label: 'Igor', url: '/cortes/presets/igor.png' },
+    { label: 'Beltrão', url: '/cortes/presets/beltrao.png' },
     { label: 'LFF', url: '/cortes/presets/lff.png' },
     { label: 'Simões', url: '/cortes/presets/simoes.png' },
+    { label: 'Igor', url: '/cortes/presets/igor.png' },
+    { label: 'Donan', url: '/cortes/presets/donan.png' },
+    { label: 'Cazé', url: '/cortes/presets/caze.png' },
   ];
 
   const [showPipAdjust, setShowPipAdjust] = useState(false);

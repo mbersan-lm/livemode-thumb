@@ -230,9 +230,7 @@ export const CortesThumbBuilder = ({
     reader.readAsDataURL(file);
   };
 
-  const PRESET_TRANSFORMS: Record<string, { x: number; y: number; scale: number; rotation: number }> = {
-    '/cortes/presets/caze.png': { x: -127, y: 50, scale: 1.27, rotation: -1 },
-  };
+  const PRESET_TRANSFORMS: Record<string, { x: number; y: number; scale: number; rotation: number }> = {};
 
   const handleQuadrantPresetSelect = async (idx: number, url: string) => {
     try {
