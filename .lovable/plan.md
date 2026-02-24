@@ -1,22 +1,44 @@
 
 
-# Corrigir Posicao Y do Texto no Modelo Thumb Principal
+# Limitar texto ao meio inferior da thumbnail -- Todos os modelos
 
 ## Problema
-O slider de "Posicao Y" do texto nao tem efeito no modelo **Thumb Principal** (Roda de Bobo). Isso acontece porque o texto esta posicionado com valores fixos (`top: 50%`, `transform: translate(-50%, 10%)`) em vez de usar a variavel `textBoxHeight` que o slider controla.
+O texto da thumbnail pode subir acima do meio vertical (360px de 720px total). O usuario quer que essa regra se aplique a **todos os modelos** que possuem caixa de texto, nao apenas ao Thumb Principal.
 
-## Correcao
+## Modelos afetados
+- Corte com PIP
+- Lettering simples (so-lettering)
+- Duas pessoas
+- Jogo v1 / 3 fotos + PIP duplo
+- Thumb Principal (Roda de Bobo)
+- Meio a meio (textos esquerdo e direito)
+
+## O que sera feito
 
 ### Arquivo 1: `src/components/cortes/CortesCanvas.tsx` (preview)
 
-Na secao "Layer 5tp" (linha ~554-590), o texto do thumb-principal sera ajustado para usar `textBoxHeight` no posicionamento vertical:
+Adicionar `top: '50%'` em todos os blocos de texto:
 
-- Trocar `top: '50%'` e `transform: 'translate(-50%, 10%)'` por um posicionamento baseado em `bottom` + `textBoxHeight`, similar ao que os outros modelos ja fazem
-- O texto continuara centralizado horizontalmente, mas a posicao vertical sera controlada pelo slider
+1. **Layer 5 (texto unico)** -- linha ~522: adicionar `top: '50%'` ao estilo do div. Isso impede o texto de ultrapassar o meio, pois o CSS respeita tanto `top` quanto `bottom` simultaneamente, limitando a area disponivel.
+
+2. **Layer 5tp (thumb-principal)** -- linha ~557: adicionar `top: '50%'` ao estilo.
+
+3. **Layer 5b (meio-a-meio esquerdo)** -- linha ~597: adicionar `top: '50%'`.
+
+4. **Layer 5c (meio-a-meio direito)** -- linha ~632: adicionar `top: '50%'`.
+
+Em todos os casos, remover o `maxHeight` fixo, pois o `top: 50%` + `bottom: X%` ja define a altura maxima automaticamente.
 
 ### Arquivo 2: `src/components/cortes/CortesControls.tsx` (export)
 
-Na secao "Thumb Principal -- text inside circle" (linha ~886-899), o calculo de `textY` sera atualizado para usar `bottomFrac` (derivado de `textBoxHeight`) em vez do valor fixo `H / 2 - 20`.
+No `handleExport`, clampar o `areaY` para nunca ser menor que `H / 2` (360px) em todos os blocos de texto:
+
+1. **Texto unico** (linha ~875): `areaY = Math.max(H / 2, H - H * bottomFrac - areaH)`
+2. **Thumb Principal** (linha ~891): `textY = Math.max(H / 2, H - H * bottomFrac - textH)`
+3. **Meio a meio esquerdo** (linha ~905): `areaY = Math.max(H / 2, H - H * bottomFrac - areaH)`
+4. **Meio a meio direito** (linha ~918): `areaY = Math.max(H / 2, H - H * bottomFrac - areaH)`
+
+Alem disso, recalcular a altura disponivel quando o clamp for ativado: se `areaY` foi clampado para `H/2`, a altura real passa a ser `H - H * bottomFrac - H/2` (espaco entre o meio e o bottom).
 
 ## Resultado
-O slider de Posicao Y passara a mover o texto verticalmente no modelo Thumb Principal, tanto no preview quanto no JPG exportado.
+Em todos os modelos com texto, o conteudo ficara sempre na metade inferior da thumbnail, independentemente do slider de Posicao Y ou do tamanho do texto.
