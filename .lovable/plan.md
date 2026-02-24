@@ -1,48 +1,23 @@
 
 
-# Menu de Template para o modelo Ao Vivo
+# Remover "Selecionar Template" na aba Ao Vivo
 
-## O que sera feito
+## Problema
 
-Adicionar um seletor de template exclusivo para o modelo "Ao Vivo" com duas opcoes: **Europa League** e **Conference League**. O template Conference League reutiliza toda a estrutura visual (paineis, gradientes, KV), mas **sem escudos** e **sem a logo** (serao adicionados depois pelo usuario).
+Quando o usuario seleciona "Ao Vivo", a aba "Template" na TabsList esta oculta, mas o conteudo do "Selecionar Template" (com o dropdown "Brasileirao") ainda aparece na parte inferior porque o `Tabs` tem `defaultValue="template"` e o `TabsContent` continua sendo renderizado.
 
-## Alteracoes
+## Solucao
 
-### 1. Novo estado `aoVivoTemplate` no Index
+Modificar o arquivo `src/pages/Index.tsx` para:
 
-- Criar um estado `aoVivoTemplate` com tipo `'europaleague' | 'conferenceleague'`, valor inicial `'europaleague'`.
-- Passar esse valor para o `ThumbnailCanvasAoVivo`.
-
-### 2. Seletor de template no painel de controles (Index.tsx)
-
-- Dentro do bloco `{activeCanvas === 'av' && (...)}`, adicionar um seletor (Select ou ToggleGroup) com as opcoes "Europa League" e "Conference League", acima dos controles de gradiente.
-- Ao trocar de template, limpar os times selecionados (`homeTeamId: null, awayTeamId: null`).
-
-### 3. ThumbnailCanvasAoVivo.tsx
-
-- Receber uma nova prop `aoVivoTemplate` (ou reutilizar `template` com os novos valores).
-- Condicionar a exibicao dos **escudos** (home/away crests) apenas quando `aoVivoTemplate === 'europaleague'`.
-- Condicionar a exibicao da **logo** (`logos-ao-vivo-europa.png`) apenas quando `aoVivoTemplate === 'europaleague'`.
-- No modo Conference League, os espacos de escudo e logo ficam vazios (prontos para receber novos assets futuramente).
-
-### 4. TeamControls - esconder seletor de times no Conference League
-
-- Quando `aoVivoTemplate === 'conferenceleague'`, esconder tambem o seletor de times (ja que nao ha escudos). Ou manter visivel se o usuario quiser adicionar escudos depois -- **por padrao, esconder os seletores de time no Conference League** ate que os novos escudos sejam anexados.
+1. **Esconder o `TabsContent` de template** quando `activeCanvas === 'av'`, adicionando uma condicao para nao renderizar esse conteudo.
+2. **Ajustar o `defaultValue` do Tabs** para que, quando o usuario estiver em Ao Vivo, o tab ativo padrao seja "teams" em vez de "template" (que nao existe nesse modo).
 
 ## Detalhes Tecnicos
 
-**Arquivos modificados:**
+**Arquivo:** `src/pages/Index.tsx`
 
-1. **`src/pages/Index.tsx`**:
-   - Novo estado: `const [aoVivoTemplate, setAoVivoTemplate] = useState<'europaleague' | 'conferenceleague'>('europaleague')`
-   - Adicionar Select/ToggleGroup no bloco `activeCanvas === 'av'`
-   - Passar `aoVivoTemplate` como prop para `ThumbnailCanvasAoVivo`
+- Alterar o `Tabs` para usar um `defaultValue` dinamico: `defaultValue={activeCanvas === 'av' ? 'teams' : 'template'}`
+- Envolver o `TabsContent value="template"` com `{activeCanvas !== 'av' && (...)}`  para que ele nao seja renderizado no modo Ao Vivo
 
-2. **`src/components/ThumbnailCanvasAoVivo.tsx`**:
-   - Nova prop ou reutilizacao de `template` para distinguir europa/conference
-   - Envolver escudos (linhas 228-258) com `{template === 'europaleague' && ...}`
-   - Envolver logo (linhas 262-268) com `{template === 'europaleague' && ...}`
-
-3. **`src/components/controls/TeamControls.tsx`**:
-   - Esconder seletores de time quando ao vivo + conference league (opcional, dependendo se o usuario quer manter)
-
+Isso garante que o menu "Template Ao Vivo" (Europa League / Conference League) continue visivel, enquanto o "Selecionar Template" geral (Brasileirao, etc.) desaparece completamente.
