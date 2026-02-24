@@ -82,7 +82,7 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            zIndex: 5,
+            zIndex: 15,
             background: `linear-gradient(to right, ${gradientLeftColor} 0%, transparent 50%)`,
           }}
         />
@@ -91,7 +91,7 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            zIndex: 5,
+            zIndex: 15,
             background: `linear-gradient(to left, ${gradientRightColor} 0%, transparent 50%)`,
           }}
         />
