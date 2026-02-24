@@ -206,7 +206,7 @@ const AoVivo = () => {
         roundRect(ctx, x, y, w, h, 12);
         ctx.fillStyle = color + '33';
         ctx.fill();
-        ctx.strokeStyle = 'white';
+        ctx.strokeStyle = 'rgba(255,255,255,0.35)';
         ctx.lineWidth = 1;
         ctx.stroke();
         ctx.restore();
