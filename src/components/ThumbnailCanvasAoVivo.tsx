@@ -229,10 +229,10 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
             className="absolute h-auto w-auto object-contain"
             style={{ 
               left: '458px', 
-              top: '537px', 
+              top: '527px', 
               transform: 'translate(-50%, -50%)', 
-              maxWidth: '500px', 
-              maxHeight: '500px', 
+              maxWidth: ['av5', 'av6'].includes(matchData.homeTeamId) ? '150px' : '500px', 
+              maxHeight: ['av5', 'av6'].includes(matchData.homeTeamId) ? '150px' : '500px', 
               zIndex: 50 
             }}
           />
@@ -246,10 +246,10 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
             className="absolute h-auto w-auto object-contain"
             style={{ 
               left: '822px', 
-              top: '537px', 
+              top: '527px', 
               transform: 'translate(-50%, -50%)', 
-              maxWidth: '500px', 
-              maxHeight: '500px', 
+              maxWidth: ['av5', 'av6'].includes(matchData.awayTeamId) ? '150px' : '500px', 
+              maxHeight: ['av5', 'av6'].includes(matchData.awayTeamId) ? '150px' : '500px', 
               zIndex: 50 
             }}
           />
