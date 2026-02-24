@@ -221,27 +221,38 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
           style={{ width: '1280px', height: '720px', objectFit: 'cover', zIndex: 10 }}
         />
 
-        {/* Match Info */}
-        {homeTeam && awayTeam && (
-          <div 
-            id="MATCH_ROW_AV"
-            className="absolute left-1/2 top-1/2 flex items-center justify-center gap-[34px]"
-            style={{ zIndex: 50, transform: 'translate(-50%, -50%)' }}
-          >
-            <img 
-              src={homeTeam.crest_url}
-              alt={homeTeam.name}
-              className="h-auto w-auto object-contain"
-              style={{ maxWidth: `${homeTeam.maxSize ?? 216}px`, maxHeight: `${homeTeam.maxSize ?? 216}px` }}
-            />
+        {/* Home Crest - centered in left glass panel */}
+        {homeTeam && (
+          <img 
+            src={homeTeam.crest_url}
+            alt={homeTeam.name}
+            className="absolute h-auto w-auto object-contain"
+            style={{ 
+              left: '458px', 
+              top: '537px', 
+              transform: 'translate(-50%, -50%)', 
+              maxWidth: '250px', 
+              maxHeight: '250px', 
+              zIndex: 50 
+            }}
+          />
+        )}
 
-            <img 
-              src={awayTeam.crest_url}
-              alt={awayTeam.name}
-              className="h-auto w-auto object-contain"
-              style={{ maxWidth: `${awayTeam.maxSize ?? 216}px`, maxHeight: `${awayTeam.maxSize ?? 216}px` }}
-            />
-          </div>
+        {/* Away Crest - centered in right glass panel */}
+        {awayTeam && (
+          <img 
+            src={awayTeam.crest_url}
+            alt={awayTeam.name}
+            className="absolute h-auto w-auto object-contain"
+            style={{ 
+              left: '822px', 
+              top: '537px', 
+              transform: 'translate(-50%, -50%)', 
+              maxWidth: '250px', 
+              maxHeight: '250px', 
+              zIndex: 50 
+            }}
+          />
         )}
       </div>
     );
