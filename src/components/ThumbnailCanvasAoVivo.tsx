@@ -180,7 +180,7 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
             backgroundColor: `${panelLeftColor}33`,
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid white',
+            border: '1px solid rgba(255,255,255,0.35)',
             borderRadius: '12px',
             zIndex: 16,
           }}
@@ -197,7 +197,7 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
             backgroundColor: `${panelRightColor}33`,
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid white',
+            border: '1px solid rgba(255,255,255,0.35)',
             borderRadius: '12px',
             zIndex: 16,
           }}
