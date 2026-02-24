@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ThumbnailCanvas } from '@/components/ThumbnailCanvas';
 import { ThumbnailCanvasJogoCompleto } from '@/components/ThumbnailCanvasJogoCompleto';
+import { ThumbnailCanvasAoVivo } from '@/components/ThumbnailCanvasAoVivo';
 import { PhotoControls } from '@/components/controls/PhotoControls';
 import { TeamControls } from '@/components/controls/TeamControls';
 import { ExportControls } from '@/components/controls/ExportControls';
@@ -19,6 +20,7 @@ const CANVAS_HEIGHT = 720;
 const Index = () => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const canvasRefJogoCompleto = useRef<HTMLDivElement>(null);
+  const canvasRefAoVivo = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   
   const [activeCanvas, setActiveCanvas] = useState<ActiveCanvas>('mm');
@@ -41,6 +43,14 @@ const Index = () => {
       scaleX: 1,
       scaleY: 1,
     },
+    aoVivoPhoto: null,
+    aoVivoPhotoTransform: {
+      x: 0,
+      y: 0,
+      scale: 1,
+      scaleX: 1,
+      scaleY: 1,
+    },
     matchData: {
       homeTeamId: null,
       awayTeamId: null,
@@ -52,6 +62,7 @@ const Index = () => {
     },
     initialScale: 0.5,
     initialScaleJogoCompleto: 0.5,
+    initialScaleAoVivo: 0.5,
     template: 'brasileirao',
   });
 
@@ -145,12 +156,22 @@ const Index = () => {
                 template={state.template}
               />
             </div>
-          ) : (
+          ) : activeCanvas === 'jc' ? (
             <div style={{ transform: `scale(${canvasScale})`, transformOrigin: 'center' }}>
               <ThumbnailCanvasJogoCompleto
                 ref={canvasRefJogoCompleto}
                 playerPhoto={state.jogoCompletoPhoto}
                 photoTransform={state.jogoCompletoPhotoTransform}
+                matchData={state.matchData}
+                template={state.template}
+              />
+            </div>
+          ) : (
+            <div style={{ transform: `scale(${canvasScale})`, transformOrigin: 'center' }}>
+              <ThumbnailCanvasAoVivo
+                ref={canvasRefAoVivo}
+                playerPhoto={state.aoVivoPhoto}
+                photoTransform={state.aoVivoPhotoTransform}
                 matchData={state.matchData}
                 template={state.template}
               />
