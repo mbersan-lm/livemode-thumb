@@ -98,14 +98,6 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
           }}
         />
 
-        {/* Fixed PNG overlay above gradients */}
-        <img
-          src="/kv/ao-vivo-overlay.png"
-          alt="Ao Vivo Overlay"
-          className="absolute left-0 top-0 pointer-events-none"
-          style={{ width: '1280px', height: '720px', objectFit: 'cover', zIndex: 16 }}
-        />
-
         {/* KV Background - Ao Vivo */}
         <img 
           src="/kv/kv-ao-vivo.png"
