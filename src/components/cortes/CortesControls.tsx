@@ -137,15 +137,15 @@ function fitFontSize(
   maxW: number,
   maxH: number,
   startSize: number,
-  fontFamily: string
+  fontFamily: string,
+  lineHeightRatio = 1.2
 ): number {
   let size = startSize;
-  const lineHeight = 1.2;
   const cleanText = stripHighlightMarkers(text.toUpperCase());
   while (size > 20) {
     ctx.font = `800 ${size}px ${fontFamily}`;
     const lines = wrapText(ctx, cleanText, maxW);
-    const totalH = lines.length * size * lineHeight;
+    const totalH = lines.length * size * lineHeightRatio;
     if (totalH <= maxH) break;
     size -= 2;
   }
@@ -226,16 +226,17 @@ function drawAutoFitText(
   strokeColor: string,
   strokeRadius: number,
   rotationDeg: number,
-  paddingPx: number
+  paddingPx: number,
+  lineHeightRatio = 1.2
 ) {
   const text = rawText.toUpperCase();
   const cleanText = stripHighlightMarkers(text);
   const innerW = areaW - paddingPx * 2;
   const innerH = areaH - paddingPx * 2;
 
-  const fontSize = fitFontSize(ctx, text, innerW, innerH, startFontSize, fontFamily);
+  const fontSize = fitFontSize(ctx, text, innerW, innerH, startFontSize, fontFamily, lineHeightRatio);
   ctx.font = `800 ${fontSize}px ${fontFamily}`;
-  const lineHeight = fontSize * 1.2;
+  const lineHeight = fontSize * lineHeightRatio;
 
   // Layout com texto limpo (sem marcadores)
   const cleanLines = wrapText(ctx, cleanText, innerW);
@@ -885,16 +886,16 @@ export const CortesControls = ({
 
       // Thumb Principal — text inside circle
       if (showThumbPrincipal && props.thumbText) {
-        const textW = 360;
-        const textH = 190;
+        const textW = 380;
+        const textH = 200;
         const textX = W / 2 - textW / 2;
         const textY = H - H * bottomFrac - textH;
         drawAutoFitText(
           ctx, props.thumbText,
           textX, textY, textW, textH,
-          120, fontFamily,
+          200, fontFamily,
           textColor, highlightColor, strokeColor, 15,
-          0, 10
+          0, 10, 1.15
         );
       }
 
