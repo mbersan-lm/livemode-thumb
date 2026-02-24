@@ -31,4 +31,10 @@ export const teamsAoVivo: Team[] = [
   { id: 'av28', name: 'RANGERS', slug: 'av-rangers', crest_url: '/crests/av-rangers.png' },
   { id: 'av29', name: 'REAL BETIS', slug: 'av-real-betis', crest_url: '/crests/av-real-betis.png' },
   { id: 'av30', name: 'RED BULL SALZBURG', slug: 'av-red-bull-salzburg', crest_url: '/crests/av-red-bull-salzburg.png' },
+  { id: 'av31', name: 'ROMA', slug: 'av-roma', crest_url: '/crests/av-roma.png' },
+  { id: 'av32', name: 'STURM GRAZ', slug: 'av-sturm-graz', crest_url: '/crests/av-sturm-graz.png' },
+  { id: 'av33', name: 'UTRECHT', slug: 'av-utrecht', crest_url: '/crests/av-utrecht.png' },
+  { id: 'av34', name: 'VfB STUTTGART', slug: 'av-vfb-stuttgart', crest_url: '/crests/av-vfb-stuttgart.png' },
+  { id: 'av35', name: 'VIKTORIA PLZEŇ', slug: 'av-viktoria-plzen', crest_url: '/crests/av-viktoria-plzen.png' },
+  { id: 'av36', name: 'YOUNG BOYS', slug: 'av-young-boys', crest_url: '/crests/av-young-boys.png' },
 ];
