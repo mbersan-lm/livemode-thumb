@@ -1,28 +1,54 @@
 
 
-# Corrigir tamanho das fotos nos quadrantes na exportacao
+# Corrigir exportacao das fotos nos quadrantes da Thumb Principal
 
 ## Problema
-No preview (CSS), as fotos dos quadrantes sao renderizadas com `height: 240%` do quadrante, fazendo a imagem ocupar uma area grande e mostrar mais do corpo/rosto. Na exportacao (Canvas API), o codigo usa `drawH = qH` (100% do quadrante), resultando em uma foto muito menor e cortada diferente do preview.
+As fotos dos quadrantes na exportacao estao aparecendo muito "zoomed in" (apenas texturas de fundo visiveis, pessoas quase invisiveis). O multiplicador `2.4x` faz a imagem ficar grande demais no Canvas, mostrando apenas uma pequena porcao central.
+
+## Causa raiz
+As fotos dos presets sao imagens pre-compostas (ja com fundo + pessoa posicionada) que devem preencher o quadrante por completo. O CSS `height: 240%` funciona no preview porque o browser renderiza a imagem mantendo a proporcao com `width: auto`, mas no Canvas API o calculo `drawH = qH * 2.4` com `drawW = drawH * aspect` gera dimensoes excessivas.
 
 ## Correcao
 
-### Arquivo: `src/components/cortes/CortesControls.tsx` (linhas 843-844)
+### Arquivo: `src/components/cortes/CortesControls.tsx` (linhas ~842-850)
 
-Alterar o calculo de `drawH` de:
-```
-const drawH = qH;
-const drawW = drawH * aspect;
-```
+Substituir o calculo atual por logica de **object-fit: cover** que preenche completamente o quadrante, mantendo a proporcao da imagem:
 
-Para:
-```
+```text
+// Antes (incorreto):
 const drawH = qH * 2.4;
 const drawW = drawH * aspect;
+
+// Depois (object-fit cover):
+const imgAspect = c.img.naturalWidth / c.img.naturalHeight;
+const qAspect = qW / qH;
+let drawW, drawH;
+if (imgAspect > qAspect) {
+  // Imagem mais larga que o quadrante: ajustar pela altura
+  drawH = qH;
+  drawW = qH * imgAspect;
+} else {
+  // Imagem mais alta que o quadrante: ajustar pela largura
+  drawW = qW;
+  drawH = qW / imgAspect;
+}
 ```
 
-Isso alinha o fator de escala da exportacao (240%) com o CSS do preview (`height: 240%`), garantindo paridade visual entre o que o usuario ve e o que e exportado.
+### Tambem atualizar o CSS do preview: `src/components/cortes/CortesCanvas.tsx` (linhas ~460-464)
+
+Trocar `height: 240%` e `width: auto` por logica equivalente de object-fit cover:
+
+```text
+// Antes:
+height: '240%',
+width: 'auto',
+
+// Depois:
+width: '100%',
+height: '100%',
+objectFit: 'cover' as const,
+```
 
 ## Resultado esperado
-A foto exportada tera o mesmo enquadramento e tamanho que aparece no preview, mostrando mais do rosto/corpo como na imagem de referencia "certo.png".
+As fotos dos presets preencherao completamente o quadrante tanto no preview quanto na exportacao, mostrando a pessoa posicionada exatamente como na imagem original fornecida ("certo.png"), funcionando como uma "logo atras da logo".
 
