@@ -1,39 +1,28 @@
 
 
-# Atualizar presets do Quadrante 1 - Thumb Principal (Roda de Bobo)
+# Corrigir tamanho das fotos nos quadrantes na exportacao
 
-## Resumo
-Substituir as fotos atuais dos presets do Quadrante 1 por novas fotos fornecidas, adicionando o Beltrao que nao existia antes. As fotos serao usadas exatamente como enviadas, sem transformacoes.
+## Problema
+No preview (CSS), as fotos dos quadrantes sao renderizadas com `height: 240%` do quadrante, fazendo a imagem ocupar uma area grande e mostrar mais do corpo/rosto. Na exportacao (Canvas API), o codigo usa `drawH = qH` (100% do quadrante), resultando em uma foto muito menor e cortada diferente do preview.
 
-## Mudancas
+## Correcao
 
-### 1. Substituir assets em `public/cortes/presets/`
-- Apagar as 5 fotos atuais (caze.png, donan.png, igor.png, lff.png, simoes.png)
-- Salvar as 6 novas fotos:
-  - `beltrao.png` (de BELTRAO-QD1_-_Copia.png)
-  - `lff.png` (de LFF-QD1-2.png)
-  - `simoes.png` (de SIMOES-QD1-2.png)
-  - `igor.png` (de IGOR-QD1-2.png)
-  - `donan.png` (de DONAN-QD1-2.png)
-  - `caze.png` (de CAZE-QD1-2.png)
+### Arquivo: `src/components/cortes/CortesControls.tsx` (linhas 843-844)
 
-### 2. Atualizar `src/components/cortes/CortesControls.tsx`
-- Adicionar "Beltrao" ao array `QUADRANT_PRESETS`:
-```text
-const QUADRANT_PRESETS = [
-  { label: 'Beltrao', url: '/cortes/presets/beltrao.png' },
-  { label: 'LFF', url: '/cortes/presets/lff.png' },
-  { label: 'Simoes', url: '/cortes/presets/simoes.png' },
-  { label: 'Igor', url: '/cortes/presets/igor.png' },
-  { label: 'Donan', url: '/cortes/presets/donan.png' },
-  { label: 'Caze', url: '/cortes/presets/caze.png' },
-];
+Alterar o calculo de `drawH` de:
+```
+const drawH = qH;
+const drawW = drawH * aspect;
 ```
 
-### 3. Atualizar `src/components/cortes/CortesThumbBuilder.tsx`
-- Remover as transformacoes pre-definidas do preset Caze (`PRESET_TRANSFORMS`), ja que as fotos devem ser usadas exatamente como estao, sem ajustes automaticos de posicao/escala
-- O `PRESET_TRANSFORMS` ficara vazio: `{}`
+Para:
+```
+const drawH = qH * 2.4;
+const drawW = drawH * aspect;
+```
 
-### Resultado esperado
-Ao selecionar um preset no Quadrante 1, a foto sera carregada exatamente como enviada, sem nenhuma transformacao aplicada, funcionando como uma "logo atras da logo".
+Isso alinha o fator de escala da exportacao (240%) com o CSS do preview (`height: 240%`), garantindo paridade visual entre o que o usuario ve e o que e exportado.
+
+## Resultado esperado
+A foto exportada tera o mesmo enquadramento e tamanho que aparece no preview, mostrando mais do rosto/corpo como na imagem de referencia "certo.png".
 
