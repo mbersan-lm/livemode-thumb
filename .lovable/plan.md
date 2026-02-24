@@ -1,15 +1,17 @@
 
 
-# Substituir o PNG do overlay "Ao Vivo"
+# Esconder overlay "Ao Vivo" quando "Som ambiente" estiver ativo
 
 ## O que sera feito
 
-Substituir o arquivo `public/kv/overlay-ao-vivo-panels.png` pelo novo PNG enviado. Nenhuma alteracao de codigo e necessaria, pois o componente `ThumbnailCanvasAoVivo.tsx` ja referencia esse mesmo caminho (`/kv/overlay-ao-vivo-panels.png`).
+Quando o switch "Som ambiente" estiver ligado, o overlay `overlay-ao-vivo-panels.png` (que contem o visual "Ao Vivo" com os paineis) sera ocultado. Assim, apenas o overlay de "Som ambiente" aparecera sobre a thumb.
 
 ## Detalhes Tecnicos
 
-**Arquivo substituido:**
-- `public/kv/overlay-ao-vivo-panels.png` -- sera sobrescrito com o novo upload (`user-uploads://Slide_16_9_-_33-1-2.png`)
+**Arquivo modificado:**
+- `src/components/ThumbnailCanvasAoVivo.tsx`
 
-Nenhum arquivo `.tsx` ou `.ts` precisa ser modificado.
+**Alteracao:**
+- Envolver o `<img>` do overlay `overlay-ao-vivo-panels.png` (linha 158-164) com uma condicao `{!showSomAmbiente && ...}`, fazendo com que ele desapareca quando o switch estiver ativado.
 
+Nenhum outro arquivo precisa ser alterado, pois a prop `showSomAmbiente` ja esta disponivel no componente.
