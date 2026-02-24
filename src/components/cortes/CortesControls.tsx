@@ -840,7 +840,7 @@ export const CortesControls = ({
           ctx.rect(q.x, q.y, qW, qH);
           ctx.clip();
           const aspect = c.img.naturalWidth / c.img.naturalHeight;
-          const drawH = qH;
+          const drawH = qH * 2.4;
           const drawW = drawH * aspect;
           const cx = q.x + qW / 2 + c.t.x;
           const cy = q.y + qH / 2 + c.t.y;
