@@ -1,19 +1,15 @@
 
-
-# Fixar template "Europa League" no modelo Ao Vivo
+# Esconder controles de placar no modo Ao Vivo
 
 ## O que sera feito
 
-Quando o modelo "Ao Vivo" estiver ativo, o seletor de templates sera ocultado e o canvas usara sempre o template "Europa League" automaticamente. Ao trocar para outro modelo (MM ou JC), o seletor de templates volta a aparecer normalmente.
+Quando o modelo "Ao Vivo" estiver ativo, os controles de **Placar Casa**, **Placar Visitante** e **Penaltis** (incluindo os campos de penaltis expandidos) serao ocultados. Apenas os seletores de time permanecerao visiveis.
 
 ## Detalhes Tecnicos
 
-**Arquivos modificados:**
+**Arquivo modificado:** `src/components/controls/TeamControls.tsx`
 
-1. **`src/pages/Index.tsx`**:
-   - Na passagem de props para `ThumbnailCanvasAoVivo`, forcar `template="europaleague"` em vez de usar `state.template`
-   - Esconder a aba "Template" do `TabsList` quando `activeCanvas === 'av'` (ajustar grid-cols de 3 para 2 no modo Ao Vivo sem foto, mantendo apenas "Times" e "Exportar")
+**Alteracao:**
+- Envolver os blocos de placar (linhas 78-101), penaltis switch (linhas 104-111) e campos de penaltis expandidos (linhas 113-138) com a condicao `{activeCanvas !== 'av' && (...)}`, escondendo tudo quando o canvas ativo for "Ao Vivo".
 
-2. **`src/components/ThumbnailCanvasAoVivo.tsx`**:
-   - Nenhuma alteracao necessaria, pois ja recebe `template` como prop e o valor sera fixado no Index
-
+Nenhum outro arquivo precisa ser alterado.
