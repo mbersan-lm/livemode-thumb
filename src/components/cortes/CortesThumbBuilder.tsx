@@ -230,9 +230,7 @@ export const CortesThumbBuilder = ({
     reader.readAsDataURL(file);
   };
 
-  const PRESET_TRANSFORMS: Record<string, { x: number; y: number; scale: number; rotation: number }> = {
-    '/cortes/presets/lff.png': { x: 0, y: 10, scale: 1, rotation: 0 },
-  };
+  const PRESET_TRANSFORMS: Record<string, { x: number; y: number; scale: number; rotation: number }> = {};
 
   const handleQuadrantPresetSelect = async (idx: number, url: string) => {
     try {
