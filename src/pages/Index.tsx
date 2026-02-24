@@ -186,6 +186,7 @@ const Index = () => {
                 image2={state.aoVivoImage2}
                 image1Transform={state.aoVivoTransform1}
                 image2Transform={state.aoVivoTransform2}
+                template={state.template}
               />
             </div>
           )}
