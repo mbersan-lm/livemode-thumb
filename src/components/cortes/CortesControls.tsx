@@ -871,9 +871,8 @@ export const CortesControls = ({
 
       if (!showMeioAMeio && !showThumbPrincipal && props.thumbText) {
         const areaX = W * 0.02;
-        let areaH = H * 0.38;
-        let areaY = H - H * bottomFrac - areaH;
-        if (areaY < H / 2) { areaY = H / 2; areaH = H - H * bottomFrac - H / 2; }
+        const areaH = H * 0.38;
+        const areaY = H - H * bottomFrac - areaH;
         const areaW = W * 0.96;
         drawAutoFitText(
           ctx, props.thumbText,
@@ -887,10 +886,9 @@ export const CortesControls = ({
       // Thumb Principal — text inside circle
       if (showThumbPrincipal && props.thumbText) {
         const textW = 360;
-        let textH = 190;
+        const textH = 190;
         const textX = W / 2 - textW / 2;
-        let textY = H - H * bottomFrac - textH;
-        if (textY < H / 2) { textY = H / 2; textH = H - H * bottomFrac - H / 2; }
+        const textY = H - H * bottomFrac - textH;
         drawAutoFitText(
           ctx, props.thumbText,
           textX, textY, textW, textH,
@@ -903,9 +901,8 @@ export const CortesControls = ({
       if (showMeioAMeio) {
         if (props.thumbTextLeft) {
           const areaX = W * 0.01;
-          let areaH = H * 0.40;
-          let areaY = H - H * bottomFrac - areaH;
-          if (areaY < H / 2) { areaY = H / 2; areaH = H - H * bottomFrac - H / 2; }
+          const areaH = H * 0.40;
+          const areaY = H - H * bottomFrac - areaH;
           const areaW = W * 0.47;
           drawAutoFitText(
             ctx, props.thumbTextLeft,
@@ -917,9 +914,8 @@ export const CortesControls = ({
         }
         if (props.thumbTextRight) {
           const areaX = W * 0.52;
-          let areaH = H * 0.40;
-          let areaY = H - H * bottomFrac - areaH;
-          if (areaY < H / 2) { areaY = H / 2; areaH = H - H * bottomFrac - H / 2; }
+          const areaH = H * 0.40;
+          const areaY = H - H * bottomFrac - areaH;
           const areaW = W * 0.47;
           drawAutoFitText(
             ctx, props.thumbTextRight,
