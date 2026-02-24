@@ -8,14 +8,14 @@ import { TeamControls } from '@/components/controls/TeamControls';
 import { ExportControls } from '@/components/controls/ExportControls';
 import { AoVivoGradientControls } from '@/components/controls/AoVivoGradientControls';
 import { TemplateControls } from '@/components/controls/TemplateControls';
-import { ViewControls, ActiveCanvas } from '@/components/controls/ViewControls';
+import { ActiveCanvas } from '@/components/controls/ViewControls';
 import { ThumbnailState, PhotoTransform } from '@/types/thumbnail';
 import { TemplateType } from '@/data/templates';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { ArrowRight } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { AoVivoTemplate } from '@/components/ThumbnailCanvasAoVivo';
 import {
   Select,
@@ -28,13 +28,17 @@ import {
 const CANVAS_WIDTH = 1280;
 const CANVAS_HEIGHT = 720;
 
-const Index = () => {
+interface IndexProps {
+  mode: ActiveCanvas;
+}
+
+const Index = ({ mode }: IndexProps) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const canvasRefJogoCompleto = useRef<HTMLDivElement>(null);
   const canvasRefAoVivo = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   
-  const [activeCanvas, setActiveCanvas] = useState<ActiveCanvas>('mm');
+  const activeCanvas = mode;
   const [aoVivoTemplate, setAoVivoTemplate] = useState<AoVivoTemplate>('europaleague');
   const [mobileScale, setMobileScale] = useState(0.3);
   const [gradientLeftColor, setGradientLeftColor] = useState('#000000');
@@ -272,26 +276,21 @@ const Index = () => {
       <div className="w-full md:w-1/2 bg-card border-t md:border-t-0 md:border-l border-border overflow-y-auto flex flex-col flex-1 md:flex-none">
         <div className="p-4 md:p-6 pb-3 md:pb-4 border-b border-border flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold tracking-tight">Melhores Momentos</h1>
+            <h1 className="text-xl font-bold tracking-tight">
+              {activeCanvas === 'mm' ? 'Melhores Momentos' : activeCanvas === 'jc' ? 'Jogo Completo' : 'Ao Vivo'}
+            </h1>
             <p className="text-xs text-muted-foreground mt-1">
               Gerador de Thumbnails
             </p>
           </div>
-          <a href="/cortes">
+          <a href="/">
             <Button variant="outline" size="sm" className="gap-1.5">
-              Cortes <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowLeft className="w-3.5 h-3.5" /> Voltar
             </Button>
           </a>
         </div>
 
         <div className="p-3 md:p-5 flex-1">
-          {/* Canvas Switcher */}
-          <div className="mb-5">
-            <ViewControls
-              activeCanvas={activeCanvas}
-              onActiveCanvasChange={setActiveCanvas}
-            />
-          </div>
 
           {activeCanvas === 'av' && (
             <div className="mb-5 space-y-4">
