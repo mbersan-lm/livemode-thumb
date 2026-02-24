@@ -1,28 +1,22 @@
 
-## Adicionar retangulo glass preto na esquerda
+# Centralizar Escudos e Placar no Modelo Ao Vivo
 
-Adicionar um novo retangulo com efeito glass no canto inferior esquerdo do canvas "Ao Vivo", conforme a imagem de referencia.
+## O que sera feito
 
-### O que sera feito
+Mover os escudos dos times e o placar para o centro do canvas (entre os dois paineis glass) e coloca-los no primeiro plano, acima de todos os elementos.
 
-- Adicionar um novo `div` no componente `ThumbnailCanvasAoVivo.tsx` representando o retangulo preto com efeito glass
-- O retangulo tera:
-  - Cor de fundo preta com transparencia (`#00000033`)
-  - Backdrop blur (efeito glass)
-  - Stroke de 1px branco
-  - Border radius de 12px (consistente com os outros paineis)
-  - Posicionado no canto inferior esquerdo do canvas
-- Baseado na imagem de referencia, o retangulo ocupa aproximadamente 280px de largura e 120px de altura, alinhado ao canto inferior esquerdo com pequena margem
-
-### Detalhes tecnicos
+## Detalhes Tecnicos
 
 **Arquivo:** `src/components/ThumbnailCanvasAoVivo.tsx`
 
-Adicionar um novo elemento entre os paineis existentes (zIndex 16), com as seguintes propriedades:
-- `left: '0px'`, `bottom: '0px'` (canto inferior esquerdo)
-- `width: '280px'`, `height: '120px'`
-- `backgroundColor: '#00000033'` (preto com transparencia)
-- `backdropFilter: 'blur(20px)'`
-- `border: '1px solid white'`
-- `borderRadius: '12px'`
-- `zIndex: 16`
+Alteracoes no container `MATCH_ROW_AV` (linha 228):
+
+1. **Posicionamento central:**
+   - Remover `left-[22px] top-[360px]`
+   - Usar `left-1/2 top-1/2` com `transform: translate(-50%, -50%)` para centralizar no canvas
+   - Adicionar `justify-center` para alinhar os elementos internamente
+
+2. **Primeiro plano:**
+   - Alterar `zIndex` de `25` para `50`, garantindo que fique acima de todos os outros elementos (overlay em zIndex 17, panels em 16, KV em 10)
+
+O resultado sera os escudos e placar centralizados horizontalmente e verticalmente no canvas, visualmente posicionados entre os dois paineis glass e acima de todas as camadas.
