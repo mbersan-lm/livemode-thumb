@@ -1,20 +1,19 @@
 
+# Substituir emoji por imagem de abelha real
 
-# Corrigir distorcao das fotos de preset do Quadrante 1
+## Mudancas
 
-## Problema
-As imagens de preset do Quadrante 1 (Thumb Principal Roda de Bobo) estao sendo exibidas distorcidas/comprimidas horizontalmente. As fotos originais enviadas nao estao sendo preservadas fielmente.
+### 1. Salvar a imagem
+- Copiar `user-uploads://image-19.png` para `public/images/bee.png`
 
-## Solucao
+### 2. Atualizar `src/components/FlyingBees.tsx`
+- Substituir o emoji `🐝` por uma tag `<img>` usando `/images/bee.png`
+- Adicionar propriedade `flipped` (booleano) a cada abelha no array de configuracao
+- Quando `flipped: true`, aplicar `transform: scaleX(-1)` na imagem para espelhar horizontalmente
+- Alternar `flipped` entre as abelhas para criar variedade visual
+- Usar `width` e `height` baseados no `size` ja existente em cada abelha
 
-### 1. Re-salvar as imagens exatamente como enviadas
-Copiar novamente todas as 6 imagens de preset diretamente dos uploads originais, sem qualquer processamento ou compressao:
-- `CAZE-QD1.png` para `public/cortes/presets/caze.png`
-- `BELTRAO-QD1.png` para `public/cortes/presets/beltrao.png`
-- `DONAN-QD1.png` para `public/cortes/presets/donan.png`
-- `IGOR-QD1.png` para `public/cortes/presets/igor.png`
-- `LFF-QD1.png` para `public/cortes/presets/lff.png`
-- `SIMOES-QD1.png` para `public/cortes/presets/simoes.png`
-
-### 2. Nenhuma alteracao de codigo
-O CSS do canvas (`height: 240%`, `width: auto`) ja preserva a proporcao correta. O problema esta apenas nos arquivos de imagem, nao no codigo de renderizacao. Posicoes e proporcoes permanecem inalteradas.
+### 3. Detalhes tecnicos
+- A propriedade `flipped` sera alternada: abelhas nos indices pares ficam normais, impares ficam espelhadas (ou vice-versa)
+- O `fontSize` atual sera convertido para `width` da imagem (ex: `28px` -> `width: 28px`)
+- A imagem tera `pointer-events: none` e `user-select: none` para nao interferir na interacao
