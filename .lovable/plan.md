@@ -1,27 +1,28 @@
 
+## Adicionar retangulo glass preto na esquerda
 
-# Atualizar dimensoes dos paineis glass para 529x607
+Adicionar um novo retangulo com efeito glass no canto inferior esquerdo do canvas "Ao Vivo", conforme a imagem de referencia.
 
-## O que muda
-Os dois paineis glass no modelo "Ao Vivo" terao suas dimensoes atualizadas para **529px de largura** e **607px de altura**, mantendo a posicao centralizada no canvas.
+### O que sera feito
 
-## Detalhe tecnico
+- Adicionar um novo `div` no componente `ThumbnailCanvasAoVivo.tsx` representando o retangulo preto com efeito glass
+- O retangulo tera:
+  - Cor de fundo preta com transparencia (`#00000033`)
+  - Backdrop blur (efeito glass)
+  - Stroke de 1px branco
+  - Border radius de 12px (consistente com os outros paineis)
+  - Posicionado no canto inferior esquerdo do canvas
+- Baseado na imagem de referencia, o retangulo ocupa aproximadamente 280px de largura e 120px de altura, alinhado ao canto inferior esquerdo com pequena margem
 
-### `src/components/ThumbnailCanvasAoVivo.tsx`
+### Detalhes tecnicos
 
-Com paineis de 529px de largura, o espaco total ocupado seria 529 + 30 (gap) + 529 = 1088px. Para centralizar no canvas de 1280px: margem lateral = (1280 - 1088) / 2 = 96px.
+**Arquivo:** `src/components/ThumbnailCanvasAoVivo.tsx`
 
-**Painel esquerdo:**
-- `left: '96px'`
-- `top: '100px'`
-- `width: '529px'`
-- `height: '607px'`
-
-**Painel direito:**
-- `left: '655px'` (96 + 529 + 30)
-- `top: '100px'`
-- `width: '529px'`
-- `height: '607px'`
-
-O topo foi ajustado para ~100px para que os paineis de 607px caibam verticalmente no canvas de 720px (100 + 607 = 707px, com 13px de margem inferior).
-
+Adicionar um novo elemento entre os paineis existentes (zIndex 16), com as seguintes propriedades:
+- `left: '0px'`, `bottom: '0px'` (canto inferior esquerdo)
+- `width: '280px'`, `height: '120px'`
+- `backgroundColor: '#00000033'` (preto com transparencia)
+- `backdropFilter: 'blur(20px)'`
+- `border: '1px solid white'`
+- `borderRadius: '12px'`
+- `zIndex: 16`
