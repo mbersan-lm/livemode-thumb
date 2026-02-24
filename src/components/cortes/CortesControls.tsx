@@ -489,6 +489,7 @@ export const CortesControls = ({
 
   const QUADRANT_PRESETS = [
     { label: 'Cazé', url: '/cortes/presets/caze.png' },
+    { label: 'Beltrão', url: '/cortes/presets/beltrao.png' },
     { label: 'Donan', url: '/cortes/presets/donan.png' },
     { label: 'Igor', url: '/cortes/presets/igor.png' },
     { label: 'LFF', url: '/cortes/presets/lff.png' },
