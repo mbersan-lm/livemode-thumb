@@ -6,7 +6,7 @@ import { Slider } from '@/components/ui/slider';
 import { PhotoTransform } from '@/types/thumbnail';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { ActiveCanvas } from '@/types/thumbnail';
+import { ActiveCanvas } from '@/components/controls/ViewControls';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface PhotoControlsProps {
