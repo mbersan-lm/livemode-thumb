@@ -259,6 +259,15 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
         )}
 
         {/* Som Ambiente Overlay */}
+        {/* Logos Ao Vivo Europa League */}
+        <img
+          src="/kv/logos-ao-vivo-europa.png"
+          alt="Logos Ao Vivo Europa League"
+          className="absolute left-0 top-0 pointer-events-none"
+          style={{ width: '1280px', height: '720px', objectFit: 'cover', zIndex: 60 }}
+        />
+
+        {/* Som Ambiente Overlay */}
         {showSomAmbiente && (
           <img
             src="/kv/overlay-som-ambiente.png"
