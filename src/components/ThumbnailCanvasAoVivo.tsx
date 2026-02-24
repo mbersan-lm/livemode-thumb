@@ -104,9 +104,9 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
         <div
           className="absolute pointer-events-none"
           style={{
-            left: '245px',
+            left: '321px',
             top: '283px',
-            width: '380px',
+            width: '304px',
             height: '437px',
             backgroundColor: `${panelLeftColor}33`,
             backdropFilter: 'blur(20px)',
@@ -123,7 +123,7 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
           style={{
             left: '655px',
             top: '283px',
-            width: '380px',
+            width: '304px',
             height: '437px',
             backgroundColor: `${panelRightColor}33`,
             backdropFilter: 'blur(20px)',
