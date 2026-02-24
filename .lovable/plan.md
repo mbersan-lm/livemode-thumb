@@ -1,18 +1,23 @@
 
 
-# Reduzir fotos dos quadrantes em 20% mantendo proporcao
+# Corrigir gradientes invisíveis no canvas Ao Vivo
 
 ## Problema
-As imagens dos quadrantes da Thumb Principal (Roda de Bobo) estao muito grandes apos o aumento de 3x.
+Os dois gradientes (esquerdo e direito) estao com `zIndex: 5`, mas a imagem KV de fundo esta com `zIndex: 10`. O KV cobre totalmente os gradientes, tornando-os invisíveis.
 
 ## Correcao
 
-### Arquivo: `src/components/cortes/CortesCanvas.tsx`
+### Arquivo: `src/components/ThumbnailCanvasAoVivo.tsx`
 
-Na linha 463, mudar `height: '300%'` para `height: '240%'` (reducao de 20%).
+Alterar o `zIndex` dos dois gradientes de `5` para `15`, colocando-os acima do KV (zIndex 10) mas abaixo do Match Info (zIndex 20).
 
-A propriedade `width: 'auto'` ja esta correta e garante que a proporcao original da imagem seja mantida. Se a distorcao que o usuario viu foi causada por outro motivo (cache ou estado anterior), essa configuracao resolve.
+Camadas finais:
+- Foto do jogador: zIndex 0
+- KV Ao Vivo: zIndex 10
+- Gradiente esquerdo: zIndex 15
+- Gradiente direito: zIndex 15
+- Escudos e placar: zIndex 20
 
 ## Resultado
-Fotos 20% menores, sem distorcao, mantendo a proporcao original.
+Os gradientes ficam visíveis sobre o KV, e os escudos/placar continuam por cima de tudo.
 
