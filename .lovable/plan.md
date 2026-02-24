@@ -1,17 +1,19 @@
 
 
-# Esconder overlay "Ao Vivo" quando "Som ambiente" estiver ativo
+# Fixar template "Europa League" no modelo Ao Vivo
 
 ## O que sera feito
 
-Quando o switch "Som ambiente" estiver ligado, o overlay `overlay-ao-vivo-panels.png` (que contem o visual "Ao Vivo" com os paineis) sera ocultado. Assim, apenas o overlay de "Som ambiente" aparecera sobre a thumb.
+Quando o modelo "Ao Vivo" estiver ativo, o seletor de templates sera ocultado e o canvas usara sempre o template "Europa League" automaticamente. Ao trocar para outro modelo (MM ou JC), o seletor de templates volta a aparecer normalmente.
 
 ## Detalhes Tecnicos
 
-**Arquivo modificado:**
-- `src/components/ThumbnailCanvasAoVivo.tsx`
+**Arquivos modificados:**
 
-**Alteracao:**
-- Envolver o `<img>` do overlay `overlay-ao-vivo-panels.png` (linha 158-164) com uma condicao `{!showSomAmbiente && ...}`, fazendo com que ele desapareca quando o switch estiver ativado.
+1. **`src/pages/Index.tsx`**:
+   - Na passagem de props para `ThumbnailCanvasAoVivo`, forcar `template="europaleague"` em vez de usar `state.template`
+   - Esconder a aba "Template" do `TabsList` quando `activeCanvas === 'av'` (ajustar grid-cols de 3 para 2 no modo Ao Vivo sem foto, mantendo apenas "Times" e "Exportar")
 
-Nenhum outro arquivo precisa ser alterado, pois a prop `showSomAmbiente` ja esta disponivel no componente.
+2. **`src/components/ThumbnailCanvasAoVivo.tsx`**:
+   - Nenhuma alteracao necessaria, pois ja recebe `template` como prop e o valor sera fixado no Index
+
