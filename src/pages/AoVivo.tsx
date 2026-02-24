@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { ThumbnailCanvasAoVivo, AoVivoTemplate } from '@/components/ThumbnailCanvasAoVivo';
 import { TeamControls } from '@/components/controls/TeamControls';
-import { ExportControls } from '@/components/controls/ExportControls';
 import { AoVivoGradientControls } from '@/components/controls/AoVivoGradientControls';
 import { PhotoControls } from '@/components/controls/PhotoControls';
 import { PhotoTransform, ThumbnailState } from '@/types/thumbnail';
@@ -9,7 +8,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Download } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select,
@@ -18,6 +17,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { teamsAoVivo } from '@/data/teamsAoVivo';
+import { teamsConferenceLeague } from '@/data/teamsConferenceLeague';
+import html2canvas from 'html2canvas';
+import { toast } from 'sonner';
 
 const CANVAS_WIDTH = 1280;
 const CANVAS_HEIGHT = 720;
@@ -78,6 +81,62 @@ const AoVivo = () => {
       img.src = e.target?.result as string;
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleExportAoVivo = async () => {
+    if (!canvasRefAoVivo.current) {
+      toast.error('Canvas não está pronto');
+      return;
+    }
+    try {
+      toast.loading('Gerando JPG Ao Vivo...');
+      await document.fonts.ready;
+      const canvas = await html2canvas(canvasRefAoVivo.current, {
+        width: 1280,
+        height: 720,
+        scale: 1,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#000000',
+        logging: false,
+        scrollX: 0,
+        scrollY: 0,
+        x: 0,
+        y: 0,
+        foreignObjectRendering: false,
+        onclone: (clonedDoc) => {
+          const el = clonedDoc.getElementById('CANVAS_AO_VIVO');
+          if (!el) return;
+          let parent = el.parentElement;
+          while (parent) {
+            parent.style.transform = 'none';
+            (parent.style as any).zoom = '1';
+            (parent.style as any).scale = '1';
+            parent = parent.parentElement;
+          }
+        },
+      });
+
+      const currentTeams = aoVivoTemplate === 'conferenceleague' ? teamsConferenceLeague : teamsAoVivo;
+      const homeTeam = currentTeams.find(t => t.id === matchData.homeTeamId);
+      const awayTeam = currentTeams.find(t => t.id === matchData.awayTeamId);
+      const filename = `AO-VIVO_${homeTeam?.name?.replace(/\s+/g, '-') || 'home'}_${awayTeam?.name?.replace(/\s+/g, '-') || 'away'}.jpg`;
+
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = filename;
+          link.click();
+          URL.revokeObjectURL(url);
+          toast.success('JPG exportado!');
+        }
+      }, 'image/jpeg', 0.9);
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error('Falha ao exportar JPG');
+    }
   };
 
   const handleMatchDataChange = (data: Partial<typeof matchData>) => {
@@ -175,10 +234,9 @@ const AoVivo = () => {
           </div>
 
           <Tabs defaultValue="teams" className="w-full">
-            <TabsList className="w-full grid h-10 grid-cols-3">
+            <TabsList className="w-full grid h-10 grid-cols-2">
               <TabsTrigger value="photo" className="text-xs">Foto</TabsTrigger>
               <TabsTrigger value="teams" className="text-xs">Times</TabsTrigger>
-              <TabsTrigger value="export" className="text-xs">Exportar</TabsTrigger>
             </TabsList>
 
             <TabsContent value="photo" className="mt-5">
@@ -221,14 +279,18 @@ const AoVivo = () => {
               />
             </TabsContent>
 
-            <TabsContent value="export" className="mt-5">
-              <ExportControls
-                canvasRef={canvasRefAoVivo}
-                canvasRefJogoCompleto={canvasRefAoVivo}
-                matchData={matchData}
-              />
-            </TabsContent>
           </Tabs>
+
+          <div className="mt-5">
+            <Button
+              onClick={handleExportAoVivo}
+              className="w-full"
+              size="lg"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Exportar JPG
+            </Button>
+          </div>
         </div>
       </div>
     </div>
