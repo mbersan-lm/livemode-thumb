@@ -522,9 +522,9 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
             style={{
               position: 'absolute',
               left: '2%',
+              top: '50%',
               bottom: `${textBoxHeight}%`,
               width: '96%',
-              maxHeight: '38%',
               overflow: 'hidden',
               zIndex: 6,
               fontFamily: customFontFamily.includes(',') ? customFontFamily : `'${customFontFamily}', sans-serif`,
@@ -557,9 +557,9 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
             style={{
               position: 'absolute',
               left: '50%',
+              top: '50%',
               bottom: `${textBoxHeight}%`,
               width: 380,
-              maxHeight: 200,
               overflow: 'hidden',
               zIndex: 6,
               fontFamily: customFontFamily.includes(',') ? customFontFamily : `'${customFontFamily}', sans-serif`,
@@ -597,9 +597,9 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
             style={{
               position: 'absolute',
               left: '1%',
+              top: '50%',
               bottom: `${textBoxHeight}%`,
               width: '47%',
-              maxHeight: '40%',
               overflow: 'hidden',
               zIndex: 6,
               fontFamily: customFontFamily.includes(',') ? customFontFamily : `'${customFontFamily}', sans-serif`,
@@ -632,9 +632,9 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
             style={{
               position: 'absolute',
               right: '1%',
+              top: '50%',
               bottom: `${textBoxHeight}%`,
               width: '47%',
-              maxHeight: '40%',
               overflow: 'hidden',
               zIndex: 6,
               fontFamily: customFontFamily.includes(',') ? customFontFamily : `'${customFontFamily}', sans-serif`,
