@@ -100,6 +100,14 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
           }}
         />
 
+        {/* Overlay PNG above gradients */}
+        <img
+          src="/kv/overlay-ao-vivo-panels.png"
+          alt="Overlay panels"
+          className="absolute left-0 top-0 pointer-events-none"
+          style={{ width: '1280px', height: '720px', objectFit: 'cover', zIndex: 17 }}
+        />
+
         {/* Glass Panel Left */}
         <div
           className="absolute pointer-events-none"
