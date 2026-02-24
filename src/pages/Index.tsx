@@ -181,8 +181,8 @@ const Index = () => {
                 template={state.template}
                 gradientLeftColor={gradientLeftColor}
                 gradientRightColor={gradientRightColor}
-                panelLeftColor={panelLeftColor}
-                panelRightColor={panelRightColor}
+                panelLeftColor={gradientLeftColor}
+                panelRightColor={gradientRightColor}
               />
             </div>
           )}
@@ -220,10 +220,6 @@ const Index = () => {
                 gradientRightColor={gradientRightColor}
                 onGradientLeftColorChange={setGradientLeftColor}
                 onGradientRightColorChange={setGradientRightColor}
-                panelLeftColor={panelLeftColor}
-                panelRightColor={panelRightColor}
-                onPanelLeftColorChange={setPanelLeftColor}
-                onPanelRightColorChange={setPanelRightColor}
               />
             </div>
           )}
