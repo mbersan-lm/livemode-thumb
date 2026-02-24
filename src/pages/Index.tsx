@@ -28,6 +28,8 @@ const Index = () => {
   const [mobileScale, setMobileScale] = useState(0.3);
   const [gradientLeftColor, setGradientLeftColor] = useState('#000000');
   const [gradientRightColor, setGradientRightColor] = useState('#000000');
+  const [panelLeftColor, setPanelLeftColor] = useState('#c0c0c0');
+  const [panelRightColor, setPanelRightColor] = useState('#c0c0c0');
   
   const [state, setState] = useState<ThumbnailState>({
     playerPhoto: null,
@@ -179,6 +181,8 @@ const Index = () => {
                 template={state.template}
                 gradientLeftColor={gradientLeftColor}
                 gradientRightColor={gradientRightColor}
+                panelLeftColor={panelLeftColor}
+                panelRightColor={panelRightColor}
               />
             </div>
           )}
@@ -216,6 +220,10 @@ const Index = () => {
                 gradientRightColor={gradientRightColor}
                 onGradientLeftColorChange={setGradientLeftColor}
                 onGradientRightColorChange={setGradientRightColor}
+                panelLeftColor={panelLeftColor}
+                panelRightColor={panelRightColor}
+                onPanelLeftColorChange={setPanelLeftColor}
+                onPanelRightColorChange={setPanelRightColor}
               />
             </div>
           )}
