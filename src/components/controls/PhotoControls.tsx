@@ -22,12 +22,6 @@ interface PhotoControlsProps {
   onJogoCompletoPhotoUpload: (file: File) => void;
   onPlayerPhotoReplace: (dataUrl: string) => void;
   onJogoCompletoPhotoReplace: (dataUrl: string) => void;
-  aoVivoPhoto: string | null;
-  aoVivoPhotoTransform: PhotoTransform;
-  initialScaleAoVivo: number;
-  onAoVivoTransformChange: (transform: Partial<PhotoTransform>) => void;
-  onAoVivoPhotoUpload: (file: File) => void;
-  onAoVivoPhotoReplace: (dataUrl: string) => void;
 }
 
 export const PhotoControls = ({ 
@@ -44,12 +38,6 @@ export const PhotoControls = ({
   onJogoCompletoPhotoUpload,
   onPlayerPhotoReplace,
   onJogoCompletoPhotoReplace,
-  aoVivoPhoto,
-  aoVivoPhotoTransform,
-  initialScaleAoVivo,
-  onAoVivoTransformChange,
-  onAoVivoPhotoUpload,
-  onAoVivoPhotoReplace,
 }: PhotoControlsProps) => {
   const [isExpanding, setIsExpanding] = useState(false);
 
@@ -77,13 +65,12 @@ export const PhotoControls = ({
 
   // Determine which set of controls to show
   const isMM = activeCanvas === 'mm';
-  const isJC = activeCanvas === 'jc';
-  const currentPhoto = isMM ? playerPhoto : isJC ? jogoCompletoPhoto : aoVivoPhoto;
-  const currentTransform = isMM ? photoTransform : isJC ? jogoCompletoPhotoTransform : aoVivoPhotoTransform;
-  const currentInitialScale = isMM ? initialScale : isJC ? initialScaleJogoCompleto : initialScaleAoVivo;
-  const currentOnTransformChange = isMM ? onTransformChange : isJC ? onJogoCompletoTransformChange : onAoVivoTransformChange;
-  const currentOnUpload = isMM ? onPhotoUpload : isJC ? onJogoCompletoPhotoUpload : onAoVivoPhotoUpload;
-  const currentOnReplace = isMM ? onPlayerPhotoReplace : isJC ? onJogoCompletoPhotoReplace : onAoVivoPhotoReplace;
+  const currentPhoto = isMM ? playerPhoto : jogoCompletoPhoto;
+  const currentTransform = isMM ? photoTransform : jogoCompletoPhotoTransform;
+  const currentInitialScale = isMM ? initialScale : initialScaleJogoCompleto;
+  const currentOnTransformChange = isMM ? onTransformChange : onJogoCompletoTransformChange;
+  const currentOnUpload = isMM ? onPhotoUpload : onJogoCompletoPhotoUpload;
+  const currentOnReplace = isMM ? onPlayerPhotoReplace : onJogoCompletoPhotoReplace;
   const currentResetTransform = () => currentOnTransformChange({ x: 0, y: 0, scale: currentInitialScale, scaleX: 1, scaleY: 1 });
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {

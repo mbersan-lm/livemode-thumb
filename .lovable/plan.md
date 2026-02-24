@@ -1,49 +1,37 @@
 
 
-# Novo Modelo "Ao Vivo" na aba Thumbnail Ativa
+# Corrigir exportacao do texto em todos os modelos com "Texto da thumbnail"
 
-## Resumo
-Adicionar uma terceira opcao chamada **"Ao Vivo"** no seletor "Thumbnail Ativa", ao lado de "Melhores Momentos" e "Jogo Completo". O modelo usara a imagem de estadio enviada como KV de fundo, com o mesmo layout de foto + escudos + placar do modelo Melhores Momentos.
+## Problema
+O JPG exportado esta cortando o texto (faltando o `"` final) porque ha diferencas entre o preview (HTML/CSS) e o export (Canvas API). Isso afeta o modelo **Thumb Principal** e potencialmente outros modelos.
 
-## Alteracoes
+## Diferencas encontradas
 
-### 1. Copiar a imagem do KV para o projeto
-- Salvar `user-uploads://BG.jpg` em `public/kv/kv-ao-vivo.jpg`
+| Propriedade | Preview (CSS) | Export (Canvas) |
+|---|---|---|
+| Largura texto (Thumb Principal) | 380px | 360px |
+| Altura texto (Thumb Principal) | 200px | 190px |
+| Line-height | 1.15 | 1.2 (fixo) |
+| Font size inicial (Thumb Principal) | auto-fit grande | 120px |
 
-### 2. Atualizar o tipo `ActiveCanvas` e o `ViewControls`
-**Arquivo:** `src/components/controls/ViewControls.tsx`
-- Adicionar `'av'` ao tipo `ActiveCanvas` (`'mm' | 'jc' | 'av'`)
-- Mudar o grid de 2 para 3 colunas
-- Adicionar a tab "Ao Vivo" com valor `'av'`
+Essas diferencas fazem com que o auto-fit calcule um tamanho de fonte diferente no export, resultando em texto que nao cabe e e cortado.
 
-### 3. Criar o componente `ThumbnailCanvasAoVivo`
-**Novo arquivo:** `src/components/ThumbnailCanvasAoVivo.tsx`
-- Seguir o mesmo padrao do `ThumbnailCanvas.tsx` (Melhores Momentos)
-- Usar a imagem `kv-ao-vivo.jpg` como fundo, cobrindo 100% do canvas (1280x720)
-- Manter a mesma estrutura: foto do jogador (z:0) + KV (z:10) + escudos e placar (z:20)
-- Usar o posicionamento e estilos dos templates europeus (top-[335px])
+## Correcao
 
-### 4. Atualizar o estado e tipos
-**Arquivo:** `src/types/thumbnail.ts`
-- Adicionar campos `aoVivoPhoto`, `aoVivoPhotoTransform` e `initialScaleAoVivo` ao `ThumbnailState`
+### Arquivo: `src/components/cortes/CortesControls.tsx`
 
-### 5. Atualizar a pagina Index
-**Arquivo:** `src/pages/Index.tsx`
-- Adicionar estado para foto/transform do "Ao Vivo"
-- Adicionar handler de upload e transform para o "Ao Vivo"
-- Renderizar `ThumbnailCanvasAoVivo` quando `activeCanvas === 'av'`
-- Atualizar `PhotoControls` para suportar o novo canvas
-- Adicionar ref para o canvas "Ao Vivo"
+**1. Funcao `drawAutoFitText` (linha ~230):**
+- Adicionar parametro opcional `lineHeightRatio` (default `1.2`)
+- Usar esse parametro em vez do valor fixo `1.2` na linha 238
 
-### 6. Atualizar o `PhotoControls`
-**Arquivo:** `src/components/controls/PhotoControls.tsx`
-- Adicionar suporte ao `activeCanvas === 'av'` na logica de selecao de foto/transform
+**2. Thumb Principal export (linhas 886-899):**
+- Mudar `textW` de `360` para `380` (igualar ao preview)
+- Mudar `textH` de `190` para `200` (igualar ao preview)
+- Mudar `startFontSize` de `120` para `200` (mesmo ponto de partida do auto-fit)
+- Passar `lineHeightRatio: 1.15` para igualar ao CSS do preview
 
-### 7. Atualizar o `ExportControls`
-**Arquivo:** `src/components/controls/ExportControls.tsx`
-- Adicionar botao "Exportar Ao Vivo"
-- Adicionar ref e handler de export para o canvas "Ao Vivo"
+**3. Modelo padrao (linhas 872-883):**
+- Verificar se o line-height do preview tambem e `1.15` e, se for, passar o mesmo ratio na chamada
 
 ## Resultado
-O usuario podera alternar entre 3 modelos de thumbnail: Melhores Momentos, Jogo Completo e Ao Vivo, cada um com sua propria foto, controles de posicao e exportacao independente.
-
+O export passara a usar as mesmas dimensoes e proporcoes do preview, garantindo que o texto completo (incluindo aspas e caracteres finais) apareca no JPG exportado em todos os modelos.
