@@ -340,6 +340,7 @@ const Index = () => {
                 matchData={state.matchData}
                 onMatchDataChange={handleMatchDataChange}
                 template={state.template}
+                activeCanvas={activeCanvas}
               />
             </TabsContent>
 

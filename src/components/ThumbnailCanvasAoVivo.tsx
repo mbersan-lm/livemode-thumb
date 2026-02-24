@@ -1,10 +1,6 @@
 import { forwardRef } from 'react';
-import { Team, teamsBrasileirao } from '@/data/teams';
-import { teamsLigue1 } from '@/data/teamsLigue1';
-import { teamsBundesliga } from '@/data/teamsBundesliga';
-import { teamsSerieA } from '@/data/teamsSerieA';
-import { teamsPaulistao } from '@/data/teamsPaulistao';
-import { teamsEuropaLeague } from '@/data/teamsEuropaLeague';
+import { Team } from '@/data/teams';
+import { teamsAoVivo } from '@/data/teamsAoVivo';
 import { PhotoTransform, MatchData } from '@/types/thumbnail';
 import { templates, TemplateType } from '@/data/templates';
 
@@ -26,13 +22,7 @@ interface ThumbnailCanvasAoVivoProps {
 export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasAoVivoProps>(
   ({ playerPhoto, photoTransform, photoLeft, photoLeftTransform, photoRight, photoRightTransform, matchData, template, gradientLeftColor, gradientRightColor, panelLeftColor, panelRightColor }, ref) => {
     const config = templates[template];
-    const currentTeams = 
-      template === 'brasileirao' ? teamsBrasileirao : 
-      template === 'bundesliga' ? teamsBundesliga :
-      template === 'seriea' ? teamsSerieA :
-      template === 'paulistao' ? teamsPaulistao :
-      template === 'europaleague' ? teamsEuropaLeague :
-      teamsLigue1;
+    const currentTeams = teamsAoVivo;
     const homeTeam = currentTeams.find(t => t.id === matchData.homeTeamId) as Team | undefined;
     const awayTeam = currentTeams.find(t => t.id === matchData.awayTeamId) as Team | undefined;
 

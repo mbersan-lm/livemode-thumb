@@ -7,8 +7,10 @@ import { teamsBundesliga } from '@/data/teamsBundesliga';
 import { teamsSerieA } from '@/data/teamsSerieA';
 import { teamsPaulistao } from '@/data/teamsPaulistao';
 import { teamsEuropaLeague } from '@/data/teamsEuropaLeague';
+import { teamsAoVivo } from '@/data/teamsAoVivo';
 import { MatchData } from '@/types/thumbnail';
 import { TemplateType } from '@/data/templates';
+import { ActiveCanvas } from '@/components/controls/ViewControls';
 import {
   Select,
   SelectContent,
@@ -21,16 +23,18 @@ interface TeamControlsProps {
   matchData: MatchData;
   onMatchDataChange: (data: Partial<MatchData>) => void;
   template: TemplateType;
+  activeCanvas?: ActiveCanvas;
 }
 
-export const TeamControls = ({ matchData, onMatchDataChange, template }: TeamControlsProps) => {
-  const currentTeams = 
-    template === 'brasileirao' ? teamsBrasileirao : 
-    template === 'bundesliga' ? teamsBundesliga :
-    template === 'seriea' ? teamsSerieA :
-    template === 'paulistao' ? teamsPaulistao :
-    template === 'europaleague' ? teamsEuropaLeague :
-    teamsLigue1;
+export const TeamControls = ({ matchData, onMatchDataChange, template, activeCanvas }: TeamControlsProps) => {
+  const currentTeams = activeCanvas === 'av'
+    ? teamsAoVivo
+    : template === 'brasileirao' ? teamsBrasileirao : 
+      template === 'bundesliga' ? teamsBundesliga :
+      template === 'seriea' ? teamsSerieA :
+      template === 'paulistao' ? teamsPaulistao :
+      template === 'europaleague' ? teamsEuropaLeague :
+      teamsLigue1;
   return (
     <div className="space-y-6">
       <div>
