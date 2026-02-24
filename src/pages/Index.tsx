@@ -295,6 +295,24 @@ const Index = () => {
 
           {activeCanvas === 'av' && (
             <div className="mb-5 space-y-4">
+              <div>
+                <Label className="text-xs font-medium mb-2 block">Template Ao Vivo</Label>
+                <Select
+                  value={aoVivoTemplate}
+                  onValueChange={(val: AoVivoTemplate) => {
+                    setAoVivoTemplate(val);
+                    handleMatchDataChange({ homeTeamId: null, awayTeamId: null });
+                  }}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="europaleague">Europa League</SelectItem>
+                    <SelectItem value="conferenceleague">Conference League</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <AoVivoGradientControls
                 gradientLeftColor={gradientLeftColor}
                 gradientRightColor={gradientRightColor}
