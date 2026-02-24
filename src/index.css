@@ -103,6 +103,20 @@ All colors MUST be HSL.
   }
 }
 
+@keyframes bee-fly {
+  0% { top: 110%; transform: rotate(0deg); }
+  25% { top: 70%; transform: rotate(-10deg) translateX(20px); }
+  50% { top: 40%; transform: rotate(5deg) translateX(-15px); }
+  75% { top: 15%; transform: rotate(-8deg) translateX(10px); }
+  100% { top: -10%; transform: rotate(0deg); }
+}
+
+@keyframes bee-wobble {
+  0%, 100% { margin-left: 0; }
+  25% { margin-left: 8px; }
+  75% { margin-left: -8px; }
+}
+
 @layer base {
   * {
     @apply border-border;

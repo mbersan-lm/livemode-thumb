@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Film, Radio, Scissors } from 'lucide-react';
+import FlyingBees from '@/components/FlyingBees';
 
 const cards = [
   {
@@ -26,7 +27,8 @@ const Home = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6">
+    <div className="min-h-screen bg-background flex items-center justify-center p-6 relative">
+      <FlyingBees />
       <div className="max-w-4xl w-full">
         <div className="text-center mb-12 flex flex-col items-center">
           <img
