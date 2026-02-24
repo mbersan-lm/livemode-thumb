@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ThumbnailCanvas } from '@/components/ThumbnailCanvas';
 import { ThumbnailCanvasJogoCompleto } from '@/components/ThumbnailCanvasJogoCompleto';
-import { ThumbnailCanvasAoVivo } from '@/components/ThumbnailCanvasAoVivo';
 import { PhotoControls } from '@/components/controls/PhotoControls';
 import { TeamControls } from '@/components/controls/TeamControls';
 import { ExportControls } from '@/components/controls/ExportControls';
@@ -17,12 +16,9 @@ import { ArrowRight } from 'lucide-react';
 const CANVAS_WIDTH = 1280;
 const CANVAS_HEIGHT = 720;
 
-const defaultTransform = { x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 };
-
 const Index = () => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const canvasRefJogoCompleto = useRef<HTMLDivElement>(null);
-  const canvasRefAoVivo = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   
   const [activeCanvas, setActiveCanvas] = useState<ActiveCanvas>('mm');
@@ -30,15 +26,21 @@ const Index = () => {
   
   const [state, setState] = useState<ThumbnailState>({
     playerPhoto: null,
-    photoTransform: { ...defaultTransform },
+    photoTransform: {
+      x: 0,
+      y: 0,
+      scale: 1,
+      scaleX: 1,
+      scaleY: 1,
+    },
     jogoCompletoPhoto: null,
-    jogoCompletoPhotoTransform: { ...defaultTransform },
-    aoVivoImage1: null,
-    aoVivoImage2: null,
-    aoVivoTransform1: { ...defaultTransform },
-    aoVivoTransform2: { ...defaultTransform },
-    initialScaleAoVivo1: 0.5,
-    initialScaleAoVivo2: 0.5,
+    jogoCompletoPhotoTransform: {
+      x: 0,
+      y: 0,
+      scale: 1,
+      scaleX: 1,
+      scaleY: 1,
+    },
     matchData: {
       homeTeamId: null,
       awayTeamId: null,
@@ -89,35 +91,12 @@ const Index = () => {
     reader.readAsDataURL(file);
   };
 
-  const makeAoVivoUploadHandler = (index: 1 | 2) => (file: File) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        const scale0 = Math.min(540 / img.naturalWidth, 380 / img.naturalHeight);
-        setState(prev => ({
-          ...prev,
-          [`aoVivoImage${index}`]: e.target?.result as string,
-          [`initialScaleAoVivo${index}`]: scale0,
-          [`aoVivoTransform${index}`]: { x: 0, y: 0, scale: scale0, scaleX: 1, scaleY: 1 },
-        } as any));
-      };
-      img.src = e.target?.result as string;
-    };
-    reader.readAsDataURL(file);
-  };
-
   const handleTransformChange = (transform: Partial<typeof state.photoTransform>) => {
     setState(prev => ({ ...prev, photoTransform: { ...prev.photoTransform, ...transform } }));
   };
 
   const handleJogoCompletoTransformChange = (transform: Partial<typeof state.jogoCompletoPhotoTransform>) => {
     setState(prev => ({ ...prev, jogoCompletoPhotoTransform: { ...prev.jogoCompletoPhotoTransform, ...transform } }));
-  };
-
-  const handleAoVivoTransformChange = (index: 1 | 2) => (transform: Partial<typeof state.aoVivoTransform1>) => {
-    const key = `aoVivoTransform${index}` as 'aoVivoTransform1' | 'aoVivoTransform2';
-    setState(prev => ({ ...prev, [key]: { ...prev[key], ...transform } }));
   };
 
   const handleMatchDataChange = (data: Partial<typeof state.matchData>) => {
@@ -156,7 +135,7 @@ const Index = () => {
         style={isMobile ? { height: scaledHeight + 8, minHeight: scaledHeight + 8 } : undefined}
       >
         <div className="flex items-center justify-center">
-          {activeCanvas === 'mm' && (
+          {activeCanvas === 'mm' ? (
             <div style={{ transform: `scale(${canvasScale})`, transformOrigin: 'center' }}>
               <ThumbnailCanvas
                 ref={canvasRef}
@@ -166,26 +145,13 @@ const Index = () => {
                 template={state.template}
               />
             </div>
-          )}
-          {activeCanvas === 'jc' && (
+          ) : (
             <div style={{ transform: `scale(${canvasScale})`, transformOrigin: 'center' }}>
               <ThumbnailCanvasJogoCompleto
                 ref={canvasRefJogoCompleto}
                 playerPhoto={state.jogoCompletoPhoto}
                 photoTransform={state.jogoCompletoPhotoTransform}
                 matchData={state.matchData}
-                template={state.template}
-              />
-            </div>
-          )}
-          {activeCanvas === 'av' && (
-            <div style={{ transform: `scale(${canvasScale})`, transformOrigin: 'center' }}>
-              <ThumbnailCanvasAoVivo
-                ref={canvasRefAoVivo}
-                image1={state.aoVivoImage1}
-                image2={state.aoVivoImage2}
-                image1Transform={state.aoVivoTransform1}
-                image2Transform={state.aoVivoTransform2}
                 template={state.template}
               />
             </div>
@@ -247,18 +213,6 @@ const Index = () => {
                 onJogoCompletoPhotoUpload={handleJogoCompletoPhotoUpload}
                 onPlayerPhotoReplace={(dataUrl) => setState(prev => ({ ...prev, playerPhoto: dataUrl, photoTransform: { x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 } }))}
                 onJogoCompletoPhotoReplace={(dataUrl) => setState(prev => ({ ...prev, jogoCompletoPhoto: dataUrl, jogoCompletoPhotoTransform: { x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 } }))}
-                aoVivoImage1={state.aoVivoImage1}
-                aoVivoImage2={state.aoVivoImage2}
-                aoVivoTransform1={state.aoVivoTransform1}
-                aoVivoTransform2={state.aoVivoTransform2}
-                initialScaleAoVivo1={state.initialScaleAoVivo1}
-                initialScaleAoVivo2={state.initialScaleAoVivo2}
-                onAoVivoTransform1Change={handleAoVivoTransformChange(1)}
-                onAoVivoTransform2Change={handleAoVivoTransformChange(2)}
-                onAoVivoImage1Upload={makeAoVivoUploadHandler(1)}
-                onAoVivoImage2Upload={makeAoVivoUploadHandler(2)}
-                onAoVivoImage1Replace={(dataUrl) => setState(prev => ({ ...prev, aoVivoImage1: dataUrl, aoVivoTransform1: { x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 } }))}
-                onAoVivoImage2Replace={(dataUrl) => setState(prev => ({ ...prev, aoVivoImage2: dataUrl, aoVivoTransform2: { x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 } }))}
               />
             </TabsContent>
 
@@ -274,7 +228,6 @@ const Index = () => {
               <ExportControls
                 canvasRef={canvasRef}
                 canvasRefJogoCompleto={canvasRefJogoCompleto}
-                canvasRefAoVivo={canvasRefAoVivo}
                 matchData={state.matchData}
               />
             </TabsContent>

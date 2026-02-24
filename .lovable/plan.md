@@ -1,32 +1,37 @@
 
 
-# Corrigir thumb "AO VIVO" para ficar identica a referencia
+# Corrigir exportacao do texto em todos os modelos com "Texto da thumbnail"
 
-## Problema atual
-A thumb "AO VIVO" tem fundo preto solido e nao usa a imagem de fundo (KV) do template selecionado. Na referencia, o fundo mostra a imagem do estadio (KV do template) por tras de tudo, incluindo por dentro dos paineis semi-transparentes.
+## Problema
+O JPG exportado esta cortando o texto (faltando o `"` final) porque ha diferencas entre o preview (HTML/CSS) e o export (Canvas API). Isso afeta o modelo **Thumb Principal** e potencialmente outros modelos.
 
-## Diferencas entre a implementacao atual e a referencia
+## Diferencas encontradas
 
-| Elemento | Atual | Referencia |
+| Propriedade | Preview (CSS) | Export (Canvas) |
 |---|---|---|
-| Fundo | Preto solido (#000) | Imagem KV do template (estadio) |
-| Paineis | Fundo semi-transparente simples | Transparentes deixando ver o fundo do estadio atras |
-| Template prop | Nao recebe | Precisa para saber qual KV usar |
-| Texto "AO VIVO" | 160px, top 36px | Correto, manter |
+| Largura texto (Thumb Principal) | 380px | 360px |
+| Altura texto (Thumb Principal) | 200px | 190px |
+| Line-height | 1.15 | 1.2 (fixo) |
+| Font size inicial (Thumb Principal) | auto-fit grande | 120px |
 
-## Alteracoes
+Essas diferencas fazem com que o auto-fit calcule um tamanho de fonte diferente no export, resultando em texto que nao cabe e e cortado.
 
-### 1. `src/data/templates.ts`
-- Adicionar campo `kvAoVivoPath` em cada template, apontando para o KV correspondente (reutilizar o mesmo `kvPath` do "Melhores Momentos", pois o fundo do AO VIVO e o mesmo KV do template)
+## Correcao
 
-### 2. `src/components/ThumbnailCanvasAoVivo.tsx`
-- Adicionar props `template` (TemplateType) e `matchData` (MatchData)
-- Adicionar camada de fundo com a imagem KV do template selecionado (`templates[template].kvPath`), cobrindo o canvas inteiro (1280x720), com `object-fit: cover`, posicionada atras de tudo (z-index 0)
-- Manter o fundo preto como fallback (`background: '#000'`)
-- Os paineis continuam com `background: rgba(255,255,255,0.08)` e `border: 1px solid rgba(255,255,255,0.15)` para o efeito de vidro sobre o fundo
+### Arquivo: `src/components/cortes/CortesControls.tsx`
 
-### 3. `src/pages/Index.tsx`
-- Passar as props `template={state.template}` e `matchData={state.matchData}` para o componente `ThumbnailCanvasAoVivo`
+**1. Funcao `drawAutoFitText` (linha ~230):**
+- Adicionar parametro opcional `lineHeightRatio` (default `1.2`)
+- Usar esse parametro em vez do valor fixo `1.2` na linha 238
+
+**2. Thumb Principal export (linhas 886-899):**
+- Mudar `textW` de `360` para `380` (igualar ao preview)
+- Mudar `textH` de `190` para `200` (igualar ao preview)
+- Mudar `startFontSize` de `120` para `200` (mesmo ponto de partida do auto-fit)
+- Passar `lineHeightRatio: 1.15` para igualar ao CSS do preview
+
+**3. Modelo padrao (linhas 872-883):**
+- Verificar se o line-height do preview tambem e `1.15` e, se for, passar o mesmo ratio na chamada
 
 ## Resultado
-A thumb "AO VIVO" passara a exibir a imagem de fundo do template selecionado (estadio), com os paineis semi-transparentes mostrando o fundo por tras, identico a imagem de referencia.
+O export passara a usar as mesmas dimensoes e proporcoes do preview, garantindo que o texto completo (incluindo aspas e caracteres finais) apareca no JPG exportado em todos os modelos.
