@@ -231,8 +231,8 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
               left: '458px', 
               top: '537px', 
               transform: 'translate(-50%, -50%)', 
-              maxWidth: '250px', 
-              maxHeight: '250px', 
+              maxWidth: '500px', 
+              maxHeight: '500px', 
               zIndex: 50 
             }}
           />
@@ -248,8 +248,8 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
               left: '822px', 
               top: '537px', 
               transform: 'translate(-50%, -50%)', 
-              maxWidth: '250px', 
-              maxHeight: '250px', 
+              maxWidth: '500px', 
+              maxHeight: '500px', 
               zIndex: 50 
             }}
           />
