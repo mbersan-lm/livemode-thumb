@@ -839,22 +839,14 @@ export const CortesControls = ({
           ctx.beginPath();
           ctx.rect(q.x, q.y, qW, qH);
           ctx.clip();
-          const imgAspect = c.img.naturalWidth / c.img.naturalHeight;
-          const qAspect = qW / qH;
-          let drawW, drawH;
-          if (imgAspect > qAspect) {
-            drawH = qH;
-            drawW = qH * imgAspect;
-          } else {
-            drawW = qW;
-            drawH = qW / imgAspect;
-          }
-          const cx = q.x + qW / 2 + c.t.x;
-          const cy = q.y + qH / 2 + c.t.y;
-          ctx.translate(cx, cy);
+          const drawH = qH * 2.4;
+          const drawW = drawH * (c.img.naturalWidth / c.img.naturalHeight);
+          const dx = q.x + c.t.x;
+          const dy = q.y + c.t.y;
+          ctx.translate(dx, dy);
           ctx.rotate((c.t.rotation * Math.PI) / 180);
           ctx.scale(c.t.scale, c.t.scale);
-          ctx.drawImage(c.img, -drawW / 2, -drawH / 2, drawW, drawH);
+          ctx.drawImage(c.img, 0, 0, drawW, drawH);
           ctx.restore();
         }
       }

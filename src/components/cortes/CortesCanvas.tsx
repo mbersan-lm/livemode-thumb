@@ -458,13 +458,12 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
                 alt=""
                 style={{
                   position: 'absolute',
-                  left: '50%',
-                  top: '50%',
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover' as const,
-                  transform: `translate(-50%, -50%) translate(${c.t.x}px, ${c.t.y}px) scale(${c.t.scale}) rotate(${c.t.rotation}deg)`,
-                  transformOrigin: 'center center',
+                  left: 0,
+                  top: 0,
+                  height: '240%',
+                  width: 'auto',
+                  transform: `translate(${c.t.x}px, ${c.t.y}px) scale(${c.t.scale}) rotate(${c.t.rotation}deg)`,
+                  transformOrigin: '0 0',
                 }}
               />
             </div>
