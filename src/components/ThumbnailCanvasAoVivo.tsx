@@ -119,7 +119,7 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
               maxHeight: 'none',
               objectFit: 'unset',
               transformOrigin: 'center center',
-              zIndex: 15.5,
+              zIndex: 18,
               ...photoLeftStyle,
             }}
           />
@@ -138,7 +138,7 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
               maxHeight: 'none',
               objectFit: 'unset',
               transformOrigin: 'center center',
-              zIndex: 15.5,
+              zIndex: 18,
               ...photoRightStyle,
             }}
           />
@@ -185,7 +185,7 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
             WebkitBackdropFilter: 'blur(20px)',
             border: '1px solid white',
             borderRadius: '12px',
-            zIndex: 16,
+            zIndex: 19,
           }}
         />
 
@@ -202,7 +202,7 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
             WebkitBackdropFilter: 'blur(20px)',
             border: '1px solid white',
             borderRadius: '12px',
-            zIndex: 16,
+            zIndex: 19,
           }}
         />
 
@@ -219,7 +219,7 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
             WebkitBackdropFilter: 'blur(20px)',
             border: '1px solid white',
             borderRadius: '12px',
-            zIndex: 16,
+            zIndex: 19,
           }}
         />
 
