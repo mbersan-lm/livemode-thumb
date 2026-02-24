@@ -1,46 +1,19 @@
 
-
-# Animacao de Abelhas Voando no Hub
-
-## Objetivo
-Adicionar abelhas animadas voando pelas laterais da tela no Hub inicial, sem sobrepor os botoes/cards centrais.
-
-## Abordagem
-Criar abelhas como elementos CSS animados posicionados nas laterais da tela (esquerda e direita), usando `position: fixed` com `pointer-events: none` para nao interferir nos cliques. As abelhas seguirao trajetorias curvas usando keyframes CSS.
+# Substituir emoji por imagem de abelha real
 
 ## Mudancas
 
-### 1. Criar componente `src/components/FlyingBees.tsx`
-- Componente que renderiza multiplas abelhas (6-8) como emojis ou SVGs
-- Cada abelha tera:
-  - Posicao fixa nas laterais (left: 0-15% ou right: 0-15%), nunca no centro
-  - Animacao de voo com keyframes personalizados (movimento vertical + leve oscilacao horizontal)
-  - Tamanhos e velocidades variados para efeito natural
-  - `pointer-events: none` para nao bloquear interacoes
-  - `z-index` baixo para ficar atras dos cards
+### 1. Salvar a imagem
+- Copiar `user-uploads://image-19.png` para `public/images/bee.png`
 
-### 2. Atualizar `src/pages/Home.tsx`
-- Importar e renderizar o componente `FlyingBees` dentro do container principal
+### 2. Atualizar `src/components/FlyingBees.tsx`
+- Substituir o emoji `🐝` por uma tag `<img>` usando `/images/bee.png`
+- Adicionar propriedade `flipped` (booleano) a cada abelha no array de configuracao
+- Quando `flipped: true`, aplicar `transform: scaleX(-1)` na imagem para espelhar horizontalmente
+- Alternar `flipped` entre as abelhas para criar variedade visual
+- Usar `width` e `height` baseados no `size` ja existente em cada abelha
 
-### 3. Adicionar keyframes em `src/index.css`
-- `bee-fly-left`: trajetoria de voo na lateral esquerda (sobe e desce com oscilacao)
-- `bee-fly-right`: trajetoria de voo na lateral direita
-- `bee-wobble`: pequena oscilacao lateral para simular batida de asas
-
-## Detalhes Tecnicos
-
-### Posicionamento das abelhas
-As abelhas ficarao restritas as faixas laterais da tela:
-- Lado esquerdo: `left: 2% a 12%`
-- Lado direito: `right: 2% a 12%`
-- Nunca no centro onde ficam os cards (area ~20%-80% da tela)
-
-### Animacoes CSS
-- Cada abelha tera `animation-duration` entre 8s e 15s para variedade
-- `animation-delay` diferente para cada uma, evitando sincronia
-- Movimento principal: subir e descer pela tela com curvas suaves
-- Movimento secundario: leve rotacao e oscilacao horizontal
-
-### Emoji vs SVG
-Usaremos o emoji de abelha para simplicidade e compatibilidade.
-
+### 3. Detalhes tecnicos
+- A propriedade `flipped` sera alternada: abelhas nos indices pares ficam normais, impares ficam espelhadas (ou vice-versa)
+- O `fontSize` atual sera convertido para `width` da imagem (ex: `28px` -> `width: 28px`)
+- A imagem tera `pointer-events: none` e `user-select: none` para nao interferir na interacao
