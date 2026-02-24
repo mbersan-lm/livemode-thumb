@@ -213,13 +213,6 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
           }}
         />
 
-        {/* KV Background - Ao Vivo */}
-        <img 
-          src="/kv/kv-ao-vivo.png"
-          alt="Background KV Ao Vivo"
-          className="absolute left-0 top-0 pointer-events-none"
-          style={{ width: '1280px', height: '720px', objectFit: 'cover', zIndex: 10 }}
-        />
 
         {/* Home Crest - centered in left glass panel */}
         {homeTeam && (
