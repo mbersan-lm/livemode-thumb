@@ -1,7 +1,5 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 import { ThumbnailCanvas } from '@/components/ThumbnailCanvas';
 import { ThumbnailCanvasJogoCompleto } from '@/components/ThumbnailCanvasJogoCompleto';
 import { ThumbnailCanvasAoVivo } from '@/components/ThumbnailCanvasAoVivo';
@@ -127,45 +125,18 @@ const Index = () => {
     reader.readAsDataURL(file);
   };
 
-  const removeBgAndSet = useCallback(async (
-    dataUrl: string,
-    side: 'left' | 'right',
-    scale0: number,
-  ) => {
-    // Set photo immediately (original) while bg removal runs
-    const photoKey = side === 'left' ? 'aoVivoPhotoLeft' : 'aoVivoPhotoRight';
-    const transformKey = side === 'left' ? 'aoVivoPhotoLeftTransform' : 'aoVivoPhotoRightTransform';
-    const scaleKey = side === 'left' ? 'initialScaleAoVivoLeft' : 'initialScaleAoVivoRight';
-
-    setState(prev => ({
-      ...prev,
-      [photoKey]: dataUrl,
-      [scaleKey]: scale0,
-      [transformKey]: { x: 0, y: 0, scale: scale0, scaleX: 1, scaleY: 1 },
-    }));
-
-    try {
-      const { data, error } = await supabase.functions.invoke('photoroom-remove-bg', {
-        body: { image_base64: dataUrl },
-      });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-      if (data?.result_base64) {
-        setState(prev => ({ ...prev, [photoKey]: data.result_base64 }));
-        toast.success(`Fundo removido (${side === 'left' ? 'esquerda' : 'direita'})!`);
-      }
-    } catch (err: any) {
-      toast.error(`Erro ao remover fundo: ${err.message}`);
-    }
-  }, []);
-
   const handleAoVivoLeftPhotoUpload = (file: File) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = new Image();
       img.onload = () => {
         const scale0 = Math.min(640 / img.naturalWidth, 720 / img.naturalHeight);
-        removeBgAndSet(e.target?.result as string, 'left', scale0);
+        setState(prev => ({
+          ...prev,
+          aoVivoPhotoLeft: e.target?.result as string,
+          initialScaleAoVivoLeft: scale0,
+          aoVivoPhotoLeftTransform: { x: 0, y: 0, scale: scale0, scaleX: 1, scaleY: 1 },
+        }));
       };
       img.src = e.target?.result as string;
     };
@@ -178,7 +149,12 @@ const Index = () => {
       const img = new Image();
       img.onload = () => {
         const scale0 = Math.min(640 / img.naturalWidth, 720 / img.naturalHeight);
-        removeBgAndSet(e.target?.result as string, 'right', scale0);
+        setState(prev => ({
+          ...prev,
+          aoVivoPhotoRight: e.target?.result as string,
+          initialScaleAoVivoRight: scale0,
+          aoVivoPhotoRightTransform: { x: 0, y: 0, scale: scale0, scaleX: 1, scaleY: 1 },
+        }));
       };
       img.src = e.target?.result as string;
     };
