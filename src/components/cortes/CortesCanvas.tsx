@@ -640,7 +640,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
                 transform: 'translateX(-50%)',
                 display: 'flex',
                 alignItems: 'center',
-                gap: -13,
+                gap: -38,
                 zIndex: 7,
               }}
             >
