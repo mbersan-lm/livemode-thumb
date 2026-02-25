@@ -12,6 +12,8 @@ function generateStrokeShadow(radius: number, color: string, steps = 32): string
 }
 
 import type { ThumbModel } from './CortesThumbBuilder';
+import { teamsBrasileirao } from '@/data/teams';
+import { teamsPaulistao } from '@/data/teamsPaulistao';
 
 interface CortesCanvasProps {
   thumbModel?: ThumbModel;
@@ -43,6 +45,8 @@ interface CortesCanvasProps {
   textBoxHeight?: number;
   quadrantVisibility?: boolean[];
   useQuadrantGrid?: boolean;
+  tpHomeTeamId?: string | null;
+  tpAwayTeamId?: string | null;
 }
 
 export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
@@ -57,7 +61,8 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
      divisoriaImage = '/cortes/divisoria-geral.png',
      textColor = '#F1E8D5', strokeColor = '#0C0C20', pipBorderColor = '#D02046',
      highlightColor = '#D02046', customFontFamily = "'Clash Grotesk', sans-serif",
-     textBoxHeight = 38, quadrantVisibility = [true, true, true, true], useQuadrantGrid = false }, ref) => {
+     textBoxHeight = 38, quadrantVisibility = [true, true, true, true], useQuadrantGrid = false,
+     tpHomeTeamId = null, tpAwayTeamId = null }, ref) => {
    const showPip = thumbModel === 'pip';
    const showPipDividido = thumbModel === 'pip-dividido';
    const showPerson2 = thumbModel === 'duas-pessoas';
@@ -620,6 +625,30 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
             </span>
           </div>
         )}
+
+        {/* Layer 5tp-crests: Team crests inside central circle — Roda de Bobo only */}
+        {showThumbPrincipal && useQuadrantGrid && (tpHomeTeamId || tpAwayTeamId) && (() => {
+          const allTeams = [...teamsBrasileirao, ...teamsPaulistao];
+          const homeTeam = allTeams.find(t => t.id === tpHomeTeamId);
+          const awayTeam = allTeams.find(t => t.id === tpAwayTeamId);
+          return (homeTeam || awayTeam) ? (
+            <div
+              style={{
+                position: 'absolute',
+                bottom: '2%',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                zIndex: 7,
+              }}
+            >
+              {homeTeam && <img src={homeTeam.crest_url} alt={homeTeam.name} style={{ height: 60, width: 'auto' }} />}
+              {awayTeam && <img src={awayTeam.crest_url} alt={awayTeam.name} style={{ height: 60, width: 'auto' }} />}
+            </div>
+          ) : null;
+        })()}
 
         {/* Layer 5b: Meio a meio — left text */}
         {showMeioAMeio && thumbTextLeft && (

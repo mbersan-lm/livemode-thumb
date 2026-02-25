@@ -100,6 +100,8 @@ export const CortesThumbBuilder = ({
   const [customBgImage, setCustomBgImage] = useState<string | null>(null);
   const [quadrantVisibility, setQuadrantVisibility] = useState([true, true, true, true]);
   const [logosVariant, setLogosVariant] = useState<'positiva' | 'negativa'>('positiva');
+  const [tpHomeTeamId, setTpHomeTeamId] = useState<string | null>(null);
+  const [tpAwayTeamId, setTpAwayTeamId] = useState<string | null>(null);
   const baseLogosImage = logosVariant === 'negativa' && logosNegativeImage ? logosNegativeImage : logosImage;
   const activeLogosImage = (thumbModel === 'thumb-principal' && thumbPrincipalLogosImage) ? thumbPrincipalLogosImage : baseLogosImage;
 
@@ -345,6 +347,8 @@ export const CortesThumbBuilder = ({
     setPip2BaseScale(1);
     setCustomBgImage(null);
     setTextBoxHeight(6);
+    setTpHomeTeamId(null);
+    setTpAwayTeamId(null);
   };
 
   const scaledHeight = CANVAS_HEIGHT * canvasScale;
@@ -387,6 +391,8 @@ export const CortesThumbBuilder = ({
             textBoxHeight={textBoxHeight}
             quadrantVisibility={quadrantVisibility}
             useQuadrantGrid={useQuadrantGrid}
+            tpHomeTeamId={tpHomeTeamId}
+            tpAwayTeamId={tpAwayTeamId}
            />
         </div>
       </div>
@@ -486,6 +492,10 @@ export const CortesThumbBuilder = ({
             onQuadrantVisibilityChange={setQuadrantVisibility}
             onQuadrantPresetSelect={handleQuadrantPresetSelect}
             useQuadrantGrid={useQuadrantGrid}
+            tpHomeTeamId={tpHomeTeamId}
+            tpAwayTeamId={tpAwayTeamId}
+            onTpHomeTeamChange={setTpHomeTeamId}
+            onTpAwayTeamChange={setTpAwayTeamId}
             textBoxHeight={textBoxHeight}
             onTextBoxHeightChange={setTextBoxHeight}
             onPipFromBase64={handlePipFromBase64}

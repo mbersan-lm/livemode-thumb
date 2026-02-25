@@ -10,6 +10,8 @@ import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
 import type { ThumbModel } from './CortesThumbBuilder';
 import { PipAiGenerator } from './PipAiGenerator';
+import { teamsBrasileirao } from '@/data/teams';
+import { teamsPaulistao } from '@/data/teamsPaulistao';
 
 // ─── Canvas Export Helpers ────────────────────────────────────────────────────
 
@@ -411,6 +413,10 @@ interface CortesControlsProps {
   onQuadrantVisibilityChange?: (v: boolean[]) => void;
   onQuadrantPresetSelect?: (idx: number, url: string) => void;
   useQuadrantGrid?: boolean;
+  tpHomeTeamId?: string | null;
+  tpAwayTeamId?: string | null;
+  onTpHomeTeamChange?: (id: string | null) => void;
+  onTpAwayTeamChange?: (id: string | null) => void;
 }
 
 export const CortesControls = ({
@@ -480,6 +486,10 @@ export const CortesControls = ({
   onQuadrantVisibilityChange,
   onQuadrantPresetSelect,
   useQuadrantGrid = false,
+  tpHomeTeamId = null,
+  tpAwayTeamId = null,
+  onTpHomeTeamChange,
+  onTpAwayTeamChange,
 }: CortesControlsProps) => {
   const pipInputRef = useRef<HTMLInputElement>(null);
   const pip2InputRef = useRef<HTMLInputElement>(null);
@@ -927,6 +937,31 @@ export const CortesControls = ({
           textColor, highlightColor, strokeColor, 15,
           0, 10, 1.15
         );
+
+        // Draw team crests below text
+        if (tpHomeTeamId || tpAwayTeamId) {
+          const allTeams = [...teamsBrasileirao, ...teamsPaulistao];
+          const homeTeam = tpHomeTeamId ? allTeams.find(t => t.id === tpHomeTeamId) : null;
+          const awayTeam = tpAwayTeamId ? allTeams.find(t => t.id === tpAwayTeamId) : null;
+          const crestPromises: Promise<{ img: HTMLImageElement; team: typeof homeTeam }>[] = [];
+          if (homeTeam) crestPromises.push(loadImage(homeTeam.crest_url).then(img => ({ img, team: homeTeam })));
+          if (awayTeam) crestPromises.push(loadImage(awayTeam.crest_url).then(img => ({ img, team: awayTeam })));
+          const crests = await Promise.all(crestPromises);
+          const crestH = 60;
+          const gap = 12;
+          const totalW = crests.reduce((acc, c) => {
+            const aspect = c.img.naturalWidth / c.img.naturalHeight;
+            return acc + crestH * aspect;
+          }, 0) + (crests.length > 1 ? gap : 0);
+          let crestX = W / 2 - totalW / 2;
+          const crestY = H - H * 0.02 - crestH;
+          for (const c of crests) {
+            const aspect = c.img.naturalWidth / c.img.naturalHeight;
+            const cW = crestH * aspect;
+            ctx.drawImage(c.img, crestX, crestY, cW, crestH);
+            crestX += cW + gap;
+          }
+        }
       }
 
       if (showMeioAMeio) {
@@ -1570,6 +1605,45 @@ export const CortesControls = ({
             ))}
           </CollapsibleContent>
         </Collapsible>
+      )}
+
+      {/* Thumb Principal — Team crests (Roda de Bobo only) */}
+      {thumbModel === 'thumb-principal' && useQuadrantGrid && (
+        <div className="space-y-3">
+          <Label className="font-semibold">Escudos</Label>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <Label className="text-xs">Time 1</Label>
+              <Select value={tpHomeTeamId || ''} onValueChange={(v) => onTpHomeTeamChange?.(v || null)}>
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue placeholder="Selecionar time" />
+                </SelectTrigger>
+                <SelectContent>
+                  {[...teamsBrasileirao, ...teamsPaulistao]
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .map((t) => (
+                      <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Time 2</Label>
+              <Select value={tpAwayTeamId || ''} onValueChange={(v) => onTpAwayTeamChange?.(v || null)}>
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue placeholder="Selecionar time" />
+                </SelectTrigger>
+                <SelectContent>
+                  {[...teamsBrasileirao, ...teamsPaulistao]
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .map((t) => (
+                      <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Thumb Principal — free photo uploads (non-quadrant) */}
