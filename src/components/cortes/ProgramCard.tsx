@@ -6,12 +6,13 @@ interface ProgramCardProps {
   previewColors: { text: string; stroke: string; pip: string };
   logoUrl?: string;
   bgImageUrl?: string;
+  bgOpacity?: number;
   onClick: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
 }
 
-export const ProgramCard = ({ name, thumbType, previewColors, logoUrl, bgImageUrl, onClick, onEdit, onDelete }: ProgramCardProps) => {
+export const ProgramCard = ({ name, thumbType, previewColors, logoUrl, bgImageUrl, bgOpacity = 0.7, onClick, onEdit, onDelete }: ProgramCardProps) => {
   const hasCustomCard = !!(logoUrl && bgImageUrl);
 
   return (
@@ -23,7 +24,7 @@ export const ProgramCard = ({ name, thumbType, previewColors, logoUrl, bgImageUr
       {hasCustomCard ? (
         <>
           {/* BG at 70% opacity */}
-          <div className="absolute inset-0" style={{ backgroundImage: `url(${bgImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.7 }} />
+          <div className="absolute inset-0" style={{ backgroundImage: `url(${bgImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: bgOpacity }} />
           {/* Centered logo */}
           <div className="relative z-10 flex-1 flex items-center justify-center p-5">
             <img src={logoUrl} alt={name} className="h-14 w-auto" style={{ maxWidth: 'none' }} />
