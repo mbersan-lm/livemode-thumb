@@ -1,31 +1,20 @@
 
 
-# Adicionar card personalizado para "Geral CazéTv Brasil"
+## Plan: Diminuir escudo Lecce em 10% no modelo Melhores Momentos
 
-## Mudanças
+### O que será feito
+Reduzir o tamanho do escudo do Lecce em 10% no modelo "Melhores Momentos", adicionando a propriedade `maxSize` ao time.
 
-### 1. Assets
-- Copiar `user-uploads://CORTE_LISTA_CONVOCADOS.jpg` para `public/cortes/bg-card-brasil.jpg`
-- Copiar `user-uploads://LOGO.png` para `public/cortes/logo-brasil.png`
+### Alteração técnica
 
-### 2. `src/pages/CortesHub.tsx` (linhas 82-84)
-Estender as condições de `logoUrl`, `bgImageUrl` e `bgOpacity` para incluir "Geral CazéTv Brasil":
-
-```typescript
-logoUrl={
-  p.name === 'Roda de Bobo' ? '/cortes/logo-rdb.png'
-  : p.name === 'Geral CazéTv' ? '/cortes/logo-geral.png'
-  : p.name === 'Geral CazéTv Brasil' ? '/cortes/logo-brasil.png'
-  : undefined
-}
-bgImageUrl={
-  p.name === 'Roda de Bobo' ? '/cortes/bg-card-rdb.png'
-  : p.name === 'Geral CazéTv' ? '/cortes/bg-card-geral.jpg'
-  : p.name === 'Geral CazéTv Brasil' ? '/cortes/bg-card-brasil.jpg'
-  : undefined
-}
-bgOpacity={p.name === 'Geral CazéTv' || p.name === 'Geral CazéTv Brasil' ? 1 : undefined}
-```
-
-Resultado: card com fundo verde/amarelo a 100% de opacidade e logo "Geral CazéTV" centralizada, sem textos.
+**Arquivo: `src/data/teamsSerieA.ts`**
+- Adicionar `maxSize: 194` ao objeto do Lecce (90% do padrão de 216px)
+- A linha atual:
+  ```typescript
+  { id: 'lecce', name: 'Lecce', slug: 'lecce', crest_url: '/crests/lecce.png', jcMaxSize: 290 }
+  ```
+- Ficará:
+  ```typescript
+  { id: 'lecce', name: 'Lecce', slug: 'lecce', crest_url: '/crests/lecce.png', maxSize: 194, jcMaxSize: 290 }
+  ```
 
