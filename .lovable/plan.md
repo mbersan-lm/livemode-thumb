@@ -1,20 +1,27 @@
 
 
-## Plan: Diminuir escudo Lecce em 10% no modelo Melhores Momentos
+## Problem
 
-### O que será feito
-Reduzir o tamanho do escudo do Lecce em 10% no modelo "Melhores Momentos", adicionando a propriedade `maxSize` ao time.
+The `getCrestMaxSize` function in `src/pages/AoVivo.tsx` (line 95-103) returns a flat `400px` for all Conference League teams. The preview component (`ThumbnailCanvasAoVivo.tsx`) has the `cl35` check for 280px, but the native canvas export does not.
 
-### Alteração técnica
+## Solution
 
-**Arquivo: `src/data/teamsSerieA.ts`**
-- Adicionar `maxSize: 194` ao objeto do Lecce (90% do padrão de 216px)
-- A linha atual:
-  ```typescript
-  { id: 'lecce', name: 'Lecce', slug: 'lecce', crest_url: '/crests/lecce.png', jcMaxSize: 290 }
-  ```
-- Ficará:
-  ```typescript
-  { id: 'lecce', name: 'Lecce', slug: 'lecce', crest_url: '/crests/lecce.png', maxSize: 194, jcMaxSize: 290 }
-  ```
+Update the `getCrestMaxSize` function to handle the AZ Alkmaar (`cl35`) case, returning `280` instead of `400`.
+
+### Change in `src/pages/AoVivo.tsx` (line 96)
+
+Replace:
+```typescript
+if (isConference) return 400;
+```
+
+With:
+```typescript
+if (isConference) {
+  if (teamId === 'cl35') return 280;
+  return 400;
+}
+```
+
+This ensures the exported JPG matches the preview for AZ Alkmaar's crest size.
 
