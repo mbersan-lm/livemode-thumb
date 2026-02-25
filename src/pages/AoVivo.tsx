@@ -93,7 +93,10 @@ const AoVivo = () => {
   };
 
   const getCrestMaxSize = (teamId: string | null, isConference: boolean): number => {
-    if (isConference) return 400;
+    if (isConference) {
+      if (teamId === 'cl35') return 280;
+      return 400;
+    }
     if (teamId === 'av5') return 248;
     if (teamId === 'av6') return 315;
     if (teamId === 'av29') return 400;
