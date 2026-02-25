@@ -7,6 +7,7 @@ export interface Team {
   jcMaxSize?: number;  // sobrescreve max-w e max-h em Jogo Completo
   jcOffsetX?: number;  // offset horizontal em px no Jogo Completo
   jcOffsetY?: number;  // offset vertical em px no Jogo Completo
+  jcSpacing?: number;  // margin-left customizado entre escudos no Jogo Completo (padrão: -70)
 }
 
 export const teamsBrasileirao: Team[] = [

@@ -108,8 +108,8 @@ export const ThumbnailCanvasJogoCompleto = forwardRef<HTMLDivElement, ThumbnailC
               id="AWAY_CREST_JC"
               src={awayTeam.crest_url}
               alt={awayTeam.name}
-              className="h-auto w-auto object-contain -ml-[70px]"
-              style={{ maxWidth: `${awayTeam.jcMaxSize ?? 322}px`, maxHeight: `${awayTeam.jcMaxSize ?? 322}px`, transform: [awayTeam.jcOffsetX ? `translateX(${awayTeam.jcOffsetX}px)` : '', awayTeam.jcOffsetY ? `translateY(${awayTeam.jcOffsetY}px)` : ''].filter(Boolean).join(' ') || undefined }}
+              className="h-auto w-auto object-contain"
+              style={{ marginLeft: `${homeTeam.jcSpacing ?? awayTeam.jcSpacing ?? -70}px`, maxWidth: `${awayTeam.jcMaxSize ?? 322}px`, maxHeight: `${awayTeam.jcMaxSize ?? 322}px`, transform: [awayTeam.jcOffsetX ? `translateX(${awayTeam.jcOffsetX}px)` : '', awayTeam.jcOffsetY ? `translateY(${awayTeam.jcOffsetY}px)` : ''].filter(Boolean).join(' ') || undefined }}
             />
           </div>
         )}
