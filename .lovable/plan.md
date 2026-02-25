@@ -2,49 +2,55 @@
 
 ## Problema
 
-A função `drawGlassPanel` no export nativo (linhas 207-216 de `AoVivo.tsx`) apenas preenche com cor semi-transparente e desenha a borda. O efeito `backdropFilter: 'blur(20px)'` do CSS não tem equivalente direto no Canvas API, então o desfoque glass não aparece na thumb exportada.
+Atualmente, o modelo "Thumb Principal" sempre usa o layout de quadrantes 2x2 (com escala de 211.2%, âncora em 0,0, offsets horizontais fixos) para todos os programas. Mas essa regra de quadrantes deveria ser exclusiva do **Roda de Bobo**. Para **Geral CazéTv** e **Geral CazéTv Brasil**, as fotos devem funcionar como anexos normais — cutouts livres, posicionáveis pelo usuário, sem confinamento em quadrantes.
 
 ## Solução
 
-Simular o efeito de glassmorphism no canvas nativo capturando o conteúdo atual do canvas, aplicando blur via `ctx.filter`, e redesenhando apenas na área recortada de cada painel.
+Adicionar uma prop `useQuadrantGrid` que controla se o layout de quadrantes é usado. Quando `false`, as 4 fotos são renderizadas como cutouts livres (posição absoluta, sem clip de quadrante, sem escala forçada de 211.2%).
 
-### Mudança em `src/pages/AoVivo.tsx`
+### Mudanças em 4 arquivos:
 
-Reescrever a função `drawGlassPanel` (linhas 207-220) para:
+---
 
-1. Salvar o estado atual do canvas em um canvas temporário
-2. Para cada painel: recortar (clip) a área arredondada, desenhar o canvas temporário com `ctx.filter = 'blur(20px)'`, preencher com a cor semi-transparente, e traçar a borda
+### 1. `src/pages/CortesProgramBuilder.tsx`
+Passar `useQuadrantGrid={program!.name === 'Roda de Bobo'}` ao `CortesThumbBuilder`.
 
-```typescript
-// 8. Glass panels (z:16) — semi-transparent with blur + border
-// Capture current canvas for blur simulation
-const tempCanvas = document.createElement('canvas');
-tempCanvas.width = W;
-tempCanvas.height = H;
-const tempCtx = tempCanvas.getContext('2d')!;
-tempCtx.drawImage(canvas, 0, 0);
+---
 
-const drawGlassPanel = (x: number, y: number, w: number, h: number, color: string) => {
-  ctx.save();
-  roundRect(ctx, x, y, w, h, 12);
-  ctx.clip();
-  // Draw blurred background within clipped area
-  ctx.filter = 'blur(20px)';
-  ctx.drawImage(tempCanvas, 0, 0);
-  ctx.filter = 'none';
-  // Semi-transparent fill
-  ctx.fillStyle = color + '33';
-  ctx.fillRect(x, y, w, h);
-  ctx.restore();
-  // Border (drawn outside clip)
-  ctx.save();
-  roundRect(ctx, x, y, w, h, 12);
-  ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-  ctx.lineWidth = 1;
-  ctx.stroke();
-  ctx.restore();
-};
+### 2. `src/components/cortes/CortesThumbBuilder.tsx`
+- Adicionar prop `useQuadrantGrid?: boolean` (default `false`).
+- Repassar para `CortesCanvas` e `CortesControls`.
+
+---
+
+### 3. `src/components/cortes/CortesCanvas.tsx` (Preview)
+- Adicionar prop `useQuadrantGrid?: boolean`.
+- No bloco "Layer 3f: Thumb Principal":
+  - Se `useQuadrantGrid === true` → manter layout atual (quadrantes 2x2, escala 211.2%, offsets, clip por quadrante).
+  - Se `useQuadrantGrid === false` → renderizar cada cutout como imagem livre sobre o canvas inteiro (sem clip de quadrante), similar ao modelo "duas-pessoas" mas com até 4 fotos. Cada foto ocupa a altura total do canvas e é posicionável via transform.
+
+Layout livre (sem quadrantes):
+```text
+┌──────────────────────────────┐
+│  foto1   foto2   foto3  foto4│  ← cutouts livres, sem clipping
+│  (zIndex 3-6, posição livre) │
+└──────────────────────────────┘
 ```
 
-O resto do código permanece inalterado. Isso garante que os três painéis glass (esquerdo, direito e inferior preto) terão o efeito de desfoque na exportação, igualando o preview.
+---
+
+### 4. `src/components/cortes/CortesControls.tsx`
+- Adicionar prop `useQuadrantGrid?: boolean`.
+- **UI dos controles**: Quando `useQuadrantGrid === false`, mostrar uploads simples de "Foto 1", "Foto 2", etc. (sem a UI de "Quadrantes" com presets e toggles de visibilidade).
+- **Export nativo**: No bloco de exportação da Thumb Principal, aplicar a mesma lógica: se `useQuadrantGrid === false`, renderizar cutouts livres (sem clip de quadrante, sem escala 211.2%, sem offsets fixos).
+
+---
+
+### Comportamento esperado após a mudança:
+
+| Programa | Thumb Principal | Layout |
+|---|---|---|
+| Roda de Bobo | Quadrantes 2x2, escala 211.2%, offsets, presets | Mantido como está |
+| Geral CazéTv | Fotos livres, posicionáveis | Cutouts normais |
+| Geral CazéTv Brasil | Fotos livres, posicionáveis | Cutouts normais |
 
