@@ -934,7 +934,7 @@ export const CortesControls = ({
           ctx, props.thumbText,
           textX, textY, textW, textH,
           200, fontFamily,
-          textColor, highlightColor, strokeColor, 15,
+          textColor, '#00f2f4', strokeColor, 15,
           0, 10, 1.15
         );
 
