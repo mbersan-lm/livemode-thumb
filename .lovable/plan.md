@@ -1,36 +1,48 @@
 
 
-## Plan: Upload to Storage and Return Public URL
+## Plan: Update Edge Function for `competicao` and `modelo` Parameters
 
-### Problem
-The edge function currently returns raw PNG binary, which causes JSON parsing errors in Airtable. Airtable needs a public URL to save attachments.
+### What Changes
 
-### Changes
+The edge function `generate-ao-vivo` will be updated to accept two new parameters and adjust the rendering accordingly.
 
-#### 1. Create Storage Bucket `thumbnails` (SQL Migration)
-Create a public bucket called `thumbnails` with a permissive insert policy so the edge function (using the service role key) can upload files.
+### New Parameters
 
-```sql
-INSERT INTO storage.buckets (id, name, public) VALUES ('thumbnails', 'thumbnails', true);
+- **`competicao`** (string): Determines which logo overlay to use. Maps to the existing `template` parameter logic:
+  - If contains "conference" → use Conference League logos
+  - Otherwise → use Europa League logos
+  - The text itself is NOT rendered on the image
+- **`modelo`** (string): When set to `"sem narracao"`, applies the "Som Ambiente" overlay instead of the standard panels overlay
+
+### Changes to `supabase/functions/generate-ao-vivo/index.ts`
+
+1. **Extract new parameters** from the request body: `competicao` and `modelo`
+2. **Use `competicao`** to determine which logo overlay to fetch (europa vs conference), working alongside the existing `template` parameter as a fallback
+3. **When `modelo === "sem narracao"`**:
+   - Skip rendering `overlay-ao-vivo-panels.png` (step 6 in current code)
+   - After all other layers, render `overlay-som-ambiente.png` at the end (full canvas, like zIndex 100 in frontend)
+4. **Keep everything else identical**: gradients, glass panels, crests, storage upload, JSON response
+
+### Rendering Logic Summary
+
+```text
+Current flow:
+  ... layers 1-5 ...
+  6. overlay-ao-vivo-panels.png  ← ALWAYS drawn
+  7. crests
+  8. logos overlay (europa/conference)
+  9. upload + return URL
+
+Updated flow:
+  ... layers 1-5 ...
+  6. overlay-ao-vivo-panels.png  ← SKIP if modelo="sem narracao"
+  7. crests
+  8. logos overlay (selected by competicao OR template)
+  9. overlay-som-ambiente.png    ← ADD if modelo="sem narracao"
+  10. upload + return URL
 ```
 
-#### 2. Update `supabase/functions/generate-ao-vivo/index.ts`
+### No Other Files Changed
 
-After generating the PNG buffer (line 168), instead of returning the binary directly:
-
-1. Import `createClient` from `@supabase/supabase-js`
-2. Create a Supabase client using `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` (both already available as secrets)
-3. Generate a unique filename using timestamp + random string (e.g., `ao-vivo/1772058562515-abc123.png`)
-4. Upload the PNG buffer to the `thumbnails` bucket via `supabase.storage.from('thumbnails').upload(...)`
-5. Get the public URL via `supabase.storage.from('thumbnails').getPublicUrl(...)`
-6. Return a JSON response: `{ "url": "https://...supabase.co/storage/v1/object/public/thumbnails/ao-vivo/..." }`
-
-The response will change from `Content-Type: image/png` to `Content-Type: application/json`.
-
-### Technical Details
-
-- **Service Role Key**: Used server-side to bypass RLS for the upload. Already configured as a secret (`SUPABASE_SERVICE_ROLE_KEY`).
-- **File naming**: `ao-vivo/{timestamp}-{random}.png` to avoid collisions.
-- **Bucket is public**: So the returned URL is directly accessible without auth tokens -- exactly what Airtable needs.
-- **No RLS policies needed on storage.objects** for this bucket since uploads happen via service role key (bypasses RLS) and reads are public.
+Only the edge function file is modified. No frontend changes, no database changes, no new migrations.
 
