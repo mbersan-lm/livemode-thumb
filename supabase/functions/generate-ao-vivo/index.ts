@@ -1,4 +1,6 @@
-import { createCanvas, loadImage } from "https://deno.land/x/canvas@v1.4.2/mod.ts";
+import satori, { init as initSatori } from "https://esm.sh/satori@0.10.14/wasm";
+import initYoga from "https://esm.sh/yoga-wasm-web@0.3.3";
+import { Resvg, initWasm } from "https://esm.sh/@resvg/resvg-wasm@2.6.2";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.97.0";
 
 const corsHeaders = {
@@ -126,36 +128,47 @@ function getCrestMaxSize(teamName: string, isConference: boolean): number {
 
 // ── Helpers ─────────────────────────────────────────────────────────
 
-async function fetchImage(url: string) {
+async function toDataUri(url: string): Promise<string> {
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed to fetch image: ${url} (${res.status})`);
-  const buf = await res.arrayBuffer();
-  return loadImage(new Uint8Array(buf));
+  if (!res.ok) throw new Error(`Failed to fetch: ${url} (${res.status})`);
+  const buf = new Uint8Array(await res.arrayBuffer());
+  // Encode to base64 in chunks to avoid stack overflow
+  let binary = "";
+  const chunkSize = 8192;
+  for (let i = 0; i < buf.length; i += chunkSize) {
+    const chunk = buf.subarray(i, Math.min(i + chunkSize, buf.length));
+    for (let j = 0; j < chunk.length; j++) {
+      binary += String.fromCharCode(chunk[j]);
+    }
+  }
+  const b64 = btoa(binary);
+  const ct = res.headers.get("content-type") || "image/png";
+  return `data:${ct};base64,${b64}`;
 }
 
-function roundRect(
-  ctx: any, x: number, y: number, w: number, h: number, r: number
-) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.lineTo(x + w - r, y);
-  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-  ctx.lineTo(x + w, y + h - r);
-  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-  ctx.lineTo(x + r, y + h);
-  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-  ctx.lineTo(x, y + r);
-  ctx.quadraticCurveTo(x, y, x + r, y);
-  ctx.closePath();
-}
+// ── WASM initialization (cached across requests) ────────────────────
+let wasmReady = false;
 
-function drawImageCentered(
-  ctx: any, img: any, cx: number, cy: number, maxW: number, maxH: number
-) {
-  const scale = Math.min(maxW / img.width(), maxH / img.height(), 1);
-  const w = img.width() * scale;
-  const h = img.height() * scale;
-  ctx.drawImage(img, cx - w / 2, cy - h / 2, w, h);
+async function ensureWasm() {
+  if (wasmReady) return;
+  try {
+    const [yogaWasm] = await Promise.all([
+      fetch("https://unpkg.com/yoga-wasm-web@0.3.3/dist/yoga.wasm").then(r => r.arrayBuffer()),
+      initWasm(
+        fetch("https://unpkg.com/@resvg/resvg-wasm@2.6.2/index_bg.wasm")
+      ),
+    ]);
+    const yoga = await initYoga(yogaWasm);
+    initSatori(yoga);
+    wasmReady = true;
+  } catch (e) {
+    // May already be initialized from a previous invocation in the same isolate
+    if (String(e).includes("Already initialized")) {
+      wasmReady = true;
+    } else {
+      throw e;
+    }
+  }
 }
 
 // ── Main handler ────────────────────────────────────────────────────
@@ -173,13 +186,14 @@ Deno.serve(async (req) => {
   }
 
   try {
+    await ensureWasm();
+
     const body = await req.json();
     const {
       nomeTimeA = "",
       nomeTimeB = "",
       competicao = "",
       modelo = "",
-      // Legacy params (backward compat)
       hexTimeA,
       hexTimeB,
       urlEscudoA,
@@ -191,7 +205,6 @@ Deno.serve(async (req) => {
       ? competicao.toLowerCase().includes("conference")
       : template === "conferenceleague";
 
-    // Resolve teams: new payload (by name) or legacy (direct URLs)
     let resolvedCrestA: string;
     let resolvedCrestB: string;
     const colorA = hexTimeA || "#000000";
@@ -224,124 +237,210 @@ Deno.serve(async (req) => {
       );
     }
 
-    const W = 1280;
-    const H = 720;
-    const canvas = createCanvas(W, H);
-    const ctx = canvas.getContext("2d");
-
-    // 1. Black background
-    ctx.fillStyle = "#000000";
-    ctx.fillRect(0, 0, W, H);
-
-    // 2. KV background
-    const kvImg = await fetchImage(`${APP_URL}/kv/kv-ao-vivo.png`);
-    ctx.drawImage(kvImg, 0, 0, W, H);
-
-    // 3. Left gradient overlay (mix-blend-mode: overlay)
-    ctx.save();
-    ctx.globalCompositeOperation = "overlay";
-    const gradL = ctx.createLinearGradient(0, 0, W, 0);
-    gradL.addColorStop(0, colorA);
-    gradL.addColorStop(0.5, "rgba(0,0,0,0)");
-    ctx.fillStyle = gradL;
-    ctx.fillRect(0, 0, W, H);
-    ctx.restore();
-
-    // 4. Right gradient overlay (mix-blend-mode: overlay)
-    ctx.save();
-    ctx.globalCompositeOperation = "overlay";
-    const gradR = ctx.createLinearGradient(W, 0, 0, 0);
-    gradR.addColorStop(0, colorB);
-    gradR.addColorStop(0.5, "rgba(0,0,0,0)");
-    ctx.fillStyle = gradR;
-    ctx.fillRect(0, 0, W, H);
-    ctx.restore();
-
-    // 5. Glass panels with manual blur simulation
-    // Capture current canvas state for blur effect
-    const tempCanvas = createCanvas(W, H);
-    const tempCtx = tempCanvas.getContext("2d");
-    tempCtx.drawImage(canvas, 0, 0);
-
-    // Manual blur: draw the snapshot many times with small offsets
-    // Uses a radial kernel of offsets to simulate ~20px gaussian blur
-    const blurRadius = 20;
-    const blurSamples: Array<[number, number]> = [];
-    for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 6) {
-      for (let r = blurRadius * 0.25; r <= blurRadius; r += blurRadius * 0.25) {
-        blurSamples.push([Math.cos(angle) * r, Math.sin(angle) * r]);
-      }
-    }
-    // Add center sample
-    blurSamples.push([0, 0]);
-    const blurAlpha = 1 / blurSamples.length;
-
-    const drawGlassPanel = (
-      x: number, y: number, w: number, h: number, color: string
-    ) => {
-      ctx.save();
-      roundRect(ctx, x, y, w, h, 12);
-      ctx.clip();
-      // Draw blurred background via multiple offset samples
-      ctx.globalAlpha = blurAlpha;
-      for (const [dx, dy] of blurSamples) {
-        ctx.drawImage(tempCanvas, dx, dy);
-      }
-      ctx.globalAlpha = 1.0;
-      // Semi-transparent fill
-      ctx.fillStyle = color + "33";
-      ctx.fillRect(x, y, w, h);
-      ctx.restore();
-      // Border (drawn outside clip)
-      ctx.save();
-      roundRect(ctx, x, y, w, h, 12);
-      ctx.strokeStyle = "rgba(255,255,255,0.35)";
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      ctx.restore();
-    };
-
-    drawGlassPanel(291, 319, 334, 437, colorA);
-    drawGlassPanel(655, 319, 334, 437, colorB);
-    drawGlassPanel(-30, H - 145 + H * 0.05, 280, 145, "#000000");
-
-    // 6. Overlay panels PNG (skip if modelo = "sem narracao")
     const isSemNarracao = modelo === "sem narracao";
-    if (!isSemNarracao) {
-      const overlayImg = await fetchImage(
-        `${APP_URL}/kv/overlay-ao-vivo-panels.png`
-      );
-      ctx.drawImage(overlayImg, 0, 0, W, H);
-    }
-
-    // 7. Team crests with dynamic sizing
-    const maxSizeA = getCrestMaxSize(nomeTimeA || "", isConference);
-    const maxSizeB = getCrestMaxSize(nomeTimeB || "", isConference);
-
-    const crestA = await fetchImage(resolvedCrestA);
-    drawImageCentered(ctx, crestA, 458, 527, maxSizeA, maxSizeA);
-
-    const crestB = await fetchImage(resolvedCrestB);
-    drawImageCentered(ctx, crestB, 822, 527, maxSizeB, maxSizeB);
-
-    // 8. Logos overlay
     const logosSrc = isConference
       ? `${APP_URL}/kv/logos-ao-vivo-conference.png`
       : `${APP_URL}/kv/logos-ao-vivo-europa.png`;
-    const logosImg = await fetchImage(logosSrc);
-    ctx.drawImage(logosImg, 0, 0, W, H);
 
-    // 9. Som Ambiente overlay (add if modelo = "sem narracao")
+    const maxSizeA = getCrestMaxSize(nomeTimeA || "", isConference);
+    const maxSizeB = getCrestMaxSize(nomeTimeB || "", isConference);
+
+    // Prefetch all images as data URIs in parallel
+    const fetchPromises: Record<string, Promise<string>> = {
+      kvBg: toDataUri(`${APP_URL}/kv/kv-ao-vivo.png`),
+      crestA: toDataUri(resolvedCrestA),
+      crestB: toDataUri(resolvedCrestB),
+      logos: toDataUri(logosSrc),
+    };
+    if (!isSemNarracao) {
+      fetchPromises.panels = toDataUri(`${APP_URL}/kv/overlay-ao-vivo-panels.png`);
+    }
     if (isSemNarracao) {
-      const somAmbienteImg = await fetchImage(
-        `${APP_URL}/kv/overlay-som-ambiente.png`
-      );
-      ctx.drawImage(somAmbienteImg, 0, 0, W, H);
+      fetchPromises.somAmbiente = toDataUri(`${APP_URL}/kv/overlay-som-ambiente.png`);
     }
 
-    // 9. Upload to Storage and return public URL
-    const pngBuffer = canvas.toBuffer();
+    // Also fetch a font (satori requires at least one)
+    const fontPromise = fetch(`${APP_URL}/fonts/Gilroy-Medium.ttf`).then(r => r.arrayBuffer());
 
+    const keys = Object.keys(fetchPromises);
+    const values = await Promise.all(Object.values(fetchPromises));
+    const imgs: Record<string, string> = {};
+    keys.forEach((k, i) => { imgs[k] = values[i]; });
+    const fontData = await fontPromise;
+
+    // ── Build satori element tree ────────────────────────────────────
+    const W = 1280;
+    const H = 720;
+
+    // Helper to create absolute-positioned full-size image layer
+    const fullImg = (src: string) => ({
+      type: "img",
+      props: {
+        src,
+        width: W,
+        height: H,
+        style: { position: "absolute" as const, top: 0, left: 0, width: W, height: H },
+      },
+    });
+
+    const children: any[] = [
+      // 1. KV background
+      fullImg(imgs.kvBg),
+
+      // 2. Left gradient (approximates overlay blend-mode)
+      {
+        type: "div",
+        props: {
+          style: {
+            position: "absolute" as const,
+            top: 0, left: 0, width: W, height: H,
+            backgroundImage: `linear-gradient(to right, ${colorA}, rgba(0,0,0,0) 50%)`,
+            opacity: 0.5,
+          },
+        },
+      },
+
+      // 3. Right gradient
+      {
+        type: "div",
+        props: {
+          style: {
+            position: "absolute" as const,
+            top: 0, left: 0, width: W, height: H,
+            backgroundImage: `linear-gradient(to left, ${colorB}, rgba(0,0,0,0) 50%)`,
+            opacity: 0.5,
+          },
+        },
+      },
+
+      // 4. Glass panel A
+      {
+        type: "div",
+        props: {
+          style: {
+            position: "absolute" as const,
+            left: 291, top: 319, width: 334, height: 437,
+            backgroundColor: "rgba(0,0,0,0.2)",
+            borderRadius: 12,
+            border: "1px solid rgba(255,255,255,0.35)",
+          },
+        },
+      },
+
+      // 5. Glass panel B
+      {
+        type: "div",
+        props: {
+          style: {
+            position: "absolute" as const,
+            left: 655, top: 319, width: 334, height: 437,
+            backgroundColor: "rgba(0,0,0,0.2)",
+            borderRadius: 12,
+            border: "1px solid rgba(255,255,255,0.35)",
+          },
+        },
+      },
+
+      // 6. Bottom-left panel
+      {
+        type: "div",
+        props: {
+          style: {
+            position: "absolute" as const,
+            left: -30, top: Math.round(H - 145 + H * 0.05), width: 280, height: 145,
+            backgroundColor: "rgba(0,0,0,0.2)",
+            borderRadius: 12,
+            border: "1px solid rgba(255,255,255,0.35)",
+          },
+        },
+      },
+    ];
+
+    // 7. Overlay panels (if not sem narracao)
+    if (imgs.panels) {
+      children.push(fullImg(imgs.panels));
+    }
+
+    // 8. Crest A (centered at 458, 527)
+    children.push({
+      type: "img",
+      props: {
+        src: imgs.crestA,
+        width: maxSizeA,
+        height: maxSizeA,
+        style: {
+          position: "absolute" as const,
+          left: Math.round(458 - maxSizeA / 2),
+          top: Math.round(527 - maxSizeA / 2),
+          width: maxSizeA,
+          height: maxSizeA,
+          objectFit: "contain" as const,
+        },
+      },
+    });
+
+    // 9. Crest B (centered at 822, 527)
+    children.push({
+      type: "img",
+      props: {
+        src: imgs.crestB,
+        width: maxSizeB,
+        height: maxSizeB,
+        style: {
+          position: "absolute" as const,
+          left: Math.round(822 - maxSizeB / 2),
+          top: Math.round(527 - maxSizeB / 2),
+          width: maxSizeB,
+          height: maxSizeB,
+          objectFit: "contain" as const,
+        },
+      },
+    });
+
+    // 10. Logos overlay
+    children.push(fullImg(imgs.logos));
+
+    // 11. Som ambiente overlay (if sem narracao)
+    if (imgs.somAmbiente) {
+      children.push(fullImg(imgs.somAmbiente));
+    }
+
+    const element = {
+      type: "div",
+      props: {
+        style: {
+          width: W,
+          height: H,
+          display: "flex" as const,
+          position: "relative" as const,
+          backgroundColor: "black",
+        },
+        children,
+      },
+    };
+
+    // ── Render SVG with satori ───────────────────────────────────────
+    const svg = await satori(element, {
+      width: W,
+      height: H,
+      fonts: [
+        {
+          name: "Gilroy",
+          data: fontData,
+          style: "normal" as const,
+          weight: 400,
+        },
+      ],
+    });
+
+    // ── Convert SVG to PNG with resvg ────────────────────────────────
+    const resvg = new Resvg(svg, {
+      fitTo: { mode: "width" as const, value: W },
+    });
+    const pngData = resvg.render();
+    const pngBuffer = pngData.asPng();
+
+    // ── Upload to Storage and return public URL ──────────────────────
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
