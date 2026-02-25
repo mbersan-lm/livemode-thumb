@@ -272,8 +272,8 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
               left: '458px', 
               top: '527px', 
               transform: 'translate(-50%, -50%)', 
-              maxWidth: '400px', 
-              maxHeight: '400px', 
+              maxWidth: matchData.homeTeamId === 'cl35' ? '280px' : '400px', 
+              maxHeight: matchData.homeTeamId === 'cl35' ? '280px' : '400px', 
               zIndex: 50 
             }}
           />
@@ -289,8 +289,8 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
               left: '822px', 
               top: '527px', 
               transform: 'translate(-50%, -50%)', 
-              maxWidth: '400px', 
-              maxHeight: '400px', 
+              maxWidth: matchData.awayTeamId === 'cl35' ? '280px' : '400px', 
+              maxHeight: matchData.awayTeamId === 'cl35' ? '280px' : '400px', 
               zIndex: 50 
             }}
           />
