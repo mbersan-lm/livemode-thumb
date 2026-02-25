@@ -645,7 +645,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               }}
             >
               {homeTeam && <img src={homeTeam.crest_url} alt={homeTeam.name} style={{ height: 173, width: 'auto', position: 'relative', left: 7 }} />}
-              {awayTeam && <img src={awayTeam.crest_url} alt={awayTeam.name} style={{ height: 173, width: 'auto' }} />}
+              {awayTeam && <img src={awayTeam.crest_url} alt={awayTeam.name} style={{ height: 173, width: 'auto', position: 'relative', left: -7 }} />}
             </div>
           ) : null;
         })()}
