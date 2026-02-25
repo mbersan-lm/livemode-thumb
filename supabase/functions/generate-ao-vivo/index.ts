@@ -257,11 +257,24 @@ Deno.serve(async (req) => {
     ctx.fillRect(0, 0, W, H);
     ctx.restore();
 
-    // 5. Glass panels with blur simulation (matching frontend)
+    // 5. Glass panels with manual blur simulation
     // Capture current canvas state for blur effect
     const tempCanvas = createCanvas(W, H);
     const tempCtx = tempCanvas.getContext("2d");
     tempCtx.drawImage(canvas, 0, 0);
+
+    // Manual blur: draw the snapshot many times with small offsets
+    // Uses a radial kernel of offsets to simulate ~20px gaussian blur
+    const blurRadius = 20;
+    const blurSamples: Array<[number, number]> = [];
+    for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 6) {
+      for (let r = blurRadius * 0.25; r <= blurRadius; r += blurRadius * 0.25) {
+        blurSamples.push([Math.cos(angle) * r, Math.sin(angle) * r]);
+      }
+    }
+    // Add center sample
+    blurSamples.push([0, 0]);
+    const blurAlpha = 1 / blurSamples.length;
 
     const drawGlassPanel = (
       x: number, y: number, w: number, h: number, color: string
@@ -269,10 +282,12 @@ Deno.serve(async (req) => {
       ctx.save();
       roundRect(ctx, x, y, w, h, 12);
       ctx.clip();
-      // Draw blurred background within clipped area
-      ctx.filter = "blur(20px)";
-      ctx.drawImage(tempCanvas, 0, 0);
-      ctx.filter = "none";
+      // Draw blurred background via multiple offset samples
+      ctx.globalAlpha = blurAlpha;
+      for (const [dx, dy] of blurSamples) {
+        ctx.drawImage(tempCanvas, dx, dy);
+      }
+      ctx.globalAlpha = 1.0;
       // Semi-transparent fill
       ctx.fillStyle = color + "33";
       ctx.fillRect(x, y, w, h);
