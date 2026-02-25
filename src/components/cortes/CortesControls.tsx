@@ -948,7 +948,7 @@ export const CortesControls = ({
           if (awayTeam) crestPromises.push(loadImage(awayTeam.crest_url).then(img => ({ img, team: awayTeam })));
           const crests = await Promise.all(crestPromises);
           const crestH = 173;
-          const gap = 12;
+          const gap = 2;
           const totalW = crests.reduce((acc, c) => {
             const aspect = c.img.naturalWidth / c.img.naturalHeight;
             return acc + crestH * aspect;
