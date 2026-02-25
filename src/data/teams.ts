@@ -5,6 +5,7 @@ export interface Team {
   crest_url: string;
   maxSize?: number;    // sobrescreve max-w e max-h em Melhores Momentos
   jcMaxSize?: number;  // sobrescreve max-w e max-h em Jogo Completo
+  jcOffsetX?: number;  // offset horizontal em px no Jogo Completo
   jcOffsetY?: number;  // offset vertical em px no Jogo Completo
 }
 

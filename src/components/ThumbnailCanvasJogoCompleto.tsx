@@ -100,7 +100,7 @@ export const ThumbnailCanvasJogoCompleto = forwardRef<HTMLDivElement, ThumbnailC
               src={homeTeam.crest_url}
               alt={homeTeam.name}
               className="h-auto w-auto object-contain"
-              style={{ maxWidth: `${homeTeam.jcMaxSize ?? 322}px`, maxHeight: `${homeTeam.jcMaxSize ?? 322}px`, transform: homeTeam.jcOffsetY ? `translateY(${homeTeam.jcOffsetY}px)` : undefined }}
+              style={{ maxWidth: `${homeTeam.jcMaxSize ?? 322}px`, maxHeight: `${homeTeam.jcMaxSize ?? 322}px`, transform: [homeTeam.jcOffsetX ? `translateX(${homeTeam.jcOffsetX}px)` : '', homeTeam.jcOffsetY ? `translateY(${homeTeam.jcOffsetY}px)` : ''].filter(Boolean).join(' ') || undefined }}
             />
 
             {/* Away Crest */}
@@ -109,7 +109,7 @@ export const ThumbnailCanvasJogoCompleto = forwardRef<HTMLDivElement, ThumbnailC
               src={awayTeam.crest_url}
               alt={awayTeam.name}
               className="h-auto w-auto object-contain -ml-[70px]"
-              style={{ maxWidth: `${awayTeam.jcMaxSize ?? 322}px`, maxHeight: `${awayTeam.jcMaxSize ?? 322}px`, transform: awayTeam.jcOffsetY ? `translateY(${awayTeam.jcOffsetY}px)` : undefined }}
+              style={{ maxWidth: `${awayTeam.jcMaxSize ?? 322}px`, maxHeight: `${awayTeam.jcMaxSize ?? 322}px`, transform: [awayTeam.jcOffsetX ? `translateX(${awayTeam.jcOffsetX}px)` : '', awayTeam.jcOffsetY ? `translateY(${awayTeam.jcOffsetY}px)` : ''].filter(Boolean).join(' ') || undefined }}
             />
           </div>
         )}
