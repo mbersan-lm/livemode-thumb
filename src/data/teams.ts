@@ -10,7 +10,7 @@ export interface Team {
 
 export const teamsBrasileirao: Team[] = [
   { id: '21', name: 'Athletico-PR', slug: 'athleticopr', crest_url: '/crests/athleticopr.png' },
-  { id: '1', name: 'Atlético', slug: 'atletico', crest_url: '/crests/atletico.png', jcMaxSize: 290, jcOffsetY: 32 },
+  { id: '1', name: 'Atlético', slug: 'atletico', crest_url: '/crests/atletico.png', jcMaxSize: 290, jcOffsetY: 16 },
   { id: '2', name: 'Bahia', slug: 'bahia', crest_url: '/crests/bahia.png' },
   { id: '3', name: 'Botafogo', slug: 'botafogo', crest_url: '/crests/botafogo.png' },
   { id: '22', name: 'Chapecoense', slug: 'chapecoense', crest_url: '/crests/chapecoense.png' },
