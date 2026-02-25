@@ -1,16 +1,31 @@
 
 
-# Alterar opacidade do fundo do card "Geral CazéTv" para 100%
-
-Atualmente, todos os cards com imagem de fundo usam `opacity: 0.7` fixo (linha 26 do ProgramCard). Para que o "Geral CazéTv" tenha 100% e o "Roda de Bobo" mantenha 70%, preciso adicionar uma prop `bgOpacity` ao componente.
+# Adicionar card personalizado para "Geral CazéTv Brasil"
 
 ## Mudanças
 
-**`src/components/cortes/ProgramCard.tsx`**
-- Adicionar prop opcional `bgOpacity?: number` (default `0.7`)
-- Usar essa prop no style do div de background em vez do valor fixo `0.7`
+### 1. Assets
+- Copiar `user-uploads://CORTE_LISTA_CONVOCADOS.jpg` para `public/cortes/bg-card-brasil.jpg`
+- Copiar `user-uploads://LOGO.png` para `public/cortes/logo-brasil.png`
 
-**`src/pages/CortesHub.tsx`**
-- Passar `bgOpacity={1}` no ProgramCard do "Geral CazéTv"
-- O "Roda de Bobo" continua sem a prop (usa o default 0.7)
+### 2. `src/pages/CortesHub.tsx` (linhas 82-84)
+Estender as condições de `logoUrl`, `bgImageUrl` e `bgOpacity` para incluir "Geral CazéTv Brasil":
+
+```typescript
+logoUrl={
+  p.name === 'Roda de Bobo' ? '/cortes/logo-rdb.png'
+  : p.name === 'Geral CazéTv' ? '/cortes/logo-geral.png'
+  : p.name === 'Geral CazéTv Brasil' ? '/cortes/logo-brasil.png'
+  : undefined
+}
+bgImageUrl={
+  p.name === 'Roda de Bobo' ? '/cortes/bg-card-rdb.png'
+  : p.name === 'Geral CazéTv' ? '/cortes/bg-card-geral.jpg'
+  : p.name === 'Geral CazéTv Brasil' ? '/cortes/bg-card-brasil.jpg'
+  : undefined
+}
+bgOpacity={p.name === 'Geral CazéTv' || p.name === 'Geral CazéTv Brasil' ? 1 : undefined}
+```
+
+Resultado: card com fundo verde/amarelo a 100% de opacidade e logo "Geral CazéTV" centralizada, sem textos.
 
