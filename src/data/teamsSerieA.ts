@@ -12,7 +12,7 @@ export const teamsSerieA: Team[] = [
   { id: 'inter', name: 'Inter', slug: 'inter', crest_url: '/crests/inter.png' },
   { id: 'juventus', name: 'Juventus', slug: 'juventus', crest_url: '/crests/juventus.png' },
   { id: 'lazio', name: 'Lazio', slug: 'lazio', crest_url: '/crests/lazio.png' },
-  { id: 'lecce', name: 'Lecce', slug: 'lecce', crest_url: '/crests/lecce.png', jcMaxSize: 290 },
+  { id: 'lecce', name: 'Lecce', slug: 'lecce', crest_url: '/crests/lecce.png', maxSize: 194, jcMaxSize: 290 },
   { id: 'milan', name: 'Milan', slug: 'milan', crest_url: '/crests/milan.png' },
   { id: 'napoli', name: 'Napoli', slug: 'napoli', crest_url: '/crests/napoli.png' },
   { id: 'parma', name: 'Parma', slug: 'parma', crest_url: '/crests/parma.png', jcMaxSize: 290 },
