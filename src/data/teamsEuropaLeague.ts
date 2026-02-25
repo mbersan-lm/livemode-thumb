@@ -20,7 +20,7 @@ export const teamsEuropaLeague: Team[] = [
   { id: 'el17', name: 'LILLE', slug: 'lille-el', crest_url: '/crests/lille-el.png' },
   { id: 'el18', name: 'LUDOGORETS', slug: 'ludogorets', crest_url: '/crests/ludogorets.png' },
   { id: 'el19', name: 'LYON', slug: 'lyon-el', crest_url: '/crests/lyon-el.png' },
-  { id: 'el20', name: 'MACCABI', slug: 'maccabi', crest_url: '/crests/maccabi.png', maxSize: 140, jcMaxSize: 200, jcOffsetX: 30, jcSpacing: -30 },
+  { id: 'el20', name: 'MACCABI', slug: 'maccabi', crest_url: '/crests/maccabi.png', maxSize: 140, jcMaxSize: 200, jcOffsetX: 30, jcSpacing: 0 },
   { id: 'el21', name: 'MALMO', slug: 'malmo', crest_url: '/crests/malmo.png' },
   { id: 'el22', name: 'MIDTJYLLAND', slug: 'midtjylland', crest_url: '/crests/midtjylland.png' },
   { id: 'el23', name: 'NICE', slug: 'nice-el', crest_url: '/crests/nice-el.png' },
