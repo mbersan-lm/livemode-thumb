@@ -19,7 +19,8 @@ const cards = [
   {
     title: 'Cortes',
     description: 'Monte thumbnails para cortes de programas',
-    icon: Scissors,
+    icon: null as any,
+    customIcon: '/images/cortes-icon.png',
     path: '/cortes',
   },
 ];
