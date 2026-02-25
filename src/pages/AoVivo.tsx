@@ -203,12 +203,29 @@ const AoVivo = () => {
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
 
-      // 8. Glass panels (z:16) — semi-transparent with border
+      // 8. Glass panels (z:16) — semi-transparent with blur + border
+      // Capture current canvas for blur simulation
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = W;
+      tempCanvas.height = H;
+      const tempCtx = tempCanvas.getContext('2d')!;
+      tempCtx.drawImage(canvas, 0, 0);
+
       const drawGlassPanel = (x: number, y: number, w: number, h: number, color: string) => {
         ctx.save();
         roundRect(ctx, x, y, w, h, 12);
+        ctx.clip();
+        // Draw blurred background within clipped area
+        ctx.filter = 'blur(20px)';
+        ctx.drawImage(tempCanvas, 0, 0);
+        ctx.filter = 'none';
+        // Semi-transparent fill
         ctx.fillStyle = color + '33';
-        ctx.fill();
+        ctx.fillRect(x, y, w, h);
+        ctx.restore();
+        // Border (drawn outside clip)
+        ctx.save();
+        roundRect(ctx, x, y, w, h, 12);
         ctx.strokeStyle = 'rgba(255,255,255,0.35)';
         ctx.lineWidth = 1;
         ctx.stroke();
