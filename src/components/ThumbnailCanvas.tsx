@@ -100,7 +100,11 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
               src={homeTeam.crest_url}
               alt={homeTeam.name}
               className="h-auto w-auto object-contain -mr-[42px]"
-              style={{ maxWidth: `${homeTeam.maxSize ?? 216}px`, maxHeight: `${homeTeam.maxSize ?? 216}px` }}
+              style={{ 
+                maxWidth: `${homeTeam.maxSize ?? 216}px`, 
+                maxHeight: `${homeTeam.maxSize ?? 216}px`,
+                ...(homeTeam.offsetX && { marginRight: `${-42 - homeTeam.offsetX}px` })
+              }}
             />
 
             {/* Scores */}
@@ -169,7 +173,11 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
               src={awayTeam.crest_url}
               alt={awayTeam.name}
               className="h-auto w-auto object-contain -ml-[42px]"
-              style={{ maxWidth: `${awayTeam.maxSize ?? 216}px`, maxHeight: `${awayTeam.maxSize ?? 216}px` }}
+              style={{ 
+                maxWidth: `${awayTeam.maxSize ?? 216}px`, 
+                maxHeight: `${awayTeam.maxSize ?? 216}px`,
+                ...(awayTeam.offsetX && { marginLeft: `${-42 - awayTeam.offsetX}px` })
+              }}
             />
           </div>
         )}
