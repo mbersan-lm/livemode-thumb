@@ -53,7 +53,7 @@ const Home = () => {
             >
               <div className="h-[4.2rem] flex items-end mb-5">
                 {(card as any).customIcon ? (
-                  <img src={(card as any).customIcon} alt="" className={`object-contain ${(card as any).customIcon === '/images/mm-icon.png' ? 'w-[4.2rem] h-[4.2rem]' : 'w-[2.8rem] h-[2.8rem]'}`} />
+                  <img src={(card as any).customIcon} alt="" className={`object-contain ${(card as any).customIcon === '/images/mm-icon.png' ? 'w-[4.2rem] h-[4.2rem]' : (card as any).customIcon === '/images/aovivo-icon.jpg' ? 'w-[3.5rem] h-[3.5rem] rounded-lg' : 'w-[2.8rem] h-[2.8rem]'}`} />
                 ) : (
                   <card.icon className="w-10 h-10 text-muted-foreground group-hover:text-foreground transition-colors" />
                 )}
