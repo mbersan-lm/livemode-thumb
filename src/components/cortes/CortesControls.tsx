@@ -955,11 +955,14 @@ export const CortesControls = ({
           }, 0) + (crests.length > 1 ? gap : 0);
           let crestX = W / 2 - totalW / 2;
           const crestY = H - H * 0.176 - crestH;
+          let crestIndex = 0;
           for (const c of crests) {
             const aspect = c.img.naturalWidth / c.img.naturalHeight;
             const cW = crestH * aspect;
-            ctx.drawImage(c.img, crestX, crestY, cW, crestH);
+            const offsetX = crestIndex === 0 ? 7 : 0;
+            ctx.drawImage(c.img, crestX + offsetX, crestY, cW, crestH);
             crestX += cW + gap;
+            crestIndex++;
           }
         }
       }
