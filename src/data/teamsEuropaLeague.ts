@@ -9,7 +9,7 @@ export const teamsEuropaLeague: Team[] = [
   { id: 'el6', name: 'CELTA DE VIGO', slug: 'celta-de-vigo', crest_url: '/crests/celta-de-vigo.png' },
   { id: 'el7', name: 'CELTICS', slug: 'celtics', crest_url: '/crests/celtics.png' },
   { id: 'el8', name: 'DINAMO ZAGREB', slug: 'dinamo-zagreb', crest_url: '/crests/dinamo-zagreb.png' },
-  { id: 'el9', name: 'ESTRELA VERMELHA', slug: 'estrela-vermelha', crest_url: '/crests/estrela-vermelha.png', jcMaxSize: 260 },
+  { id: 'el9', name: 'ESTRELA VERMELHA', slug: 'estrela-vermelha', crest_url: '/crests/estrela-vermelha.png', jcMaxSize: 354, jcOffsetY: 32 },
   { id: 'el10', name: 'FENERBAHÇE', slug: 'fenerbahce', crest_url: '/crests/fenerbahce.png' },
   { id: 'el11', name: 'FERENCVÁROS', slug: 'ferencvaros', crest_url: '/crests/ferencvaros.png' },
   { id: 'el12', name: 'FEYENOORD', slug: 'feyenoord', crest_url: '/crests/feyenoord.png' },
