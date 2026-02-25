@@ -79,7 +79,7 @@ export const TeamControls = ({ matchData, onMatchDataChange, template, activeCan
         </Select>
       </div>
 
-      {activeCanvas !== 'av' && (
+      {activeCanvas !== 'av' && activeCanvas !== 'jc' && (
         <>
           <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
             <div>
