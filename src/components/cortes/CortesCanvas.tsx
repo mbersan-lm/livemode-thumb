@@ -635,7 +635,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
             <div
               style={{
                 position: 'absolute',
-                bottom: '2%',
+                bottom: '5%',
                 left: '50%',
                 transform: 'translateX(-50%)',
                 display: 'flex',
