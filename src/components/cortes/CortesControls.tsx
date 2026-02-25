@@ -410,6 +410,7 @@ interface CortesControlsProps {
   quadrantVisibility?: boolean[];
   onQuadrantVisibilityChange?: (v: boolean[]) => void;
   onQuadrantPresetSelect?: (idx: number, url: string) => void;
+  useQuadrantGrid?: boolean;
 }
 
 export const CortesControls = ({
@@ -478,6 +479,7 @@ export const CortesControls = ({
   quadrantVisibility = [true, true, true, true],
   onQuadrantVisibilityChange,
   onQuadrantPresetSelect,
+  useQuadrantGrid = false,
 }: CortesControlsProps) => {
   const pipInputRef = useRef<HTMLInputElement>(null);
   const pip2InputRef = useRef<HTMLInputElement>(null);
@@ -814,13 +816,13 @@ export const CortesControls = ({
         drawPipFrame(pip2Img, pip2FrameVal, pip2T, 1.2);
       }
 
-      // ── Layer 3f: Thumb Principal — 4 cutouts in 2x2 quadrants ──────────
-      if (showThumbPrincipal) {
+      // ── Layer 3f: Thumb Principal ──────────
+      if (showThumbPrincipal && useQuadrantGrid) {
         const quadrants = [
-          { x: 0, y: 0 },         // top-left
-          { x: W / 2, y: 0 },     // top-right
-          { x: 0, y: H / 2 },     // bottom-left
-          { x: W / 2, y: H / 2 }, // bottom-right
+          { x: 0, y: 0 },
+          { x: W / 2, y: 0 },
+          { x: 0, y: H / 2 },
+          { x: W / 2, y: H / 2 },
         ];
         const cutouts = [
           { img: personImg, t: props.personTransform },
@@ -848,6 +850,31 @@ export const CortesControls = ({
           ctx.rotate((c.t.rotation * Math.PI) / 180);
           ctx.scale(c.t.scale, c.t.scale);
           ctx.drawImage(c.img, 0, 0, drawW, drawH);
+          ctx.restore();
+        }
+      }
+
+      // ── Layer 3f-alt: Thumb Principal — free cutouts ──────────
+      if (showThumbPrincipal && !useQuadrantGrid) {
+        const cutouts = [
+          { img: personImg, t: props.personTransform },
+          { img: person2Img, t: props.person2Transform },
+          { img: person3Img, t: props.person3Transform ?? { x: 0, y: 0, scale: 1, rotation: 0 } },
+          { img: person4Img, t: props.person4Transform ?? { x: 0, y: 0, scale: 1, rotation: 0 } },
+        ];
+        for (const c of cutouts) {
+          if (!c.img) continue;
+          const baseH = H * 1.08;
+          const aspect = c.img.naturalWidth / c.img.naturalHeight;
+          const baseW = baseH * aspect;
+          const baseY = -0.02 * H;
+          const cx = baseW / 2 + c.t.x;
+          const cy = baseY + baseH / 2 + c.t.y;
+          ctx.save();
+          ctx.translate(cx, cy);
+          ctx.rotate((c.t.rotation * Math.PI) / 180);
+          ctx.scale(c.t.scale, c.t.scale);
+          ctx.drawImage(c.img, -baseW / 2, -baseH / 2, baseW, baseH);
           ctx.restore();
         }
       }
@@ -1473,7 +1500,7 @@ export const CortesControls = ({
       )}
 
       {/* Thumb Principal — 4 quadrant uploads with visibility toggles */}
-      {thumbModel === 'thumb-principal' && (
+      {thumbModel === 'thumb-principal' && useQuadrantGrid && (
         <Collapsible open={showQuadrantsMenu} onOpenChange={setShowQuadrantsMenu} className="rounded-lg border border-border bg-muted/20 p-3">
           <CollapsibleTrigger className="flex w-full items-center justify-between">
             <Label className="font-semibold cursor-pointer">Quadrantes</Label>
@@ -1543,6 +1570,47 @@ export const CortesControls = ({
             ))}
           </CollapsibleContent>
         </Collapsible>
+      )}
+
+      {/* Thumb Principal — free photo uploads (non-quadrant) */}
+      {thumbModel === 'thumb-principal' && !useQuadrantGrid && (
+        <div className="space-y-3">
+          <Label className="font-semibold">Fotos</Label>
+          {[
+            { label: 'Foto 1', cutout: personCutout, inputRef: personInputRef, isRemoving: isRemovingBg, onUpload: onPersonUpload, transform: personTransform, onTransformChange: onPersonTransformChange, showAdjust: showPerson1Adjust, setShowAdjust: setShowPerson1Adjust },
+            { label: 'Foto 2', cutout: person2Cutout, inputRef: person2InputRef, isRemoving: isRemovingBg2, onUpload: onPerson2Upload, transform: person2Transform, onTransformChange: onPerson2TransformChange, showAdjust: showPerson2Adjust, setShowAdjust: setShowPerson2Adjust },
+            { label: 'Foto 3', cutout: person3Cutout, inputRef: person3InputRef, isRemoving: isRemovingBg3, onUpload: onPerson3Upload!, transform: person3Transform, onTransformChange: onPerson3TransformChange!, showAdjust: showPerson3Adjust, setShowAdjust: setShowPerson3Adjust },
+            { label: 'Foto 4', cutout: person4Cutout, inputRef: person4InputRef, isRemoving: isRemovingBg4, onUpload: onPerson4Upload!, transform: person4Transform, onTransformChange: onPerson4TransformChange!, showAdjust: showPerson4Adjust, setShowAdjust: setShowPerson4Adjust },
+          ].map((item, idx) => (
+            <div key={idx} className="p-3 rounded-lg border border-border bg-muted/30">
+              <Label className="font-semibold text-sm mb-2 block">{item.label}</Label>
+              <input ref={item.inputRef} type="file" accept="image/*" className="hidden"
+                onChange={(e) => e.target.files?.[0] && item.onUpload(e.target.files[0])} />
+              <Button variant={item.cutout ? 'secondary' : 'outline'} className="w-full" size="sm"
+                disabled={item.isRemoving} onClick={() => item.inputRef.current?.click()}>
+                {item.isRemoving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Removendo fundo...</>
+                  : <><Upload className="w-4 h-4 mr-2" />{item.cutout ? 'Trocar foto' : 'Upload foto'}</>}
+              </Button>
+              {item.cutout && (
+                <div className="space-y-3 p-2 rounded border border-border bg-background/50 mt-1">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste</Label>
+                    <div className="flex items-center gap-2">
+                      <Switch checked={item.showAdjust} onCheckedChange={item.setShowAdjust} />
+                      <button onClick={() => item.onTransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                    </div>
+                  </div>
+                  {item.showAdjust && (<>
+                    <div><Label className="text-xs">X: {item.transform.x}px</Label><Slider value={[item.transform.x]} onValueChange={([x]) => item.onTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
+                    <div><Label className="text-xs">Y: {item.transform.y}px</Label><Slider value={[item.transform.y]} onValueChange={([y]) => item.onTransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
+                    <div><Label className="text-xs">Zoom: {item.transform.scale.toFixed(2)}x</Label><Slider value={[item.transform.scale]} onValueChange={([scale]) => item.onTransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
+                    <div><Label className="text-xs">Rotação: {item.transform.rotation}°</Label><Slider value={[item.transform.rotation]} onValueChange={([rotation]) => item.onTransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
+                  </>)}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       )}
 
       {/* Person Upload (right side / single person) — pip, pip-dividido & duas-pessoas */}

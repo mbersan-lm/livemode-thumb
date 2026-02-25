@@ -40,6 +40,7 @@ interface CortesThumbBuilderProps {
   allowAllModels?: boolean;
   allowJogoV1?: boolean;
   allowThumbPrincipal?: boolean;
+  useQuadrantGrid?: boolean;
   thumbPrincipalLogosImage?: string;
   thumbPrincipalBgImage?: string;
 }
@@ -59,6 +60,7 @@ export const CortesThumbBuilder = ({
   allowAllModels = false,
   allowJogoV1 = false,
   allowThumbPrincipal = false,
+  useQuadrantGrid = false,
   thumbPrincipalLogosImage,
   thumbPrincipalBgImage,
 }: CortesThumbBuilderProps) => {
@@ -384,7 +386,8 @@ export const CortesThumbBuilder = ({
             customFontFamily={customFontFamily}
             textBoxHeight={textBoxHeight}
             quadrantVisibility={quadrantVisibility}
-          />
+            useQuadrantGrid={useQuadrantGrid}
+           />
         </div>
       </div>
 
@@ -482,6 +485,7 @@ export const CortesThumbBuilder = ({
             quadrantVisibility={quadrantVisibility}
             onQuadrantVisibilityChange={setQuadrantVisibility}
             onQuadrantPresetSelect={handleQuadrantPresetSelect}
+            useQuadrantGrid={useQuadrantGrid}
             textBoxHeight={textBoxHeight}
             onTextBoxHeightChange={setTextBoxHeight}
             onPipFromBase64={handlePipFromBase64}
