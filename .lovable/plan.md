@@ -2,37 +2,67 @@
 
 ## Problema
 
-A prop `thumbPrincipalLogosImage` não tem um valor definido para "Geral CazéTv Brasil" — retorna `undefined`, o que faz cair na logo padrão do programa. O usuário quer uma logo exclusiva para a Thumb Principal desse programa, que é a imagem enviada em anexo.
+O modelo "Thumb Principal" usa um bloco de texto reduzido (380×200px, centralizado, sem rotação) para **todos** os programas. Essa regra deveria ser exclusiva do **Roda de Bobo**. Para **Geral CazéTv** e **Geral CazéTv Brasil**, o texto deve funcionar como nos outros modelos (largura 96%, maxHeight 38%, rotação -2°, tamanho normal).
 
 ## Solução
 
-1. Copiar a imagem enviada para `public/cortes/logos-thumb-principal-brasil.png`.
-2. Em `src/pages/CortesProgramBuilder.tsx`, adicionar o caso "Geral CazéTv Brasil" na lógica de `thumbPrincipalLogosImage`.
+Condicionar o bloco de texto da Thumb Principal ao `useQuadrantGrid`. Quando `useQuadrantGrid === false`, usar o bloco de texto padrão (Layer 5) em vez do bloco reduzido (Layer 5tp).
 
-### Mudanças:
+### Mudanças em 2 arquivos:
 
-**Arquivo de asset:** Copiar `user-uploads://GERAL_THUMB_14-10.jpg` para `public/cortes/logos-thumb-principal-brasil.png`.
+---
 
-**`src/pages/CortesProgramBuilder.tsx` (linhas 62-66):**
+### 1. `src/components/cortes/CortesCanvas.tsx`
 
-De:
-```typescript
-thumbPrincipalLogosImage={
-  program!.name === 'Geral CazéTv' ? '/cortes/logos-thumb-principal.png'
-  : program!.name === 'Roda de Bobo' ? '/cortes/logos-thumb-principal-rdb.png'
-  : undefined
-}
+**Layer 5 (linha 550):** Alterar a condição para incluir thumb-principal sem quadrantes:
+```
+{!showMeioAMeio && !showThumbPrincipal && thumbText && (
+```
+→
+```
+{!showMeioAMeio && !(showThumbPrincipal && useQuadrantGrid) && thumbText && (
 ```
 
-Para:
-```typescript
-thumbPrincipalLogosImage={
-  program!.name === 'Geral CazéTv' ? '/cortes/logos-thumb-principal.png'
-  : program!.name === 'Geral CazéTv Brasil' ? '/cortes/logos-thumb-principal-brasil.png'
-  : program!.name === 'Roda de Bobo' ? '/cortes/logos-thumb-principal-rdb.png'
-  : undefined
-}
+**Layer 5tp (linha 585):** Restringir ao quadrant grid:
+```
+{showThumbPrincipal && thumbText && (
+```
+→
+```
+{showThumbPrincipal && useQuadrantGrid && thumbText && (
 ```
 
-Nenhum outro arquivo precisa ser alterado. A lógica em `CortesThumbBuilder` já seleciona `thumbPrincipalLogosImage` quando o modelo é `thumb-principal`.
+---
+
+### 2. `src/components/cortes/CortesControls.tsx` (Export nativo)
+
+**Linha 903:** Alterar condição do texto padrão:
+```
+if (!showMeioAMeio && !showThumbPrincipal && props.thumbText) {
+```
+→
+```
+if (!showMeioAMeio && !(showThumbPrincipal && useQuadrantGrid) && props.thumbText) {
+```
+
+**Linha 918:** Restringir texto reduzido ao quadrant grid:
+```
+if (showThumbPrincipal && props.thumbText) {
+```
+→
+```
+if (showThumbPrincipal && useQuadrantGrid && props.thumbText) {
+```
+
+---
+
+### Resultado:
+
+| Programa | Thumb Principal — Texto |
+|---|---|
+| Roda de Bobo | Reduzido (380×200, centralizado, sem rotação) — mantido |
+| Geral CazéTv | Normal (96% largura, 38% altura, rotação -2°) |
+| Geral CazéTv Brasil | Normal (96% largura, 38% altura, rotação -2°) |
+
+Nenhum outro modelo ou programa é afetado.
 
