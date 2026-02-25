@@ -61,6 +61,7 @@ const CortesProgramBuilder = () => {
       thumbPrincipalBgImage={program!.name === 'Roda de Bobo' ? '/cortes/bg-thumb-principal-rdb.jpg' : undefined}
       thumbPrincipalLogosImage={
         program!.name === 'Geral CazéTv' ? '/cortes/logos-thumb-principal.png'
+        : program!.name === 'Geral CazéTv Brasil' ? '/cortes/logos-thumb-principal-brasil.png'
         : program!.name === 'Roda de Bobo' ? '/cortes/logos-thumb-principal-rdb.png'
         : undefined
       }
