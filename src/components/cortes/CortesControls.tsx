@@ -900,7 +900,7 @@ export const CortesControls = ({
 
       const bottomFrac = (props.textBoxHeight ?? 6) / 100;
 
-      if (!showMeioAMeio && !showThumbPrincipal && props.thumbText) {
+      if (!showMeioAMeio && !(showThumbPrincipal && useQuadrantGrid) && props.thumbText) {
         const areaX = W * 0.02;
         const areaH = H * 0.38;
         const areaY = H - H * bottomFrac - areaH;
@@ -915,7 +915,7 @@ export const CortesControls = ({
       }
 
       // Thumb Principal — text inside circle
-      if (showThumbPrincipal && props.thumbText) {
+      if (showThumbPrincipal && useQuadrantGrid && props.thumbText) {
         const textW = 380;
         const textH = 200;
         const textX = W / 2 - textW / 2;

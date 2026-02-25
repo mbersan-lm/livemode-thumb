@@ -547,7 +547,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
         />
 
         {/* Layer 5: Text — single (pip/duas-pessoas/so-lettering) — NOT thumb-principal */}
-        {!showMeioAMeio && !showThumbPrincipal && thumbText && (
+        {!showMeioAMeio && !(showThumbPrincipal && useQuadrantGrid) && thumbText && (
           <div
             ref={textRef}
             style={{
@@ -582,7 +582,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
         )}
 
         {/* Layer 5tp: Text inside central circle — thumb-principal only */}
-        {showThumbPrincipal && thumbText && (
+        {showThumbPrincipal && useQuadrantGrid && thumbText && (
           <div
             ref={textRef}
             style={{
