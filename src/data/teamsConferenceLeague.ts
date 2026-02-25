@@ -2,6 +2,7 @@ import { Team } from './teams';
 
 export const teamsConferenceLeague: Team[] = [
   { id: 'cl1', name: 'ABERDEEN', slug: 'cl-aberdeen', crest_url: '/crests/cl-aberdeen.png' },
+  { id: 'cl35', name: 'AZ ALKMAAR', slug: 'cl-az-alkmaar', crest_url: '/crests/cl-az-alkmaar.png' },
   { id: 'cl2', name: 'AEK ATENAS', slug: 'cl-aek-atenas', crest_url: '/crests/cl-aek-atenas.png' },
   { id: 'cl3', name: 'AEK LARNACA', slug: 'cl-aek-larnaca', crest_url: '/crests/cl-aek-larnaca.png' },
   { id: 'cl4', name: 'BRATISLAVA', slug: 'cl-bratislava', crest_url: '/crests/cl-bratislava.png' },
