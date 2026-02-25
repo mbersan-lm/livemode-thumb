@@ -25,7 +25,7 @@ export const teamsBrasileirao: Team[] = [
   { id: '14', name: 'Palmeiras', slug: 'palmeiras', crest_url: '/crests/palmeiras.png' },
   { id: '15', name: 'Red Bull Bragantino', slug: 'redbullbragantino', crest_url: '/crests/redbullbragantino.png' },
   { id: '24', name: 'Remo', slug: 'remo', crest_url: '/crests/remo.png' },
-  { id: '16', name: 'Santos', slug: 'santos', crest_url: '/crests/santos.png' },
+  { id: '16', name: 'Santos', slug: 'santos', crest_url: '/crests/santos.png', jcOffsetY: 16 },
   { id: '17', name: 'São Paulo', slug: 'saopaulo', crest_url: '/crests/saopaulo.png' },
   { id: '19', name: 'Vasco', slug: 'vasco', crest_url: '/crests/vasco.png' },
   { id: '20', name: 'Vitória', slug: 'vitoria', crest_url: '/crests/vitoria.png' },
