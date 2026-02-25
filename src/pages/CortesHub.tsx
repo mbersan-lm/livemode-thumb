@@ -82,6 +82,7 @@ const CortesHub = () => {
               logoUrl={p.name === 'Roda de Bobo' ? '/cortes/logo-rdb.png' : p.name === 'Geral CazéTv' ? '/cortes/logo-geral.png' : p.name === 'Geral CazéTv Brasil' ? '/cortes/logo-brasil.png' : p.name === 'Live CazéTv' ? '/cortes/logo-live.png' : undefined}
               bgImageUrl={p.name === 'Roda de Bobo' ? '/cortes/bg-card-rdb.png' : p.name === 'Geral CazéTv' ? '/cortes/bg-card-geral.jpg' : p.name === 'Geral CazéTv Brasil' ? '/cortes/bg-card-brasil.jpg' : p.name === 'Live CazéTv' ? '/cortes/bg-card-live.jpg' : undefined}
               bgOpacity={p.name === 'Geral CazéTv' || p.name === 'Geral CazéTv Brasil' || p.name === 'Live CazéTv' ? 1 : undefined}
+              logoHeight={p.name === 'Live CazéTv' ? 'h-[4.2rem]' : undefined}
               onClick={() => navigate(`/cortes/${p.id}`)}
               onEdit={() => setEditingProgram(p)}
               onDelete={() => handleDelete(p.id)}
