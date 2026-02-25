@@ -1,12 +1,13 @@
 import { useNavigate } from 'react-router-dom';
-import { Film, Radio, Scissors } from 'lucide-react';
+import { Radio, Scissors } from 'lucide-react';
 import FlyingBees from '@/components/FlyingBees';
 
 const cards = [
   {
     title: 'Melhores Momentos & Jogo Completo',
     description: 'Gere thumbnails para vídeos de melhores momentos e jogos completos',
-    icon: Film,
+    icon: null as any,
+    customIcon: '/images/mm-icon.png',
     path: '/melhores-momentos',
   },
   {
@@ -48,7 +49,11 @@ const Home = () => {
               onClick={() => navigate(card.path)}
               className="group relative rounded-2xl border border-border bg-card p-8 text-left transition-all hover:border-foreground/30 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-ring"
             >
-              <card.icon className="w-10 h-10 text-muted-foreground group-hover:text-foreground transition-colors mb-5" />
+              {(card as any).customIcon ? (
+                <img src={(card as any).customIcon} alt="" className="w-10 h-10 object-contain mb-5 grayscale group-hover:grayscale-0 transition-all" />
+              ) : (
+                <card.icon className="w-10 h-10 text-muted-foreground group-hover:text-foreground transition-colors mb-5" />
+              )}
               <h2 className="text-lg font-bold text-foreground mb-2">{card.title}</h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {card.description}
