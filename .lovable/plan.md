@@ -1,90 +1,36 @@
-## Problem
 
-The user wants a backend endpoint (Supabase Edge Function) that receives a POST request with team parameters (names, colors, crest URLs) and returns a generated "Ao Vivo" thumbnail as a JPG image -- for use in n8n webhook automation.
 
-## Challenge: Server-Side Rendering
+## Plan: Upload to Storage and Return Public URL
 
-The current "Ao Vivo" thumbnail is composed of multiple layers:
+### Problem
+The edge function currently returns raw PNG binary, which causes JSON parsing errors in Airtable. Airtable needs a public URL to save attachments.
 
-1. Black background (1280x720)
-2. KV background image (`/kv/kv-ao-vivo.png`)
-3. Left and right gradient overlays with `mix-blend-mode: overlay`
-4. Glass panels with `backdrop-filter: blur(20px)` (simulated in export)
-5. Overlay panels PNG (`/kv/overlay-ao-vivo-panels.png`)
-6. Two team crests (centered in glass panels at positions 458,527 and 822,527)
-7. Logos overlay (`/kv/logos-ao-vivo-europa.png`)
+### Changes
 
-The frontend export already uses a **Native Canvas API** approach (not html2canvas), which translates well to server-side rendering. However, Supabase Edge Functions run on Deno and do not have access to the browser Canvas API or DOM.
+#### 1. Create Storage Bucket `thumbnails` (SQL Migration)
+Create a public bucket called `thumbnails` with a permissive insert policy so the edge function (using the service role key) can upload files.
 
-## Approach: Deno Canvas + Image Composition
-
-We will use `jsr:@aspect/canvas` (or `https://deno.land/x/canvas/mod.ts`), a Deno-native Canvas implementation that provides the same Canvas 2D API used in the frontend export. This avoids the need for Puppeteer (too heavy for edge functions) or Satori (designed for SVG/text, not image compositing).
-
-### Static Assets
-
-The overlay PNGs (`kv-ao-vivo.png`, `overlay-ao-vivo-panels.png`, `logos-ao-vivo-europa.png`, `logos-ao-vivo-conference.png`) are hosted on the published app URL. The edge function will fetch them from `https://livemode-thumb.lovable.app/kv/...`. Team crests come from external URLs provided in the request body.
-
-## Plan
-
-### 1. Create Edge Function `supabase/functions/generate-ao-vivo/index.ts`
-
-**Input (POST JSON body):**
-
-```json
-{
-  "nomeTimeA": "LYON",
-  "nomeTimeB": "PORTO",
-  "hexTimeA": "#000066",
-  "hexTimeB": "#003399",
-  "urlEscudoA": "https://example.com/lyon.png",
-  "urlEscudoB": "https://example.com/porto.png",
-  "template": "europaleague"
-}
+```sql
+INSERT INTO storage.buckets (id, name, public) VALUES ('thumbnails', 'thumbnails', true);
 ```
 
-- `template` is optional, defaults to `"europaleague"` (alternative: `"conferenceleague"`)
+#### 2. Update `supabase/functions/generate-ao-vivo/index.ts`
 
-**Logic (mirrors the existing `handleExportAoVivo` function):**
+After generating the PNG buffer (line 168), instead of returning the binary directly:
 
-1. Create a 1280x720 canvas
-2. Fill black background
-3. Load and draw KV background from published URL
-4. Draw left gradient overlay using `hexTimeA` with overlay composite operation
-5. Draw right gradient overlay using `hexTimeB` with overlay composite operation
-6. Simulate glass panels (blur + semi-transparent fill + border)
-7. Draw overlay panels PNG
-8. Load and draw team crests from `urlEscudoA` / `urlEscudoB`, centered at (458,527) and (822,527), max size 400px
-9. Draw logos overlay (europa or conference)
-10. Encode as PNG and return binary response
+1. Import `createClient` from `@supabase/supabase-js`
+2. Create a Supabase client using `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` (both already available as secrets)
+3. Generate a unique filename using timestamp + random string (e.g., `ao-vivo/1772058562515-abc123.png`)
+4. Upload the PNG buffer to the `thumbnails` bucket via `supabase.storage.from('thumbnails').upload(...)`
+5. Get the public URL via `supabase.storage.from('thumbnails').getPublicUrl(...)`
+6. Return a JSON response: `{ "url": "https://...supabase.co/storage/v1/object/public/thumbnails/ao-vivo/..." }`
 
-**Output:** JPG binary with `Content-Type: image/jpg`
+The response will change from `Content-Type: image/png` to `Content-Type: application/json`.
 
-### 2. Update `supabase/config.toml`
+### Technical Details
 
-Add JWT verification disabled for public webhook access:
+- **Service Role Key**: Used server-side to bypass RLS for the upload. Already configured as a secret (`SUPABASE_SERVICE_ROLE_KEY`).
+- **File naming**: `ao-vivo/{timestamp}-{random}.png` to avoid collisions.
+- **Bucket is public**: So the returned URL is directly accessible without auth tokens -- exactly what Airtable needs.
+- **No RLS policies needed on storage.objects** for this bucket since uploads happen via service role key (bypasses RLS) and reads are public.
 
-```toml
-[functions.generate-ao-vivo]
-verify_jwt = false
-```
-
-### 3. Technical Details
-
-- **Canvas library**: `https://deno.land/x/canvas@v1.4.2/mod.ts` -- provides `createCanvas`, `loadImage` compatible with standard Canvas API
-- **Image loading**: Fetch static assets from the published app URL and team crests from provided URLs
-- **Glass panel simulation**: Same approach as frontend -- capture canvas state, apply blur filter within clipped regions, draw semi-transparent fills and borders
-- **No authentication required**: This is a public webhook endpoint for n8n integration
-- **Response**: Direct JPG binary (most useful for automation pipelines)
-
-### 4. Endpoint URL
-
-Once deployed, the endpoint will be:
-
-```
-https://sgpzvgpmqshxlrowopto.supabase.co/functions/v1/generate-ao-vivo
-```
-
-### Limitations
-
-- The Deno canvas library's `blur` filter support may be limited. If blur simulation fails, the glass panels will be rendered with semi-transparent colored rectangles and white borders (visually close, without the frosted glass effect).
-- No player photos in the automated version (only crests, gradients, and overlays).
