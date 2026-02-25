@@ -2,55 +2,37 @@
 
 ## Problema
 
-Atualmente, o modelo "Thumb Principal" sempre usa o layout de quadrantes 2x2 (com escala de 211.2%, âncora em 0,0, offsets horizontais fixos) para todos os programas. Mas essa regra de quadrantes deveria ser exclusiva do **Roda de Bobo**. Para **Geral CazéTv** e **Geral CazéTv Brasil**, as fotos devem funcionar como anexos normais — cutouts livres, posicionáveis pelo usuário, sem confinamento em quadrantes.
+A prop `thumbPrincipalLogosImage` não tem um valor definido para "Geral CazéTv Brasil" — retorna `undefined`, o que faz cair na logo padrão do programa. O usuário quer uma logo exclusiva para a Thumb Principal desse programa, que é a imagem enviada em anexo.
 
 ## Solução
 
-Adicionar uma prop `useQuadrantGrid` que controla se o layout de quadrantes é usado. Quando `false`, as 4 fotos são renderizadas como cutouts livres (posição absoluta, sem clip de quadrante, sem escala forçada de 211.2%).
+1. Copiar a imagem enviada para `public/cortes/logos-thumb-principal-brasil.png`.
+2. Em `src/pages/CortesProgramBuilder.tsx`, adicionar o caso "Geral CazéTv Brasil" na lógica de `thumbPrincipalLogosImage`.
 
-### Mudanças em 4 arquivos:
+### Mudanças:
 
----
+**Arquivo de asset:** Copiar `user-uploads://GERAL_THUMB_14-10.jpg` para `public/cortes/logos-thumb-principal-brasil.png`.
 
-### 1. `src/pages/CortesProgramBuilder.tsx`
-Passar `useQuadrantGrid={program!.name === 'Roda de Bobo'}` ao `CortesThumbBuilder`.
+**`src/pages/CortesProgramBuilder.tsx` (linhas 62-66):**
 
----
-
-### 2. `src/components/cortes/CortesThumbBuilder.tsx`
-- Adicionar prop `useQuadrantGrid?: boolean` (default `false`).
-- Repassar para `CortesCanvas` e `CortesControls`.
-
----
-
-### 3. `src/components/cortes/CortesCanvas.tsx` (Preview)
-- Adicionar prop `useQuadrantGrid?: boolean`.
-- No bloco "Layer 3f: Thumb Principal":
-  - Se `useQuadrantGrid === true` → manter layout atual (quadrantes 2x2, escala 211.2%, offsets, clip por quadrante).
-  - Se `useQuadrantGrid === false` → renderizar cada cutout como imagem livre sobre o canvas inteiro (sem clip de quadrante), similar ao modelo "duas-pessoas" mas com até 4 fotos. Cada foto ocupa a altura total do canvas e é posicionável via transform.
-
-Layout livre (sem quadrantes):
-```text
-┌──────────────────────────────┐
-│  foto1   foto2   foto3  foto4│  ← cutouts livres, sem clipping
-│  (zIndex 3-6, posição livre) │
-└──────────────────────────────┘
+De:
+```typescript
+thumbPrincipalLogosImage={
+  program!.name === 'Geral CazéTv' ? '/cortes/logos-thumb-principal.png'
+  : program!.name === 'Roda de Bobo' ? '/cortes/logos-thumb-principal-rdb.png'
+  : undefined
+}
 ```
 
----
+Para:
+```typescript
+thumbPrincipalLogosImage={
+  program!.name === 'Geral CazéTv' ? '/cortes/logos-thumb-principal.png'
+  : program!.name === 'Geral CazéTv Brasil' ? '/cortes/logos-thumb-principal-brasil.png'
+  : program!.name === 'Roda de Bobo' ? '/cortes/logos-thumb-principal-rdb.png'
+  : undefined
+}
+```
 
-### 4. `src/components/cortes/CortesControls.tsx`
-- Adicionar prop `useQuadrantGrid?: boolean`.
-- **UI dos controles**: Quando `useQuadrantGrid === false`, mostrar uploads simples de "Foto 1", "Foto 2", etc. (sem a UI de "Quadrantes" com presets e toggles de visibilidade).
-- **Export nativo**: No bloco de exportação da Thumb Principal, aplicar a mesma lógica: se `useQuadrantGrid === false`, renderizar cutouts livres (sem clip de quadrante, sem escala 211.2%, sem offsets fixos).
-
----
-
-### Comportamento esperado após a mudança:
-
-| Programa | Thumb Principal | Layout |
-|---|---|---|
-| Roda de Bobo | Quadrantes 2x2, escala 211.2%, offsets, presets | Mantido como está |
-| Geral CazéTv | Fotos livres, posicionáveis | Cutouts normais |
-| Geral CazéTv Brasil | Fotos livres, posicionáveis | Cutouts normais |
+Nenhum outro arquivo precisa ser alterado. A lógica em `CortesThumbBuilder` já seleciona `thumbPrincipalLogosImage` quando o modelo é `thumb-principal`.
 
