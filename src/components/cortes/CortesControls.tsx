@@ -954,7 +954,7 @@ export const CortesControls = ({
             return acc + crestH * aspect;
           }, 0) + (crests.length > 1 ? gap : 0);
           let crestX = W / 2 - totalW / 2;
-          const crestY = H - H * 0.085 - crestH;
+          const crestY = H - H * 0.134 - crestH;
           for (const c of crests) {
             const aspect = c.img.naturalWidth / c.img.naturalHeight;
             const cW = crestH * aspect;
