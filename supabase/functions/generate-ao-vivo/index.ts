@@ -71,6 +71,8 @@ Deno.serve(async (req) => {
       urlEscudoA,
       urlEscudoB,
       template = "europaleague",
+      competicao = "",
+      modelo = "",
     } = body;
 
     if (!urlEscudoA || !urlEscudoB) {
@@ -144,11 +146,14 @@ Deno.serve(async (req) => {
     drawGlassPanel(655, 319, 334, 437, hexTimeB);
     drawGlassPanel(-30, H - 145 + H * 0.05, 280, 145, "#000000");
 
-    // 6. Overlay panels PNG
-    const overlayImg = await fetchImage(
-      `${APP_URL}/kv/overlay-ao-vivo-panels.png`
-    );
-    ctx.drawImage(overlayImg, 0, 0, W, H);
+    // 6. Overlay panels PNG (skip if modelo = "sem narracao")
+    const isSemNarracao = modelo === "sem narracao";
+    if (!isSemNarracao) {
+      const overlayImg = await fetchImage(
+        `${APP_URL}/kv/overlay-ao-vivo-panels.png`
+      );
+      ctx.drawImage(overlayImg, 0, 0, W, H);
+    }
 
     // 7. Team crests
     const crestA = await fetchImage(urlEscudoA);
@@ -157,13 +162,23 @@ Deno.serve(async (req) => {
     const crestB = await fetchImage(urlEscudoB);
     drawImageCentered(ctx, crestB, 822, 527, 400, 400);
 
-    // 8. Logos overlay
-    const isConference = template === "conferenceleague";
+    // 8. Logos overlay (use competicao if provided, fallback to template)
+    const isConference = competicao
+      ? competicao.toLowerCase().includes("conference")
+      : template === "conferenceleague";
     const logosSrc = isConference
       ? `${APP_URL}/kv/logos-ao-vivo-conference.png`
       : `${APP_URL}/kv/logos-ao-vivo-europa.png`;
     const logosImg = await fetchImage(logosSrc);
     ctx.drawImage(logosImg, 0, 0, W, H);
+
+    // 9. Som Ambiente overlay (add if modelo = "sem narracao")
+    if (isSemNarracao) {
+      const somAmbienteImg = await fetchImage(
+        `${APP_URL}/kv/overlay-som-ambiente.png`
+      );
+      ctx.drawImage(somAmbienteImg, 0, 0, W, H);
+    }
 
     // 9. Upload to Storage and return public URL
     const pngBuffer = canvas.toBuffer();
