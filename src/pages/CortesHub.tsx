@@ -80,6 +80,7 @@ const CortesHub = () => {
               thumbType="Corte com PIP"
               previewColors={{ text: p.text_color, stroke: p.stroke_color, pip: p.pip_border_color }}
               logoUrl={p.name === 'Roda de Bobo' ? '/cortes/logo-rdb.png' : undefined}
+              bgImageUrl={p.name === 'Roda de Bobo' ? '/cortes/bg-card-rdb.png' : undefined}
               onClick={() => navigate(`/cortes/${p.id}`)}
               onEdit={() => setEditingProgram(p)}
               onDelete={() => handleDelete(p.id)}

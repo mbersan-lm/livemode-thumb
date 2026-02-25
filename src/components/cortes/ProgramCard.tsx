@@ -5,16 +5,22 @@ interface ProgramCardProps {
   thumbType: string;
   previewColors: { text: string; stroke: string; pip: string };
   logoUrl?: string;
+  bgImageUrl?: string;
   onClick: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
 }
 
-export const ProgramCard = ({ name, thumbType, previewColors, logoUrl, onClick, onEdit, onDelete }: ProgramCardProps) => {
+export const ProgramCard = ({ name, thumbType, previewColors, logoUrl, bgImageUrl, onClick, onEdit, onDelete }: ProgramCardProps) => {
   return (
     <div
       onClick={onClick}
-      className="relative group bg-card border border-border rounded-xl p-5 cursor-pointer hover:border-foreground/20 transition-all min-h-[160px] flex flex-col justify-between"
+      className="relative group border border-border rounded-xl p-5 cursor-pointer hover:border-foreground/20 transition-all min-h-[160px] flex flex-col justify-between overflow-hidden"
+      style={bgImageUrl ? {
+        backgroundImage: `url(${bgImageUrl})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      } : { backgroundColor: 'hsl(var(--card))' }}
     >
       {/* Logo or color preview */}
       {logoUrl ? (
@@ -30,8 +36,8 @@ export const ProgramCard = ({ name, thumbType, previewColors, logoUrl, onClick, 
       )}
 
       <div>
-        <h3 className="text-lg font-bold text-foreground">{name}</h3>
-        <p className="text-xs text-muted-foreground mt-1">{thumbType}</p>
+        <h3 className={`text-lg font-bold ${bgImageUrl ? 'text-white' : 'text-foreground'}`}>{name}</h3>
+        <p className={`text-xs mt-1 ${bgImageUrl ? 'text-white/70' : 'text-muted-foreground'}`}>{thumbType}</p>
       </div>
 
       {(onEdit || onDelete) && (
