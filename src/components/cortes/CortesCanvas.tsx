@@ -42,6 +42,7 @@ interface CortesCanvasProps {
   customFontFamily?: string;
   textBoxHeight?: number;
   quadrantVisibility?: boolean[];
+  useQuadrantGrid?: boolean;
 }
 
 export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
@@ -56,7 +57,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
      divisoriaImage = '/cortes/divisoria-geral.png',
      textColor = '#F1E8D5', strokeColor = '#0C0C20', pipBorderColor = '#D02046',
      highlightColor = '#D02046', customFontFamily = "'Clash Grotesk', sans-serif",
-     textBoxHeight = 38, quadrantVisibility = [true, true, true, true] }, ref) => {
+     textBoxHeight = 38, quadrantVisibility = [true, true, true, true], useQuadrantGrid = false }, ref) => {
    const showPip = thumbModel === 'pip';
    const showPipDividido = thumbModel === 'pip-dividido';
    const showPerson2 = thumbModel === 'duas-pessoas';
@@ -426,13 +427,13 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           />
         )}
 
-        {/* Layer 3f: Thumb Principal — 4 cutouts in 2x2 quadrants */}
-        {showThumbPrincipal && (() => {
+        {/* Layer 3f: Thumb Principal — quadrant grid (Roda de Bobo) or free cutouts */}
+        {showThumbPrincipal && useQuadrantGrid && (() => {
           const quadrants = [
-            { left: '0%', top: '0%' },    // top-left
-            { left: '50%', top: '0%' },   // top-right
-            { left: '0%', top: '50%' },   // bottom-left
-            { left: '50%', top: '50%' },  // bottom-right
+            { left: '0%', top: '0%' },
+            { left: '50%', top: '0%' },
+            { left: '0%', top: '50%' },
+            { left: '50%', top: '50%' },
           ];
           const cutouts = [
             { src: personCutout, t: personTransform },
@@ -468,6 +469,33 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
                 }}
               />
             </div>
+          ) : null);
+        })()}
+
+        {/* Layer 3f-alt: Thumb Principal — free cutouts (Geral CazéTv) */}
+        {showThumbPrincipal && !useQuadrantGrid && (() => {
+          const cutouts = [
+            { src: personCutout, t: personTransform, z: 3 },
+            { src: person2Cutout, t: person2Transform, z: 4 },
+            { src: person3Cutout, t: person3Transform, z: 5 },
+            { src: person4Cutout, t: person4Transform, z: 6 },
+          ];
+          return cutouts.map((c, i) => c.src ? (
+            <img
+              key={`tp-free-${i}`}
+              src={c.src}
+              alt=""
+              style={{
+                position: 'absolute',
+                left: 0,
+                top: '-2%',
+                height: '108%',
+                width: 'auto',
+                zIndex: c.z,
+                transform: `translate(${c.t.x}px, ${c.t.y}px) scale(${c.t.scale}) rotate(${c.t.rotation}deg)`,
+                transformOrigin: 'center center',
+              }}
+            />
           ) : null);
         })()}
 

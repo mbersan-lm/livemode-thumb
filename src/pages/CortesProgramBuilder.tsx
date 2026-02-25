@@ -57,6 +57,7 @@ const CortesProgramBuilder = () => {
       }
       allowJogoV1={program!.name === 'Roda de Bobo'}
       allowThumbPrincipal={program!.name === 'Geral CazéTv' || program!.name === 'Geral CazéTv Brasil' || program!.name === 'Roda de Bobo'}
+      useQuadrantGrid={program!.name === 'Roda de Bobo'}
       thumbPrincipalBgImage={program!.name === 'Roda de Bobo' ? '/cortes/bg-thumb-principal-rdb.jpg' : undefined}
       thumbPrincipalLogosImage={
         program!.name === 'Geral CazéTv' ? '/cortes/logos-thumb-principal.png'
