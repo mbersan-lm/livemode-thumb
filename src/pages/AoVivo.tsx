@@ -365,53 +365,13 @@ const AoVivo = () => {
             </div>
           </div>
 
-          <Tabs defaultValue="teams" className="w-full">
-            <TabsList className="w-full grid h-10 grid-cols-2">
-              <TabsTrigger value="photo" className="text-xs">Foto</TabsTrigger>
-              <TabsTrigger value="teams" className="text-xs">Times</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="photo" className="mt-5">
-              <PhotoControls
-                activeCanvas="av"
-                photoTransform={{ x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 }}
-                initialScale={0.5}
-                onTransformChange={() => {}}
-                onPhotoUpload={() => {}}
-                playerPhoto={null}
-                jogoCompletoPhoto={null}
-                jogoCompletoPhotoTransform={{ x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 }}
-                initialScaleJogoCompleto={0.5}
-                onJogoCompletoTransformChange={() => {}}
-                onJogoCompletoPhotoUpload={() => {}}
-                onPlayerPhotoReplace={() => {}}
-                onJogoCompletoPhotoReplace={() => {}}
-                aoVivoPhotoLeft={photoLeft}
-                aoVivoPhotoLeftTransform={photoLeftTransform}
-                initialScaleAoVivoLeft={initialScaleLeft}
-                onAoVivoPhotoLeftUpload={handleLeftPhotoUpload}
-                onAoVivoPhotoLeftTransformChange={(t) => setPhotoLeftTransform(prev => ({ ...prev, ...t }))}
-                onAoVivoPhotoLeftReplace={(dataUrl) => { setPhotoLeft(dataUrl); setPhotoLeftTransform({ x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 }); }}
-                aoVivoPhotoRight={photoRight}
-                aoVivoPhotoRightTransform={photoRightTransform}
-                initialScaleAoVivoRight={initialScaleRight}
-                onAoVivoPhotoRightUpload={handleRightPhotoUpload}
-                onAoVivoPhotoRightTransformChange={(t) => setPhotoRightTransform(prev => ({ ...prev, ...t }))}
-                onAoVivoPhotoRightReplace={(dataUrl) => { setPhotoRight(dataUrl); setPhotoRightTransform({ x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 }); }}
-              />
-            </TabsContent>
-
-            <TabsContent value="teams" className="mt-5">
-              <TeamControls
-                matchData={matchData}
-                onMatchDataChange={handleMatchDataChange}
-                template="europaleague"
-                activeCanvas="av"
-                aoVivoTemplate={aoVivoTemplate}
-              />
-            </TabsContent>
-
-          </Tabs>
+          <TeamControls
+            matchData={matchData}
+            onMatchDataChange={handleMatchDataChange}
+            template="europaleague"
+            activeCanvas="av"
+            aoVivoTemplate={aoVivoTemplate}
+          />
 
           <div className="mt-5">
             <Button
