@@ -50,7 +50,7 @@ const Home = () => {
               className="group relative rounded-2xl border border-border bg-card p-8 text-left transition-all hover:border-foreground/30 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-ring"
             >
               {(card as any).customIcon ? (
-                <img src={(card as any).customIcon} alt="" className="w-[5.625rem] h-[5.625rem] object-contain mb-5 grayscale group-hover:grayscale-0 transition-all" />
+                <img src={(card as any).customIcon} alt="" className="w-[5.625rem] h-[5.625rem] object-contain mb-5" />
               ) : (
                 <card.icon className="w-10 h-10 text-muted-foreground group-hover:text-foreground transition-colors mb-5" />
               )}
