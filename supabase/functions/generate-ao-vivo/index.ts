@@ -92,15 +92,36 @@ const conferenceLeagueTeams: Record<string, TeamEntry> = {
 function findTeam(name: string, isConference: boolean): TeamEntry | null {
   const registry = isConference ? conferenceLeagueTeams : europaLeagueTeams;
   const upper = name.toUpperCase();
-  // Exact match first
   for (const [key, entry] of Object.entries(registry)) {
     if (key.toUpperCase() === upper) return entry;
   }
-  // Partial match fallback
   for (const [key, entry] of Object.entries(registry)) {
     if (key.toUpperCase().includes(upper) || upper.includes(key.toUpperCase())) return entry;
   }
   return null;
+}
+
+// ── Crest size overrides (matching frontend) ────────────────────────
+const europaLeagueSizeOverrides: Record<string, number> = {
+  "BRANN": 248,
+  "CELTA DE VIGO": 315,
+  "NOTTINGHAM FOREST": 360,
+  "REAL BETIS": 400,
+  "MALMÖ": 450,
+  "MALMO": 450,
+};
+
+const conferenceLeagueSizeOverrides: Record<string, number> = {
+  "AZ ALKMAAR": 280,
+  "CRAIOVA": 440,
+};
+
+function getCrestMaxSize(teamName: string, isConference: boolean): number {
+  const upper = teamName.toUpperCase();
+  if (isConference) {
+    return conferenceLeagueSizeOverrides[upper] ?? 400;
+  }
+  return europaLeagueSizeOverrides[upper] ?? 500;
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────
@@ -236,16 +257,27 @@ Deno.serve(async (req) => {
     ctx.fillRect(0, 0, W, H);
     ctx.restore();
 
-    // 5. Glass panels (simplified - no blur in Deno canvas)
+    // 5. Glass panels with blur simulation (matching frontend)
+    // Capture current canvas state for blur effect
+    const tempCanvas = createCanvas(W, H);
+    const tempCtx = tempCanvas.getContext("2d");
+    tempCtx.drawImage(canvas, 0, 0);
+
     const drawGlassPanel = (
       x: number, y: number, w: number, h: number, color: string
     ) => {
       ctx.save();
       roundRect(ctx, x, y, w, h, 12);
       ctx.clip();
+      // Draw blurred background within clipped area
+      ctx.filter = "blur(20px)";
+      ctx.drawImage(tempCanvas, 0, 0);
+      ctx.filter = "none";
+      // Semi-transparent fill
       ctx.fillStyle = color + "33";
       ctx.fillRect(x, y, w, h);
       ctx.restore();
+      // Border (drawn outside clip)
       ctx.save();
       roundRect(ctx, x, y, w, h, 12);
       ctx.strokeStyle = "rgba(255,255,255,0.35)";
@@ -267,12 +299,15 @@ Deno.serve(async (req) => {
       ctx.drawImage(overlayImg, 0, 0, W, H);
     }
 
-    // 7. Team crests
+    // 7. Team crests with dynamic sizing
+    const maxSizeA = getCrestMaxSize(nomeTimeA || "", isConference);
+    const maxSizeB = getCrestMaxSize(nomeTimeB || "", isConference);
+
     const crestA = await fetchImage(resolvedCrestA);
-    drawImageCentered(ctx, crestA, 458, 527, 400, 400);
+    drawImageCentered(ctx, crestA, 458, 527, maxSizeA, maxSizeA);
 
     const crestB = await fetchImage(resolvedCrestB);
-    drawImageCentered(ctx, crestB, 822, 527, 400, 400);
+    drawImageCentered(ctx, crestB, 822, 527, maxSizeB, maxSizeB);
 
     // 8. Logos overlay
     const logosSrc = isConference
