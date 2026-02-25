@@ -7,12 +7,13 @@ interface ProgramCardProps {
   logoUrl?: string;
   bgImageUrl?: string;
   bgOpacity?: number;
+  logoHeight?: string;
   onClick: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
 }
 
-export const ProgramCard = ({ name, thumbType, previewColors, logoUrl, bgImageUrl, bgOpacity = 0.7, onClick, onEdit, onDelete }: ProgramCardProps) => {
+export const ProgramCard = ({ name, thumbType, previewColors, logoUrl, bgImageUrl, bgOpacity = 0.7, logoHeight = 'h-14', onClick, onEdit, onDelete }: ProgramCardProps) => {
   const hasCustomCard = !!(logoUrl && bgImageUrl);
 
   return (
@@ -27,7 +28,7 @@ export const ProgramCard = ({ name, thumbType, previewColors, logoUrl, bgImageUr
           <div className="absolute inset-0" style={{ backgroundImage: `url(${bgImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: bgOpacity }} />
           {/* Centered logo */}
           <div className="relative z-10 flex-1 flex items-center justify-center p-5">
-            <img src={logoUrl} alt={name} className="h-14 w-auto" style={{ maxWidth: 'none' }} />
+            <img src={logoUrl} alt={name} className={`${logoHeight} w-auto`} style={{ maxWidth: 'none' }} />
           </div>
         </>
       ) : (
