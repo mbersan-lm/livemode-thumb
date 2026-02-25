@@ -1,4 +1,5 @@
 import { createCanvas, loadImage } from "https://deno.land/x/canvas@v1.4.2/mod.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.97.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -164,14 +165,36 @@ Deno.serve(async (req) => {
     const logosImg = await fetchImage(logosSrc);
     ctx.drawImage(logosImg, 0, 0, W, H);
 
-    // 9. Export as PNG
+    // 9. Upload to Storage and return public URL
     const pngBuffer = canvas.toBuffer();
 
-    return new Response(pngBuffer, {
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    const rand = Math.random().toString(36).substring(2, 8);
+    const fileName = `ao-vivo/${Date.now()}-${rand}.png`;
+
+    const { error: uploadError } = await supabaseAdmin.storage
+      .from("thumbnails")
+      .upload(fileName, pngBuffer, {
+        contentType: "image/png",
+        upsert: false,
+      });
+
+    if (uploadError) {
+      throw new Error(`Upload failed: ${uploadError.message}`);
+    }
+
+    const { data: urlData } = supabaseAdmin.storage
+      .from("thumbnails")
+      .getPublicUrl(fileName);
+
+    return new Response(JSON.stringify({ url: urlData.publicUrl }), {
       headers: {
         ...corsHeaders,
-        "Content-Type": "image/png",
-        "Content-Disposition": "inline; filename=ao-vivo.png",
+        "Content-Type": "application/json",
       },
     });
   } catch (error) {
