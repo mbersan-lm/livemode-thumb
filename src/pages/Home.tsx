@@ -48,13 +48,15 @@ const Home = () => {
             <button
               key={card.path}
               onClick={() => navigate(card.path)}
-              className="group relative rounded-2xl border border-border bg-card p-8 text-left transition-all hover:border-foreground/30 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-ring"
+              className="group relative rounded-2xl border border-border bg-card p-8 text-left transition-all hover:border-foreground/30 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-ring flex flex-col"
             >
-              {(card as any).customIcon ? (
-                <img src={(card as any).customIcon} alt="" className={`object-contain mb-5 ${(card as any).customIcon === '/images/mm-icon.png' ? 'w-[4.2rem] h-[4.2rem]' : 'w-[2.8rem] h-[2.8rem]'}`} />
-              ) : (
-                <card.icon className="w-10 h-10 text-muted-foreground group-hover:text-foreground transition-colors mb-5" />
-              )}
+              <div className="h-[4.2rem] flex items-end mb-5">
+                {(card as any).customIcon ? (
+                  <img src={(card as any).customIcon} alt="" className={`object-contain ${(card as any).customIcon === '/images/mm-icon.png' ? 'w-[4.2rem] h-[4.2rem]' : 'w-[2.8rem] h-[2.8rem]'}`} />
+                ) : (
+                  <card.icon className="w-10 h-10 text-muted-foreground group-hover:text-foreground transition-colors" />
+                )}
+              </div>
               <h2 className="text-lg font-bold text-foreground mb-2">{card.title}</h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {card.description}
