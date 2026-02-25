@@ -13,7 +13,8 @@ const cards = [
   {
     title: 'Ao Vivo',
     description: 'Crie thumbnails para transmissões ao vivo',
-    icon: Radio,
+    icon: null as any,
+    customIcon: '/images/aovivo-icon.jpg',
     path: '/ao-vivo',
   },
   {
