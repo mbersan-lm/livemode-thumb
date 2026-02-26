@@ -1,34 +1,15 @@
 
 
-## Plan: Create `/print` Route for External Screenshot Service
+## Plan: Fix Print Page to Render at 1920x1080
 
-### Summary
+The canvas component is hardcoded at 1280x720. The external screenshot service captures whatever is on screen, so we need the rendered output to be exactly 1920x1080.
 
-Create a new page at `/print` that reads query string parameters, resolves team data internally, and renders only the `ThumbnailCanvasAoVivo` component in "sem narracao" mode -- no UI, no scrollbar, full viewport.
+### Change: `src/pages/Print.tsx`
 
-### New File: `src/pages/Print.tsx`
+- Set the outer container to exactly `1920px × 1080px` (not `100vw/100vh`)
+- Apply a fixed scale of `1920 / 1280 = 1.5` to the inner wrapper so the 1280x720 canvas fills 1920x1080 perfectly
+- Remove the dynamic `window.innerWidth` resize logic — the dimensions are now fixed regardless of viewport
+- Keep overflow hidden and no scrollbars
 
-- Read query params: `timeA`, `timeB`, `competicao`, `modelo`
-- Determine competition: if `competicao` contains "conference" → use `teamsConferenceLeague`, otherwise → `teamsAoVivo`
-- Find teams by name (case-insensitive partial match against the team arrays)
-- Render `ThumbnailCanvasAoVivo` with:
-  - `showSomAmbiente = true` (always "sem narracao" mode)
-  - `aoVivoTemplate` = `'conferenceleague'` or `'europaleague'` based on `competicao`
-  - `gradientLeftColor` / `gradientRightColor` / `panelLeftColor` / `panelRightColor` = `#000000`
-  - No player photos (null)
-  - `matchData` populated with the resolved team IDs
-- Page styling: `overflow: hidden`, no padding/margin, body scrollbar hidden via useEffect
-- The 1280x720 canvas scaled to fill the viewport using CSS `transform: scale()` calculated from `window.innerWidth / 1280`
-
-### Edit: `src/App.tsx`
-
-- Add route: `<Route path="/print" element={<Print />} />`
-
-### Example URL
-
-```
-https://livemode-thumb.lovable.app/print?timeA=GENK&timeB=DINAMO ZAGREB&competicao=Europa League&modelo=sem narracao
-```
-
-### No backend changes. No Edge Function changes.
+This ensures the screenshot service always captures a 1920x1080 frame with the thumbnail scaled proportionally to fill it.
 
