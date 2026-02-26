@@ -63,7 +63,7 @@ const ligue1Teams: Record<string, TeamEntry> = {
   "MARSEILLE":    { slug: "marseille",  crest_url: "/crests/marseille.png",  color: "#2FAEE0" },
   "METZ":         { slug: "metz",       crest_url: "/crests/metz.png",      color: "#6B1832" },
   "MONACO":       { slug: "monaco",     crest_url: "/crests/monaco.png",    color: "#E2001A" },
-  "NANTES":       { slug: "nantes",     crest_url: "/crests/nantes.png",    color: "#FFD200" },
+  "NANTES":       { slug: "nantes",     crest_url: "/crests/nantes-av.png", color: "#FFD200" },
   "NICE":         { slug: "nice",       crest_url: "/crests/nice.png",      color: "#C8102E" },
   "PARIS FC":     { slug: "parisfc",    crest_url: "/crests/parisfc.png",   color: "#1A3C6E" },
   "PSG":          { slug: "psg",        crest_url: "/crests/psg.png",       color: "#004170" },
@@ -138,8 +138,8 @@ const conferenceLeagueSizeOverrides: Record<string, number> = {
 };
 
 const ligue1SizeOverrides: Record<string, number> = {
-  "LENS": 262,
-  "LORIENT": 227,
+  "LENS": 590,
+  "LORIENT": 512,
 };
 
 function getCrestMaxSize(teamName: string, isConference: boolean, isLigue1: boolean = false): number {
