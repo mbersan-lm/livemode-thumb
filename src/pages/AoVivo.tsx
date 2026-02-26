@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/select';
 import { teamsAoVivo } from '@/data/teamsAoVivo';
 import { teamsConferenceLeague } from '@/data/teamsConferenceLeague';
+import { teamsLigue1 } from '@/data/teamsLigue1';
 import { toast } from 'sonner';
 
 const CANVAS_WIDTH = 1280;
@@ -92,8 +93,12 @@ const AoVivo = () => {
     });
   };
 
-  const getCrestMaxSize = (teamId: string | null, isConference: boolean): number => {
-    if (isConference) {
+  const getCrestMaxSize = (teamId: string | null, template: AoVivoTemplate): number => {
+    if (template === 'ligue1') {
+      const team = teamsLigue1.find(t => t.id === teamId);
+      return (team as any)?.maxSize || 400;
+    }
+    if (template === 'conferenceleague') {
       if (teamId === 'cl35') return 280;
       return 400;
     }
@@ -243,24 +248,25 @@ const AoVivo = () => {
       }
 
       // 10. Team crests (z:50)
-      const isConference = aoVivoTemplate === 'conferenceleague';
-      const currentTeams = isConference ? teamsConferenceLeague : teamsAoVivo;
+      const currentTeams = aoVivoTemplate === 'ligue1' ? teamsLigue1 : aoVivoTemplate === 'conferenceleague' ? teamsConferenceLeague : teamsAoVivo;
       const homeTeam = currentTeams.find(t => t.id === matchData.homeTeamId);
       const awayTeam = currentTeams.find(t => t.id === matchData.awayTeamId);
 
       if (homeTeam) {
         const crestImg = await loadImage(homeTeam.crest_url);
-        const maxSize = getCrestMaxSize(matchData.homeTeamId, isConference);
+        const maxSize = getCrestMaxSize(matchData.homeTeamId, aoVivoTemplate);
         drawImageCentered(ctx, crestImg, 458, 527, maxSize, maxSize);
       }
       if (awayTeam) {
         const crestImg = await loadImage(awayTeam.crest_url);
-        const maxSize = getCrestMaxSize(matchData.awayTeamId, isConference);
+        const maxSize = getCrestMaxSize(matchData.awayTeamId, aoVivoTemplate);
         drawImageCentered(ctx, crestImg, 822, 527, maxSize, maxSize);
       }
 
       // 11. Logos (z:60)
-      const logosSrc = isConference
+      const logosSrc = aoVivoTemplate === 'ligue1'
+        ? '/kv/logos-ao-vivo-ligue1.png'
+        : aoVivoTemplate === 'conferenceleague'
         ? '/kv/logos-ao-vivo-conference.png'
         : '/kv/logos-ao-vivo-europa.png';
       const logosImg = await loadImage(logosSrc);
@@ -294,7 +300,7 @@ const AoVivo = () => {
   const handleMatchDataChange = (data: Partial<typeof matchData>) => {
     setMatchData(prev => ({ ...prev, ...data }));
 
-    const currentTeams = aoVivoTemplate === 'conferenceleague' ? teamsConferenceLeague : teamsAoVivo;
+    const currentTeams = aoVivoTemplate === 'ligue1' ? teamsLigue1 : aoVivoTemplate === 'conferenceleague' ? teamsConferenceLeague : teamsAoVivo;
 
     if (data.homeTeamId) {
       const team = currentTeams.find(t => t.id === data.homeTeamId);
@@ -381,6 +387,7 @@ const AoVivo = () => {
                 <SelectContent>
                   <SelectItem value="europaleague">Europa League</SelectItem>
                   <SelectItem value="conferenceleague">Conference League</SelectItem>
+                  <SelectItem value="ligue1">Ligue 1</SelectItem>
                 </SelectContent>
               </Select>
             </div>

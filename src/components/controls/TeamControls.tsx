@@ -31,7 +31,7 @@ interface TeamControlsProps {
 
 export const TeamControls = ({ matchData, onMatchDataChange, template, activeCanvas, aoVivoTemplate }: TeamControlsProps) => {
   const currentTeams = activeCanvas === 'av'
-    ? (aoVivoTemplate === 'conferenceleague' ? teamsConferenceLeague : teamsAoVivo)
+    ? (aoVivoTemplate === 'ligue1' ? teamsLigue1 : aoVivoTemplate === 'conferenceleague' ? teamsConferenceLeague : teamsAoVivo)
     : template === 'brasileirao' ? teamsBrasileirao : 
       template === 'bundesliga' ? teamsBundesliga :
       template === 'seriea' ? teamsSerieA :

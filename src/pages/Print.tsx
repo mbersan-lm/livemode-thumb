@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { ThumbnailCanvasAoVivo, AoVivoTemplate } from '@/components/ThumbnailCanvasAoVivo';
 import { teamsAoVivo } from '@/data/teamsAoVivo';
 import { teamsConferenceLeague } from '@/data/teamsConferenceLeague';
+import { teamsLigue1 } from '@/data/teamsLigue1';
 
 const Print = () => {
   const [searchParams] = useSearchParams();
@@ -13,8 +14,9 @@ const Print = () => {
   const modelo = searchParams.get('modelo') || '';
 
   const isConference = competicao.includes('conference');
-  const aoVivoTemplate: AoVivoTemplate = isConference ? 'conferenceleague' : 'europaleague';
-  const teams = isConference ? teamsConferenceLeague : teamsAoVivo;
+  const isLigue1 = competicao.includes('ligue');
+  const aoVivoTemplate: AoVivoTemplate = isLigue1 ? 'ligue1' : isConference ? 'conferenceleague' : 'europaleague';
+  const teams = isLigue1 ? teamsLigue1 : isConference ? teamsConferenceLeague : teamsAoVivo;
 
   const findTeam = (name: string) => {
     const n = name.toUpperCase().trim();

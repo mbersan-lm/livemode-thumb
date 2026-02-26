@@ -2,10 +2,11 @@ import { forwardRef } from 'react';
 import { Team } from '@/data/teams';
 import { teamsAoVivo } from '@/data/teamsAoVivo';
 import { teamsConferenceLeague } from '@/data/teamsConferenceLeague';
+import { teamsLigue1 } from '@/data/teamsLigue1';
 import { PhotoTransform, MatchData } from '@/types/thumbnail';
 import { templates, TemplateType } from '@/data/templates';
 
-export type AoVivoTemplate = 'europaleague' | 'conferenceleague';
+export type AoVivoTemplate = 'europaleague' | 'conferenceleague' | 'ligue1';
 
 interface ThumbnailCanvasAoVivoProps {
   playerPhoto: string | null;
@@ -27,7 +28,7 @@ interface ThumbnailCanvasAoVivoProps {
 export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasAoVivoProps>(
   ({ playerPhoto, photoTransform, photoLeft, photoLeftTransform, photoRight, photoRightTransform, matchData, template, aoVivoTemplate = 'europaleague', gradientLeftColor, gradientRightColor, panelLeftColor, panelRightColor, showSomAmbiente = false }, ref) => {
     const config = templates[template];
-    const currentTeams = aoVivoTemplate === 'conferenceleague' ? teamsConferenceLeague : teamsAoVivo;
+    const currentTeams = aoVivoTemplate === 'ligue1' ? teamsLigue1 : aoVivoTemplate === 'conferenceleague' ? teamsConferenceLeague : teamsAoVivo;
     const homeTeam = currentTeams.find(t => t.id === matchData.homeTeamId) as Team | undefined;
     const awayTeam = currentTeams.find(t => t.id === matchData.awayTeamId) as Team | undefined;
 
@@ -296,6 +297,40 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
           />
         )}
 
+        {/* Home Crest - Ligue 1 */}
+        {aoVivoTemplate === 'ligue1' && homeTeam && (
+          <img 
+            src={homeTeam.crest_url}
+            alt={homeTeam.name}
+            className="absolute h-auto w-auto object-contain"
+            style={{ 
+              left: '458px', 
+              top: '527px', 
+              transform: 'translate(-50%, -50%)', 
+              maxWidth: `${(homeTeam as any).maxSize || 400}px`, 
+              maxHeight: `${(homeTeam as any).maxSize || 400}px`, 
+              zIndex: 50 
+            }}
+          />
+        )}
+
+        {/* Away Crest - Ligue 1 */}
+        {aoVivoTemplate === 'ligue1' && awayTeam && (
+          <img 
+            src={awayTeam.crest_url}
+            alt={awayTeam.name}
+            className="absolute h-auto w-auto object-contain"
+            style={{ 
+              left: '822px', 
+              top: '527px', 
+              transform: 'translate(-50%, -50%)', 
+              maxWidth: `${(awayTeam as any).maxSize || 400}px`, 
+              maxHeight: `${(awayTeam as any).maxSize || 400}px`, 
+              zIndex: 50 
+            }}
+          />
+        )}
+
         {/* Logos Ao Vivo Europa League */}
         {aoVivoTemplate === 'europaleague' && (
           <img
@@ -310,6 +345,15 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
           <img
             src="/kv/logos-ao-vivo-conference.png"
             alt="Logos Ao Vivo Conference League"
+            className="absolute left-0 top-0 pointer-events-none"
+            style={{ width: '1280px', height: '720px', objectFit: 'cover', zIndex: 60 }}
+          />
+        )}
+        {/* Logos Ao Vivo Ligue 1 */}
+        {aoVivoTemplate === 'ligue1' && (
+          <img
+            src="/kv/logos-ao-vivo-ligue1.png"
+            alt="Logos Ao Vivo Ligue 1"
             className="absolute left-0 top-0 pointer-events-none"
             style={{ width: '1280px', height: '720px', objectFit: 'cover', zIndex: 60 }}
           />
