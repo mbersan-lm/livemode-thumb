@@ -1,17 +1,12 @@
 
 
-## Plan: Add delete button for photos in Thumb Principal (Geral CazéTv / Brasil)
+## Plan: Limit text Y position to bottom half of canvas
 
-### Changes
+The `textBoxHeight` slider currently allows values 0–60%, controlling the `bottom` CSS position of the text block. To keep text in the bottom half, cap the max at 50% for all models **except** Thumb Principal with quadrant grid (Roda de Bobo), which keeps its current 0–60% range.
 
-**1. `src/components/cortes/CortesThumbBuilder.tsx`**
-- Add 4 new clear callbacks: `handleClearPerson`, `handleClearPerson2`, `handleClearPerson3`, `handleClearPerson4` — each sets the respective cutout to `null` and resets its transform
-- Pass them to `CortesControls` as `onClearPerson`, `onClearPerson2`, `onClearPerson3`, `onClearPerson4`
+### Change: `src/components/cortes/CortesControls.tsx` (~line 2030-2034)
 
-**2. `src/components/cortes/CortesControls.tsx`**
-- Add the 4 new optional props to the interface
-- In the "Thumb Principal — free photo uploads" section (lines ~1662-1689), add a trash icon button next to each photo slot when a cutout exists
-- The button calls the corresponding `onClearPerson` callback to remove the photo, allowing re-upload
-
-The trash button will appear inline next to the "Trocar foto" button, styled consistently with existing icon buttons in the UI.
+- Compute `maxTextY` based on model: if `thumbModel === 'thumb-principal' && useQuadrantGrid` → max 60, otherwise → max 50
+- Update the Slider's `max` prop to use `maxTextY`
+- Clamp current `textBoxHeight` if it exceeds the new max (optional safeguard in the onChange)
 
