@@ -293,6 +293,17 @@ const AoVivo = () => {
 
   const handleMatchDataChange = (data: Partial<typeof matchData>) => {
     setMatchData(prev => ({ ...prev, ...data }));
+
+    const currentTeams = aoVivoTemplate === 'conferenceleague' ? teamsConferenceLeague : teamsAoVivo;
+
+    if (data.homeTeamId) {
+      const team = currentTeams.find(t => t.id === data.homeTeamId);
+      if (team?.color) setGradientLeftColor(team.color);
+    }
+    if (data.awayTeamId) {
+      const team = currentTeams.find(t => t.id === data.awayTeamId);
+      if (team?.color) setGradientRightColor(team.color);
+    }
   };
 
   useEffect(() => {

@@ -8,6 +8,7 @@ export interface Team {
   jcOffsetX?: number;  // offset horizontal em px no Jogo Completo
   jcOffsetY?: number;  // offset vertical em px no Jogo Completo
   jcSpacing?: number;  // margin-left customizado entre escudos no Jogo Completo (padrão: -70)
+  color?: string;      // cor vibrante representativa do time (hex)
 }
 
 export const teamsBrasileirao: Team[] = [
