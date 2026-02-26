@@ -2029,9 +2029,9 @@ export const CortesControls = ({
         </div>
         <Slider
           value={[textBoxHeight]}
-          onValueChange={([h]) => onTextBoxHeightChange(h)}
+          onValueChange={([h]) => onTextBoxHeightChange(Math.min(h, (thumbModel === 'thumb-principal' && useQuadrantGrid) ? 60 : 50))}
           min={0}
-          max={60}
+          max={(thumbModel === 'thumb-principal' && useQuadrantGrid) ? 60 : 50}
           step={1}
           className="mt-1"
         />
