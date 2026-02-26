@@ -1,19 +1,26 @@
 
 
-## Plan: Add default team colors to Ao Vivo gradients
+## Plan: Use team colors as default gradients in the edge function
 
-### 1. Add `color` field to Team interface (`src/data/teams.ts`)
-- Add optional `color?: string` to the `Team` interface
+### Change: `supabase/functions/generate-ao-vivo/index.ts`
 
-### 2. Add colors to Europa League teams (`src/data/teamsAoVivo.ts`)
-- Add a vibrant representative `color` hex to each of the 36 teams (e.g., Aston Villa `#670E36`, Porto `#003893`, Roma `#C8102E`, etc.)
-- Colors must be vibrant — avoid near-white or near-black values
+**Add a `color` field to each team entry in the registries** (`europaLeagueTeams` and `conferenceLeagueTeams`), mirroring the exact hex values from `teamsAoVivo.ts` and `teamsConferenceLeague.ts`.
 
-### 3. Add colors to Conference League teams (`src/data/teamsConferenceLeague.ts`)
-- Same approach for all Conference League teams
+Update the `TeamEntry` interface:
+```typescript
+interface TeamEntry { slug: string; crest_url: string; color: string; }
+```
 
-### 4. Auto-set gradient colors when team is selected (`src/pages/AoVivo.tsx`)
-- In `handleMatchDataChange`, when `homeTeamId` changes, look up the team's `color` and call `setGradientLeftColor(team.color)` (fallback to current value if no color)
-- When `awayTeamId` changes, do the same for `setGradientRightColor`
-- User can still manually override via the existing color pickers
+**Use team color as fallback** instead of `#000000` (lines ~197-198). When teams are resolved by name, use `teamA.color` / `teamB.color` as defaults:
+```typescript
+// Before:
+const colorA = hexTimeA || "#000000";
+const colorB = hexTimeB || "#000000";
+
+// After: resolved inside the name-based branch
+const colorA = hexTimeA || teamA.color;
+const colorB = hexTimeB || teamB.color;
+```
+
+This ensures the webhook-generated thumbnails use the same vibrant, balanced team colors we just implemented on the frontend.
 
