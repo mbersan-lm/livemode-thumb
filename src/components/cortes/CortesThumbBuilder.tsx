@@ -325,6 +325,11 @@ export const CortesThumbBuilder = ({
     reader.readAsDataURL(file);
   };
 
+  const handleClearPerson = () => { setPersonCutout(null); setPersonTransform(DEFAULT_PERSON_TRANSFORM); };
+  const handleClearPerson2 = () => { setPerson2Cutout(null); setPerson2Transform(DEFAULT_PERSON2_TRANSFORM); };
+  const handleClearPerson3 = () => { setPerson3Cutout(null); setPerson3Transform(DEFAULT_PERSON3_TRANSFORM); };
+  const handleClearPerson4 = () => { setPerson4Cutout(null); setPerson4Transform(DEFAULT_PERSON4_TRANSFORM); };
+
   const handleClear = () => {
     setPipImage(null);
     setPip2Image(null);
@@ -498,6 +503,10 @@ export const CortesThumbBuilder = ({
             onTpAwayTeamChange={setTpAwayTeamId}
             textBoxHeight={textBoxHeight}
             onTextBoxHeightChange={setTextBoxHeight}
+            onClearPerson={handleClearPerson}
+            onClearPerson2={handleClearPerson2}
+            onClearPerson3={handleClearPerson3}
+            onClearPerson4={handleClearPerson4}
             onPipFromBase64={handlePipFromBase64}
             currentCanvasProps={{
               thumbModel,
