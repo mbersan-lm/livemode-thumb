@@ -140,7 +140,7 @@ const conferenceLeagueSizeOverrides: Record<string, number> = {
 const ligue1SizeOverrides: Record<string, number> = {
   "LENS": 590,
   "LORIENT": 512,
-  "NANTES": 200,
+  "NANTES": 230,
 };
 
 function getCrestMaxSize(teamName: string, isConference: boolean, isLigue1: boolean = false): number {
