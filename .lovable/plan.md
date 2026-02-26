@@ -1,24 +1,62 @@
 
 
-### Plan: Replace Nantes crest only in Ao Vivo model
+## Stack Detection
 
-**Problem**: The Nantes crest needs to be different only in the Ao Vivo template, while keeping the existing crest for Melhores Momentos and Jogo Completo.
+This is a **Vite + React + TypeScript** SPA (no server-side rendering). It uses Supabase (Lovable Cloud) for backend. There is no Express/Node server -- it's a pure static frontend.
 
-**Approach**: Add an optional `aoVivoCrestUrl` property to the Team interface, save the new crest file, and update the Ao Vivo canvas + edge function to prefer this property when rendering.
+## Plan
 
-### Steps
+### 1. Update `vite.config.ts`
+- Add `preview.host` and `preview.port` to respect `PORT` env var for production serving:
+```ts
+preview: {
+  host: "0.0.0.0",
+  port: parseInt(process.env.PORT || "4173"),
+},
+```
 
-1. **Copy uploaded crest to `public/crests/nantes-av.png`**
+### 2. Update `package.json` scripts
+```json
+"build": "vite build",
+"start": "vite preview --host 0.0.0.0 --port $PORT",
+"dev": "vite"
+```
 
-2. **Add `aoVivoCrestUrl` to Team interface** (`src/data/teams.ts`)
-   - Add optional `aoVivoCrestUrl?: string` property
+### 3. Create `Dockerfile`
+Multi-stage Node 20 Dockerfile:
+- Stage 1: `node:20-alpine` -- install deps + `npm run build`
+- Stage 2: same image -- copy `dist/`, `node_modules`, `package.json`, `vite.config.ts` -- `CMD ["npm", "start"]`
+- Expose `PORT` env var
 
-3. **Update Nantes entry in `teamsLigue1.ts`**
-   - Add `aoVivoCrestUrl: '/crests/nantes-av.png'` to the Nantes team entry
+### 4. Create `.env.example`
+```
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=your-anon-key
+VITE_SUPABASE_PROJECT_ID=your-project-id
+PORT=3000
+```
 
-4. **Update `ThumbnailCanvasAoVivo.tsx`**
-   - In the Ligue 1 crest rendering blocks, use `(homeTeam as any).aoVivoCrestUrl || homeTeam.crest_url` instead of just `homeTeam.crest_url` (same for away)
+### 5. Create `DEPLOY_RAILWAY.md`
+Step-by-step guide covering:
+- Connecting Lovable to GitHub (sync)
+- Creating Railway project from GitHub repo
+- Generating domain
+- Required env vars (from `.env.example`)
+- Logs and common errors (PORT, build failures)
+- Note about file uploads: this project uses Supabase Edge Functions for image processing (PhotoRoom, Gemini) -- no local file storage needed. Static assets in `public/` are bundled at build time.
 
-5. **Update Edge Function** (`supabase/functions/generate-ao-vivo/index.ts`)
-   - Add `aoVivoCrestUrl` to the Nantes entry in `ligue1Teams` registry so the automated pipeline uses the correct crest
+### Files to create/modify
+
+| File | Action |
+|------|--------|
+| `vite.config.ts` | Add `preview` config for PORT |
+| `package.json` | Add `start` script |
+| `Dockerfile` | Create (multi-stage Node 20) |
+| `.env.example` | Create with placeholders |
+| `DEPLOY_RAILWAY.md` | Create deployment guide |
+
+### Final commands
+- **Build**: `npm run build`
+- **Start**: `npm start` (runs `vite preview --host 0.0.0.0 --port $PORT`)
+- **Env vars for Railway**: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_PROJECT_ID`, `PORT` (auto-set by Railway)
 
