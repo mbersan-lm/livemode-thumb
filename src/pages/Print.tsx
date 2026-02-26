@@ -10,6 +10,7 @@ const Print = () => {
   const timeA = searchParams.get('timeA') || '';
   const timeB = searchParams.get('timeB') || '';
   const competicao = (searchParams.get('competicao') || '').toLowerCase();
+  const modelo = searchParams.get('modelo') || '';
 
   const isConference = competicao.includes('conference');
   const aoVivoTemplate: AoVivoTemplate = isConference ? 'conferenceleague' : 'europaleague';
@@ -79,11 +80,11 @@ const Print = () => {
           matchData={matchData}
           template="europaleague"
           aoVivoTemplate={aoVivoTemplate}
-          gradientLeftColor="#000000"
-          gradientRightColor="#000000"
-          panelLeftColor="#000000"
-          panelRightColor="#000000"
-          showSomAmbiente={true}
+          gradientLeftColor={homeTeam?.color || "#000000"}
+          gradientRightColor={awayTeam?.color || "#000000"}
+          panelLeftColor={homeTeam?.color || "#000000"}
+          panelRightColor={awayTeam?.color || "#000000"}
+          showSomAmbiente={modelo === 'sem narracao'}
         />
       </div>
     </div>
