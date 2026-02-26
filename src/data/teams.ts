@@ -9,6 +9,7 @@ export interface Team {
   jcOffsetY?: number;  // offset vertical em px no Jogo Completo
   jcSpacing?: number;  // margin-left customizado entre escudos no Jogo Completo (padrão: -70)
   color?: string;      // cor vibrante representativa do time (hex)
+  aoVivoCrestUrl?: string; // escudo alternativo usado apenas no modelo Ao Vivo
 }
 
 export const teamsBrasileirao: Team[] = [

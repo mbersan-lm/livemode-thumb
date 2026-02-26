@@ -300,7 +300,7 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
         {/* Home Crest - Ligue 1 */}
         {aoVivoTemplate === 'ligue1' && homeTeam && (
           <img 
-            src={homeTeam.crest_url}
+            src={(homeTeam as any).aoVivoCrestUrl || homeTeam.crest_url}
             alt={homeTeam.name}
             className="absolute h-auto w-auto object-contain"
             style={{ 
@@ -317,7 +317,7 @@ export const ThumbnailCanvasAoVivo = forwardRef<HTMLDivElement, ThumbnailCanvasA
         {/* Away Crest - Ligue 1 */}
         {aoVivoTemplate === 'ligue1' && awayTeam && (
           <img 
-            src={awayTeam.crest_url}
+            src={(awayTeam as any).aoVivoCrestUrl || awayTeam.crest_url}
             alt={awayTeam.name}
             className="absolute h-auto w-auto object-contain"
             style={{ 

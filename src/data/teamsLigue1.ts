@@ -12,7 +12,7 @@ export const teamsLigue1: Team[] = [
   { id: 'l9', name: 'Marseille', slug: 'marseille', crest_url: '/crests/marseille.png', color: '#2FAEE0' },
   { id: 'l10', name: 'Metz', slug: 'metz', crest_url: '/crests/metz.png', color: '#6B1832' },
   { id: 'l11', name: 'Monaco', slug: 'monaco', crest_url: '/crests/monaco.png', color: '#E2001A' },
-  { id: 'l12', name: 'Nantes', slug: 'nantes', crest_url: '/crests/nantes.png', color: '#FFD200' },
+  { id: 'l12', name: 'Nantes', slug: 'nantes', crest_url: '/crests/nantes.png', aoVivoCrestUrl: '/crests/nantes-av.png', color: '#FFD200' },
   { id: 'l13', name: 'Nice', slug: 'nice', crest_url: '/crests/nice.png', color: '#C8102E' },
   { id: 'l14', name: 'Paris FC', slug: 'parisfc', crest_url: '/crests/parisfc.png', color: '#1A3C6E' },
   { id: 'l15', name: 'PSG', slug: 'psg', crest_url: '/crests/psg.png', color: '#004170' },
