@@ -417,6 +417,10 @@ interface CortesControlsProps {
   tpAwayTeamId?: string | null;
   onTpHomeTeamChange?: (id: string | null) => void;
   onTpAwayTeamChange?: (id: string | null) => void;
+  onClearPerson?: () => void;
+  onClearPerson2?: () => void;
+  onClearPerson3?: () => void;
+  onClearPerson4?: () => void;
 }
 
 export const CortesControls = ({
@@ -490,6 +494,10 @@ export const CortesControls = ({
   tpAwayTeamId = null,
   onTpHomeTeamChange,
   onTpAwayTeamChange,
+  onClearPerson,
+  onClearPerson2,
+  onClearPerson3,
+  onClearPerson4,
 }: CortesControlsProps) => {
   const pipInputRef = useRef<HTMLInputElement>(null);
   const pip2InputRef = useRef<HTMLInputElement>(null);
@@ -1654,20 +1662,27 @@ export const CortesControls = ({
         <div className="space-y-3">
           <Label className="font-semibold">Fotos</Label>
           {[
-            { label: 'Foto 1', cutout: personCutout, inputRef: personInputRef, isRemoving: isRemovingBg, onUpload: onPersonUpload, transform: personTransform, onTransformChange: onPersonTransformChange, showAdjust: showPerson1Adjust, setShowAdjust: setShowPerson1Adjust },
-            { label: 'Foto 2', cutout: person2Cutout, inputRef: person2InputRef, isRemoving: isRemovingBg2, onUpload: onPerson2Upload, transform: person2Transform, onTransformChange: onPerson2TransformChange, showAdjust: showPerson2Adjust, setShowAdjust: setShowPerson2Adjust },
-            { label: 'Foto 3', cutout: person3Cutout, inputRef: person3InputRef, isRemoving: isRemovingBg3, onUpload: onPerson3Upload!, transform: person3Transform, onTransformChange: onPerson3TransformChange!, showAdjust: showPerson3Adjust, setShowAdjust: setShowPerson3Adjust },
-            { label: 'Foto 4', cutout: person4Cutout, inputRef: person4InputRef, isRemoving: isRemovingBg4, onUpload: onPerson4Upload!, transform: person4Transform, onTransformChange: onPerson4TransformChange!, showAdjust: showPerson4Adjust, setShowAdjust: setShowPerson4Adjust },
+            { label: 'Foto 1', cutout: personCutout, inputRef: personInputRef, isRemoving: isRemovingBg, onUpload: onPersonUpload, transform: personTransform, onTransformChange: onPersonTransformChange, showAdjust: showPerson1Adjust, setShowAdjust: setShowPerson1Adjust, onClear: onClearPerson },
+            { label: 'Foto 2', cutout: person2Cutout, inputRef: person2InputRef, isRemoving: isRemovingBg2, onUpload: onPerson2Upload, transform: person2Transform, onTransformChange: onPerson2TransformChange, showAdjust: showPerson2Adjust, setShowAdjust: setShowPerson2Adjust, onClear: onClearPerson2 },
+            { label: 'Foto 3', cutout: person3Cutout, inputRef: person3InputRef, isRemoving: isRemovingBg3, onUpload: onPerson3Upload!, transform: person3Transform, onTransformChange: onPerson3TransformChange!, showAdjust: showPerson3Adjust, setShowAdjust: setShowPerson3Adjust, onClear: onClearPerson3 },
+            { label: 'Foto 4', cutout: person4Cutout, inputRef: person4InputRef, isRemoving: isRemovingBg4, onUpload: onPerson4Upload!, transform: person4Transform, onTransformChange: onPerson4TransformChange!, showAdjust: showPerson4Adjust, setShowAdjust: setShowPerson4Adjust, onClear: onClearPerson4 },
           ].map((item, idx) => (
             <div key={idx} className="p-3 rounded-lg border border-border bg-muted/30">
               <Label className="font-semibold text-sm mb-2 block">{item.label}</Label>
               <input ref={item.inputRef} type="file" accept="image/*" className="hidden"
                 onChange={(e) => e.target.files?.[0] && item.onUpload(e.target.files[0])} />
-              <Button variant={item.cutout ? 'secondary' : 'outline'} className="w-full" size="sm"
-                disabled={item.isRemoving} onClick={() => item.inputRef.current?.click()}>
-                {item.isRemoving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Removendo fundo...</>
-                  : <><Upload className="w-4 h-4 mr-2" />{item.cutout ? 'Trocar foto' : 'Upload foto'}</>}
-              </Button>
+              <div className="flex gap-2">
+                <Button variant={item.cutout ? 'secondary' : 'outline'} className="flex-1" size="sm"
+                  disabled={item.isRemoving} onClick={() => item.inputRef.current?.click()}>
+                  {item.isRemoving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Removendo fundo...</>
+                    : <><Upload className="w-4 h-4 mr-2" />{item.cutout ? 'Trocar foto' : 'Upload foto'}</>}
+                </Button>
+                {item.cutout && item.onClear && (
+                  <Button variant="outline" size="sm" onClick={item.onClear} className="px-2.5 text-destructive hover:text-destructive">
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                )}
+              </div>
               {item.cutout && (
                 <div className="space-y-3 p-2 rounded border border-border bg-background/50 mt-1">
                   <div className="flex items-center justify-between">
