@@ -1,52 +1,34 @@
 
 
-## Plan: Fix Glass Panel Blur and Crest Sizes in Edge Function
+## Plan: Create `/print` Route for External Screenshot Service
 
-### Problems Identified
+### Summary
 
-Comparing the frontend export (`src/pages/AoVivo.tsx` lines 206-260) with the edge function (`supabase/functions/generate-ao-vivo/index.ts` lines 239-275):
+Create a new page at `/print` that reads query string parameters, resolves team data internally, and renders only the `ThumbnailCanvasAoVivo` component in "sem narracao" mode -- no UI, no scrollbar, full viewport.
 
-**1. No blur effect on glass panels**
-The frontend captures the current canvas into a temp canvas, clips to each panel shape, draws the temp canvas with `ctx.filter = 'blur(20px)'`, then fills with semi-transparent color. The edge function just fills with color -- no blur simulation at all.
+### New File: `src/pages/Print.tsx`
 
-**2. Crest sizes too small**
-The frontend uses per-team size overrides via `getCrestMaxSize()`:
-- Europa League default: **500px** (with exceptions: Brann 248px, Celta de Vigo 315px, Real Betis 400px, Malmo 450px, Nottingham Forest 360px)
-- Conference League default: **400px** (with exception: AZ Alkmaar 280px)
+- Read query params: `timeA`, `timeB`, `competicao`, `modelo`
+- Determine competition: if `competicao` contains "conference" → use `teamsConferenceLeague`, otherwise → `teamsAoVivo`
+- Find teams by name (case-insensitive partial match against the team arrays)
+- Render `ThumbnailCanvasAoVivo` with:
+  - `showSomAmbiente = true` (always "sem narracao" mode)
+  - `aoVivoTemplate` = `'conferenceleague'` or `'europaleague'` based on `competicao`
+  - `gradientLeftColor` / `gradientRightColor` / `panelLeftColor` / `panelRightColor` = `#000000`
+  - No player photos (null)
+  - `matchData` populated with the resolved team IDs
+- Page styling: `overflow: hidden`, no padding/margin, body scrollbar hidden via useEffect
+- The 1280x720 canvas scaled to fill the viewport using CSS `transform: scale()` calculated from `window.innerWidth / 1280`
 
-The edge function hardcodes **400px** for all teams in both competitions.
+### Edit: `src/App.tsx`
 
-### Changes to `supabase/functions/generate-ao-vivo/index.ts`
+- Add route: `<Route path="/print" element={<Print />} />`
 
-**A. Add blur simulation to `drawGlassPanel`**
+### Example URL
 
-Replicate the frontend technique:
-1. Before drawing glass panels, snapshot the current canvas into a temp canvas
-2. In `drawGlassPanel`, clip to the rounded rect, apply `ctx.filter = 'blur(20px)'`, draw the snapshot, reset filter, then fill with semi-transparent color, then draw border
-
-```text
-Before (simplified):
-  clip → fill color → border
-
-After (matching frontend):
-  clip → filter blur(20px) → drawImage(snapshot) → filter none → fill color → restore → border
+```
+https://livemode-thumb.lovable.app/print?timeA=GENK&timeB=DINAMO ZAGREB&competicao=Europa League&modelo=sem narracao
 ```
 
-**B. Add crest size lookup**
-
-Add a `getCrestMaxSize` function mirroring the frontend logic, using the team name as key. Update the two `drawImageCentered` calls to use the resolved max size instead of hardcoded 400.
-
-The size map will use team names (since that's what the new payload provides):
-- `"BRANN"` → 248
-- `"CELTA DE VIGO"` → 315
-- `"NOTTINGHAM FOREST"` → 360
-- `"REAL BETIS"` → 400
-- `"MALMÖ"` → 450
-- `"AZ ALKMAAR"` → 280 (conference)
-- Europa League default → 500
-- Conference League default → 400
-
-### No Other Files Changed
-
-Only the edge function is modified. No frontend, database, or migration changes.
+### No backend changes. No Edge Function changes.
 
