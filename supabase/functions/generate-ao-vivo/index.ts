@@ -51,6 +51,27 @@ const europaLeagueTeams: Record<string, TeamEntry> = {
   "YOUNG BOYS":         { slug: "av-young-boys",           crest_url: "/crests/av-young-boys.png", color: "#FFD200" },
 };
 
+const ligue1Teams: Record<string, TeamEntry> = {
+  "ANGERS":       { slug: "angers",     crest_url: "/crests/angers.png",     color: "#1A1A1A" },
+  "AUXERRE":      { slug: "auxerre",    crest_url: "/crests/auxerre.png",    color: "#1E4D8C" },
+  "BREST":        { slug: "brest",      crest_url: "/crests/brest.png",      color: "#E2001A" },
+  "LE HAVRE":     { slug: "lehavre",    crest_url: "/crests/lehavre.png",    color: "#00A3E0" },
+  "LENS":         { slug: "lens",       crest_url: "/crests/lens.png",       color: "#F5B400" },
+  "LORIENT":      { slug: "lorient",    crest_url: "/crests/lorient.png",    color: "#F26522" },
+  "LILLE":        { slug: "lille",      crest_url: "/crests/lille.png",      color: "#D32027" },
+  "LYON":         { slug: "lyon",       crest_url: "/crests/lyon.png",       color: "#1F3D7A" },
+  "MARSEILLE":    { slug: "marseille",  crest_url: "/crests/marseille.png",  color: "#2FAEE0" },
+  "METZ":         { slug: "metz",       crest_url: "/crests/metz.png",      color: "#6B1832" },
+  "MONACO":       { slug: "monaco",     crest_url: "/crests/monaco.png",    color: "#E2001A" },
+  "NANTES":       { slug: "nantes",     crest_url: "/crests/nantes.png",    color: "#FFD200" },
+  "NICE":         { slug: "nice",       crest_url: "/crests/nice.png",      color: "#C8102E" },
+  "PARIS FC":     { slug: "parisfc",    crest_url: "/crests/parisfc.png",   color: "#1A3C6E" },
+  "PSG":          { slug: "psg",        crest_url: "/crests/psg.png",       color: "#004170" },
+  "RENNAIS":      { slug: "rennais",    crest_url: "/crests/rennais.png",   color: "#D4213D" },
+  "STRASBOURG":   { slug: "strasbourg", crest_url: "/crests/strasbourg.png", color: "#0055A4" },
+  "TOULOUSE":     { slug: "toulouse",   crest_url: "/crests/toulouse.png",  color: "#5B2D8E" },
+};
+
 const conferenceLeagueTeams: Record<string, TeamEntry> = {
   "ABERDEEN":           { slug: "cl-aberdeen",            crest_url: "/crests/cl-aberdeen.png", color: "#D4213D" },
   "AZ ALKMAAR":         { slug: "cl-az-alkmaar",          crest_url: "/crests/cl-az-alkmaar.png", color: "#CC0000" },
@@ -89,8 +110,8 @@ const conferenceLeagueTeams: Record<string, TeamEntry> = {
   "ZRINJSKI":           { slug: "cl-zrinjski",             crest_url: "/crests/cl-zrinjski.png", color: "#D4213D" },
 };
 
-function findTeam(name: string, isConference: boolean): TeamEntry | null {
-  const registry = isConference ? conferenceLeagueTeams : europaLeagueTeams;
+function findTeam(name: string, isConference: boolean, isLigue1: boolean = false): TeamEntry | null {
+  const registry = isLigue1 ? ligue1Teams : isConference ? conferenceLeagueTeams : europaLeagueTeams;
   const upper = name.toUpperCase();
   for (const [key, entry] of Object.entries(registry)) {
     if (key.toUpperCase() === upper) return entry;
@@ -116,8 +137,16 @@ const conferenceLeagueSizeOverrides: Record<string, number> = {
   "CRAIOVA": 440,
 };
 
-function getCrestMaxSize(teamName: string, isConference: boolean): number {
+const ligue1SizeOverrides: Record<string, number> = {
+  "LENS": 262,
+  "LORIENT": 227,
+};
+
+function getCrestMaxSize(teamName: string, isConference: boolean, isLigue1: boolean = false): number {
   const upper = teamName.toUpperCase();
+  if (isLigue1) {
+    return ligue1SizeOverrides[upper] ?? 400;
+  }
   if (isConference) {
     return conferenceLeagueSizeOverrides[upper] ?? 400;
   }
@@ -190,6 +219,9 @@ Deno.serve(async (req) => {
     const isConference = competicao
       ? competicao.toLowerCase().includes("conference")
       : template === "conferenceleague";
+    const isLigue1 = competicao
+      ? competicao.toLowerCase().includes("ligue")
+      : false;
 
     // Resolve teams: new payload (by name) or legacy (direct URLs)
     let resolvedCrestA: string;
@@ -198,8 +230,8 @@ Deno.serve(async (req) => {
     let colorB = hexTimeB || "#000000";
 
     if (nomeTimeA && nomeTimeB) {
-      const teamA = findTeam(nomeTimeA, isConference);
-      const teamB = findTeam(nomeTimeB, isConference);
+      const teamA = findTeam(nomeTimeA, isConference, isLigue1);
+      const teamB = findTeam(nomeTimeB, isConference, isLigue1);
       if (!teamA) {
         return new Response(
           JSON.stringify({ error: `Time não encontrado: "${nomeTimeA}"` }),
@@ -302,8 +334,8 @@ Deno.serve(async (req) => {
     }
 
     // 7. Team crests with dynamic sizing
-    const maxSizeA = getCrestMaxSize(nomeTimeA || "", isConference);
-    const maxSizeB = getCrestMaxSize(nomeTimeB || "", isConference);
+    const maxSizeA = getCrestMaxSize(nomeTimeA || "", isConference, isLigue1);
+    const maxSizeB = getCrestMaxSize(nomeTimeB || "", isConference, isLigue1);
 
     const crestA = await fetchImage(resolvedCrestA);
     drawImageCentered(ctx, crestA, 458, 527, maxSizeA, maxSizeA);
@@ -312,7 +344,9 @@ Deno.serve(async (req) => {
     drawImageCentered(ctx, crestB, 822, 527, maxSizeB, maxSizeB);
 
     // 8. Logos overlay
-    const logosSrc = isConference
+    const logosSrc = isLigue1
+      ? `${APP_URL}/kv/logos-ao-vivo-ligue1.png`
+      : isConference
       ? `${APP_URL}/kv/logos-ao-vivo-conference.png`
       : `${APP_URL}/kv/logos-ao-vivo-europa.png`;
     const logosImg = await fetchImage(logosSrc);
