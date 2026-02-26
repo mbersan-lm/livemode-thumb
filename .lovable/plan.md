@@ -1,26 +1,21 @@
 
 
-## Plan: Use team colors as default gradients in the edge function
+## Plan: Use team colors for gradients in /print route
 
-### Change: `supabase/functions/generate-ao-vivo/index.ts`
+### Change: `src/pages/Print.tsx`
 
-**Add a `color` field to each team entry in the registries** (`europaLeagueTeams` and `conferenceLeagueTeams`), mirroring the exact hex values from `teamsAoVivo.ts` and `teamsConferenceLeague.ts`.
+The `gradientLeftColor` and `gradientRightColor` props are hardcoded to `#000000`. Since `homeTeam` and `awayTeam` are already resolved with their `color` field, simply pass those colors instead:
 
-Update the `TeamEntry` interface:
 ```typescript
-interface TeamEntry { slug: string; crest_url: string; color: string; }
+gradientLeftColor={homeTeam?.color || "#000000"}
+gradientRightColor={awayTeam?.color || "#000000"}
+panelLeftColor={homeTeam?.color || "#000000"}
+panelRightColor={awayTeam?.color || "#000000"}
 ```
 
-**Use team color as fallback** instead of `#000000` (lines ~197-198). When teams are resolved by name, use `teamA.color` / `teamB.color` as defaults:
-```typescript
-// Before:
-const colorA = hexTimeA || "#000000";
-const colorB = hexTimeB || "#000000";
+Also support the `modelo` query param to conditionally show "Som Ambiente":
+- Read `modelo` from search params
+- Pass `showSomAmbiente={modelo === 'sem narracao'}` (currently always `true`, which is correct for this case but should be driven by the param)
 
-// After: resolved inside the name-based branch
-const colorA = hexTimeA || teamA.color;
-const colorB = hexTimeB || teamB.color;
-```
-
-This ensures the webhook-generated thumbnails use the same vibrant, balanced team colors we just implemented on the frontend.
+Single file change, 4 lines updated.
 
