@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ThumbnailCanvasAoVivo, AoVivoTemplate } from '@/components/ThumbnailCanvasAoVivo';
 import { teamsAoVivo } from '@/data/teamsAoVivo';
@@ -6,6 +6,7 @@ import { teamsConferenceLeague } from '@/data/teamsConferenceLeague';
 
 const Print = () => {
   const [searchParams] = useSearchParams();
+  const [scale, setScale] = useState(1);
 
   const timeA = searchParams.get('timeA') || '';
   const timeB = searchParams.get('timeB') || '';
@@ -37,12 +38,18 @@ const Print = () => {
 
   const defaultTransform = { x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 };
 
+  // Hide scrollbars & scale to viewport
   useEffect(() => {
     document.body.style.margin = '0';
     document.body.style.padding = '0';
     document.body.style.overflow = 'hidden';
     document.documentElement.style.overflow = 'hidden';
+
+    const update = () => setScale(window.innerWidth / 1280);
+    update();
+    window.addEventListener('resize', update);
     return () => {
+      window.removeEventListener('resize', update);
       document.body.style.margin = '';
       document.body.style.padding = '';
       document.body.style.overflow = '';
@@ -51,8 +58,8 @@ const Print = () => {
   }, []);
 
   return (
-    <div style={{ width: '1920px', height: '1080px', overflow: 'hidden', background: '#000' }}>
-      <div style={{ transform: 'scale(1.5)', transformOrigin: 'top left' }}>
+    <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', background: '#000' }}>
+      <div style={{ transform: `scale(${scale})`, transformOrigin: 'top left' }}>
         <ThumbnailCanvasAoVivo
           playerPhoto={null}
           photoTransform={defaultTransform}
