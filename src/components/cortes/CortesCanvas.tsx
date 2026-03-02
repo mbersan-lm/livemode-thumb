@@ -655,6 +655,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               padding: '20px',
               boxSizing: 'border-box',
               wordBreak: 'break-word',
+              whiteSpace: 'pre-wrap',
             } as React.CSSProperties}
           >
             {thumbText.split(/(\*[^*]+\*)/g).map((part, i) =>
@@ -690,6 +691,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               padding: '10px',
               boxSizing: 'border-box',
               wordBreak: 'break-word',
+              whiteSpace: 'pre-wrap',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
