@@ -9,6 +9,7 @@ import AoVivo from "./pages/AoVivo";
 import CortesHub from "./pages/CortesHub";
 import CortesProgramBuilder from "./pages/CortesProgramBuilder";
 import Print from "./pages/Print";
+import RenderExport from "./pages/RenderExport";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/cortes" element={<CortesHub />} />
           <Route path="/cortes/:id" element={<CortesProgramBuilder />} />
           <Route path="/print" element={<Print />} />
+          <Route path="/render/:type" element={<RenderExport />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

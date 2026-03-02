@@ -21,6 +21,7 @@ import { teamsAoVivo } from '@/data/teamsAoVivo';
 import { teamsConferenceLeague } from '@/data/teamsConferenceLeague';
 import { teamsLigue1 } from '@/data/teamsLigue1';
 import { toast } from 'sonner';
+import { exportViaServer } from '@/lib/serverExport';
 
 const CANVAS_WIDTH = 1280;
 const CANVAS_HEIGHT = 720;
@@ -83,218 +84,28 @@ const AoVivo = () => {
     reader.readAsDataURL(file);
   };
 
-  const loadImage = (src: string): Promise<HTMLImageElement> => {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = () => resolve(img);
-      img.onerror = reject;
-      img.src = src;
-    });
-  };
-
-  const getCrestMaxSize = (teamId: string | null, template: AoVivoTemplate): number => {
-    if (template === 'ligue1') {
-      const team = teamsLigue1.find(t => t.id === teamId);
-      return (team as any)?.maxSize || 400;
-    }
-    if (template === 'conferenceleague') {
-      if (teamId === 'cl35') return 280;
-      return 400;
-    }
-    if (teamId === 'av5') return 248;
-    if (teamId === 'av6') return 315;
-    if (teamId === 'av29') return 400;
-    if (teamId === 'av21') return 450;
-    if (teamId === 'av24') return 360;
-    return 500;
-  };
-
-  const drawImageCentered = (
-    ctx: CanvasRenderingContext2D,
-    img: HTMLImageElement,
-    cx: number,
-    cy: number,
-    maxW: number,
-    maxH: number
-  ) => {
-    const scale = Math.min(maxW / img.naturalWidth, maxH / img.naturalHeight, 1);
-    const w = img.naturalWidth * scale;
-    const h = img.naturalHeight * scale;
-    ctx.drawImage(img, cx - w / 2, cy - h / 2, w, h);
-  };
-
-  const drawPhotoLayer = (
-    ctx: CanvasRenderingContext2D,
-    img: HTMLImageElement,
-    anchorX: number,
-    anchorY: number,
-    transform: PhotoTransform
-  ) => {
-    ctx.save();
-    ctx.translate(anchorX, anchorY);
-    ctx.translate(transform.x, transform.y);
-    ctx.scale(transform.scale * (transform.scaleX ?? 1), transform.scale * (transform.scaleY ?? 1));
-    ctx.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2);
-    ctx.restore();
-  };
-
-  const roundRect = (ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) => {
-    ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.lineTo(x + w - r, y);
-    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-    ctx.lineTo(x + w, y + h - r);
-    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-    ctx.lineTo(x + r, y + h);
-    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-    ctx.lineTo(x, y + r);
-    ctx.quadraticCurveTo(x, y, x + r, y);
-    ctx.closePath();
-  };
-
   const handleExportAoVivo = async () => {
-    try {
-      toast.loading('Gerando JPG Ao Vivo...');
+    const currentTeams = aoVivoTemplate === 'ligue1' ? teamsLigue1 : aoVivoTemplate === 'conferenceleague' ? teamsConferenceLeague : teamsAoVivo;
+    const homeTeam = currentTeams.find(t => t.id === matchData.homeTeamId);
+    const awayTeam = currentTeams.find(t => t.id === matchData.awayTeamId);
+    const filename = `AO-VIVO_${homeTeam?.name?.replace(/\s+/g, '-') || 'home'}_${awayTeam?.name?.replace(/\s+/g, '-') || 'away'}.png`;
 
-      const W = 1280;
-      const H = 720;
-      const canvas = document.createElement('canvas');
-      canvas.width = W;
-      canvas.height = H;
-      const ctx = canvas.getContext('2d')!;
-
-      // 1. Black background
-      ctx.fillStyle = '#000000';
-      ctx.fillRect(0, 0, W, H);
-
-      // 2. Player photo (z:0) — usually null in Ao Vivo but support it
-      // (skipped — playerPhoto is always null in current usage)
-
-      // 3. Left photo (z:5)
-      if (photoLeft) {
-        const img = await loadImage(photoLeft);
-        drawPhotoLayer(ctx, img, W * 0.25, H * 0.5, photoLeftTransform);
-      }
-
-      // 4. Right photo (z:5)
-      if (photoRight) {
-        const img = await loadImage(photoRight);
-        drawPhotoLayer(ctx, img, W * 0.75, H * 0.5, photoRightTransform);
-      }
-
-      // 5. KV background (z:10) — drawn as cover
-      const kvSrc = '/kv/kv-ao-vivo.png';
-      const kvImg = await loadImage(kvSrc);
-      ctx.drawImage(kvImg, 0, 0, W, H);
-
-      // 6. Left gradient overlay (z:15, mix-blend-mode: overlay)
-      ctx.save();
-      ctx.globalCompositeOperation = 'overlay';
-      const gradL = ctx.createLinearGradient(0, 0, W, 0);
-      gradL.addColorStop(0, gradientLeftColor);
-      gradL.addColorStop(0.5, 'transparent');
-      ctx.fillStyle = gradL;
-      ctx.fillRect(0, 0, W, H);
-      ctx.restore();
-
-      // 7. Right gradient overlay (z:15, mix-blend-mode: overlay)
-      ctx.save();
-      ctx.globalCompositeOperation = 'overlay';
-      const gradR = ctx.createLinearGradient(W, 0, 0, 0);
-      gradR.addColorStop(0, gradientRightColor);
-      gradR.addColorStop(0.5, 'transparent');
-      ctx.fillStyle = gradR;
-      ctx.fillRect(0, 0, W, H);
-      ctx.restore();
-
-      // 8. Glass panels (z:16) — semi-transparent with blur + border
-      // Capture current canvas for blur simulation
-      const tempCanvas = document.createElement('canvas');
-      tempCanvas.width = W;
-      tempCanvas.height = H;
-      const tempCtx = tempCanvas.getContext('2d')!;
-      tempCtx.drawImage(canvas, 0, 0);
-
-      const drawGlassPanel = (x: number, y: number, w: number, h: number, color: string) => {
-        ctx.save();
-        roundRect(ctx, x, y, w, h, 12);
-        ctx.clip();
-        // Draw blurred background within clipped area
-        ctx.filter = 'blur(20px)';
-        ctx.drawImage(tempCanvas, 0, 0);
-        ctx.filter = 'none';
-        // Semi-transparent fill
-        ctx.fillStyle = color + '33';
-        ctx.fillRect(x, y, w, h);
-        ctx.restore();
-        // Border (drawn outside clip)
-        ctx.save();
-        roundRect(ctx, x, y, w, h, 12);
-        ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-        ctx.restore();
-      };
-
-      drawGlassPanel(291, 319, 334, 437, gradientLeftColor);
-      drawGlassPanel(655, 319, 334, 437, gradientRightColor);
-      drawGlassPanel(-30, H - 145 + (H * 0.05), 280, 145, '#000000');
-
-      // 9. Overlay panels PNG (z:17)
-      if (!showSomAmbiente) {
-        const overlayImg = await loadImage('/kv/overlay-ao-vivo-panels.png');
-        ctx.drawImage(overlayImg, 0, 0, W, H);
-      }
-
-      // 10. Team crests (z:50)
-      const currentTeams = aoVivoTemplate === 'ligue1' ? teamsLigue1 : aoVivoTemplate === 'conferenceleague' ? teamsConferenceLeague : teamsAoVivo;
-      const homeTeam = currentTeams.find(t => t.id === matchData.homeTeamId);
-      const awayTeam = currentTeams.find(t => t.id === matchData.awayTeamId);
-
-      if (homeTeam) {
-        const crestImg = await loadImage(homeTeam.crest_url);
-        const maxSize = getCrestMaxSize(matchData.homeTeamId, aoVivoTemplate);
-        drawImageCentered(ctx, crestImg, 458, 527, maxSize, maxSize);
-      }
-      if (awayTeam) {
-        const crestImg = await loadImage(awayTeam.crest_url);
-        const maxSize = getCrestMaxSize(matchData.awayTeamId, aoVivoTemplate);
-        drawImageCentered(ctx, crestImg, 822, 527, maxSize, maxSize);
-      }
-
-      // 11. Logos (z:60)
-      const logosSrc = aoVivoTemplate === 'ligue1'
-        ? '/kv/logos-ao-vivo-ligue1.png'
-        : aoVivoTemplate === 'conferenceleague'
-        ? '/kv/logos-ao-vivo-conference.png'
-        : '/kv/logos-ao-vivo-europa.png';
-      const logosImg = await loadImage(logosSrc);
-      ctx.drawImage(logosImg, 0, 0, W, H);
-
-      // 12. Som ambiente overlay (z:100)
-      if (showSomAmbiente) {
-        const somImg = await loadImage('/kv/overlay-som-ambiente.png');
-        ctx.drawImage(somImg, 0, 0, W, H);
-      }
-
-      // Export
-      const filename = `AO-VIVO_${homeTeam?.name?.replace(/\s+/g, '-') || 'home'}_${awayTeam?.name?.replace(/\s+/g, '-') || 'away'}.jpg`;
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = filename;
-          link.click();
-          URL.revokeObjectURL(url);
-          toast.success('JPG exportado!');
-        }
-      }, 'image/jpeg', 0.92);
-    } catch (error) {
-      console.error('Export error:', error);
-      toast.error('Falha ao exportar JPG');
-    }
+    await exportViaServer('ao-vivo', {
+      playerPhoto: null,
+      photoTransform: { x: 0, y: 0, scale: 1, scaleX: 1, scaleY: 1 },
+      photoLeft,
+      photoLeftTransform,
+      photoRight,
+      photoRightTransform,
+      matchData,
+      template: 'brasileirao',
+      aoVivoTemplate,
+      gradientLeftColor,
+      gradientRightColor,
+      panelLeftColor: gradientLeftColor,
+      panelRightColor: gradientRightColor,
+      showSomAmbiente,
+    }, filename);
   };
 
   const handleMatchDataChange = (data: Partial<typeof matchData>) => {
