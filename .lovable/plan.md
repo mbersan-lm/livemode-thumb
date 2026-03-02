@@ -1,19 +1,31 @@
 
 
-## Plano: Fixar PIP no centro para o modelo "PIP meio + 2 pessoas"
+## Plano: Restaurar suporte a quebra de linha (Enter) no texto
 
-### O que será feito
+### Diagnóstico
 
-Remover os controles de posição X e Y da moldura PIP no modelo `pip-meio-2pessoas`, forçando o PIP a ficar sempre centralizado horizontalmente e na posição Y fixa.
+O texto renderiza `\n` como texto corrido porque:
+1. **Preview** (`CortesCanvas.tsx` linha 660): o split só procura `*highlights*`, ignora `\n`. Falta `whiteSpace: 'pre-wrap'` no estilo do container.
+2. **Export** (`CortesControls.tsx` linha 102-103): `wrapText` faz `text.split(' ')` sem considerar `\n`.
 
-### Alterações
+### Correções
 
-1. **`CortesControls.tsx`** (linhas ~1397-1414) — Remover os sliders de "Posição X" e "Posição Y" da seção "Moldura PIP" do bloco `pip-meio-2pessoas`. Manter apenas os controles avançados de largura e altura (colapsáveis). O botão de reset continua, fixando `x: 37, y: 15.4`.
+1. **`CortesCanvas.tsx`** — Adicionar `whiteSpace: 'pre-wrap'` ao estilo do container de texto nos Layers 5 e 5tp (linhas ~634 e ~671). Isso faz o browser respeitar `\n` automaticamente, sem precisar mudar a lógica de split/highlight.
 
-2. **`CortesControls.tsx` + `CortesCanvas.tsx`** — Na renderização (preview e export), forçar `pipFrame.x` a ser calculado como `(100 - pipFrame.width) / 2` para centralização horizontal perfeita, e fixar `pipFrame.y` em `15.4` quando o modelo for `pip-meio-2pessoas`. Isso garante que mesmo que o estado tenha valores diferentes, o PIP sempre renderiza no centro.
+2. **`CortesControls.tsx`** — Na função `wrapText` (linha 102), primeiro dividir por `\n` para criar linhas forçadas, depois aplicar word-wrap dentro de cada segmento:
+   ```
+   function wrapText(ctx, text, maxWidth) {
+     const paragraphs = text.split('\n');
+     const lines = [];
+     for (const para of paragraphs) {
+       // word-wrap dentro de cada parágrafo
+       ...
+     }
+     return lines;
+   }
+   ```
 
 ### Arquivos alterados
-
-- `src/components/cortes/CortesControls.tsx` — remover sliders X/Y da moldura PIP; forçar centralização no export
-- `src/components/cortes/CortesCanvas.tsx` — forçar centralização no preview
+- `src/components/cortes/CortesCanvas.tsx` — `whiteSpace: 'pre-wrap'` nos containers de texto
+- `src/components/cortes/CortesControls.tsx` — `wrapText` respeitar `\n`
 
