@@ -226,8 +226,8 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           <div
             style={{
               position: 'absolute',
-              left: `${pipFrame.x}%`,
-              top: `${pipFrame.y}%`,
+              left: `${(100 - pipFrame.width) / 2}%`,
+              top: `${15.4}%`,
               width: `${pipFrame.width}%`,
               height: `${pipFrame.height}%`,
               border: `10px solid ${pipBorderColor}`,
