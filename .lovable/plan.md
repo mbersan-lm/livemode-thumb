@@ -1,22 +1,19 @@
 
 
-## Plano: Limitar altura do lettering a 50% — exceto Thumb Principal do Roda de Bobo
+## Plano: Suporte a quebra de linha (Enter) no texto da thumbnail
+
+### O que será feito
+
+Permitir que o Enter no campo "Texto da Thumbnail" crie uma quebra de linha real, refletida tanto no preview (canvas HTML) quanto no export (canvas 2D).
 
 ### Alterações
 
-1. **`CortesCanvas.tsx`**:
-   - Linha 565: `maxHeight: '38%'` → `maxHeight: '50%'` (texto padrão — este bloco já não renderiza para thumb-principal do RdB)
-   - Linha 677: `maxHeight: '40%'` → `maxHeight: '50%'` (texto esquerdo meio-a-meio)
-   - Linha 712: `maxHeight: '40%'` → `maxHeight: '50%'` (texto direito meio-a-meio)
-   - Linha 608: `maxHeight: 200` — **não alterar** (este é o bloco do Roda de Bobo com quadrant grid)
+1. **`CortesCanvas.tsx`** — No render do texto (linhas ~586 e ~625), trocar o split simples por um que primeiro separe por `\n` e insira `<br/>` entre os blocos, mantendo o suporte a `*highlights*`.
 
-2. **`CortesControls.tsx`** (export):
-   - Linha 929: `H * 0.38` → `H * 0.50`
-   - Linha 987: `H * 0.40` → `H * 0.50`
-   - Linha 1000: `H * 0.40` → `H * 0.50`
-   - O bloco de texto do Roda de Bobo (thumb-principal com quadrant grid) tem sua própria lógica separada e não será alterado.
+2. **`CortesControls.tsx`** — Na função `wrapText` (linha 102), antes de dividir por espaços, primeiro dividir por `\n` e tratar cada segmento como uma linha forçada, aplicando word-wrap dentro de cada segmento.
 
 ### Arquivos alterados
-- `src/components/cortes/CortesCanvas.tsx`
-- `src/components/cortes/CortesControls.tsx`
+
+- `src/components/cortes/CortesCanvas.tsx` — render do texto com suporte a `\n`
+- `src/components/cortes/CortesControls.tsx` — `wrapText` respeitar `\n`
 

@@ -926,7 +926,7 @@ export const CortesControls = ({
 
       if (!showMeioAMeio && !(showThumbPrincipal && useQuadrantGrid) && props.thumbText) {
         const areaX = W * 0.02;
-        const areaH = H * 0.50;
+        const areaH = H * 0.38;
         const areaY = H - H * bottomFrac - areaH;
         const areaW = W * 0.96;
         drawAutoFitText(
@@ -984,7 +984,7 @@ export const CortesControls = ({
       if (showMeioAMeio) {
         if (props.thumbTextLeft) {
           const areaX = W * 0.01;
-          const areaH = H * 0.50;
+          const areaH = H * 0.40;
           const areaY = H - H * bottomFrac - areaH;
           const areaW = W * 0.47;
           drawAutoFitText(
@@ -997,7 +997,7 @@ export const CortesControls = ({
         }
         if (props.thumbTextRight) {
           const areaX = W * 0.52;
-          const areaH = H * 0.50;
+          const areaH = H * 0.40;
           const areaY = H - H * bottomFrac - areaH;
           const areaW = W * 0.47;
           drawAutoFitText(
