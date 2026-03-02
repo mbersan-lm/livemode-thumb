@@ -1,62 +1,34 @@
 
 
-## Stack Detection
+## Plano: Trocar fonte da Thumb Principal no Geral CazéTv para GeneralSans-Bold
 
-This is a **Vite + React + TypeScript** SPA (no server-side rendering). It uses Supabase (Lovable Cloud) for backend. There is no Express/Node server -- it's a pure static frontend.
+### O que será feito
 
-## Plan
+Adicionar a fonte **GeneralSans-Bold.otf** ao projeto e aplicá-la **exclusivamente** ao modelo "Thumb Principal" do programa "Geral CazéTv" (não afeta Roda de Bobo, outros modelos, nem outros programas).
 
-### 1. Update `vite.config.ts`
-- Add `preview.host` and `preview.port` to respect `PORT` env var for production serving:
-```ts
-preview: {
-  host: "0.0.0.0",
-  port: parseInt(process.env.PORT || "4173"),
-},
-```
+### Etapas
 
-### 2. Update `package.json` scripts
-```json
-"build": "vite build",
-"start": "vite preview --host 0.0.0.0 --port $PORT",
-"dev": "vite"
-```
+1. **Copiar a fonte** `GeneralSans-Bold.otf` para `public/fonts/`
 
-### 3. Create `Dockerfile`
-Multi-stage Node 20 Dockerfile:
-- Stage 1: `node:20-alpine` -- install deps + `npm run build`
-- Stage 2: same image -- copy `dist/`, `node_modules`, `package.json`, `vite.config.ts` -- `CMD ["npm", "start"]`
-- Expose `PORT` env var
+2. **Registrar a fonte** em `src/index.css` com `@font-face` para `General Sans`
 
-### 4. Create `.env.example`
-```
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=your-anon-key
-VITE_SUPABASE_PROJECT_ID=your-project-id
-PORT=3000
-```
+3. **Adicionar prop `thumbPrincipalFontFamily`** ao `CortesThumbBuilder` — uma fonte opcional usada apenas quando o modelo ativo for `thumb-principal`
 
-### 5. Create `DEPLOY_RAILWAY.md`
-Step-by-step guide covering:
-- Connecting Lovable to GitHub (sync)
-- Creating Railway project from GitHub repo
-- Generating domain
-- Required env vars (from `.env.example`)
-- Logs and common errors (PORT, build failures)
-- Note about file uploads: this project uses Supabase Edge Functions for image processing (PhotoRoom, Gemini) -- no local file storage needed. Static assets in `public/` are bundled at build time.
+4. **Passar a prop no `CortesProgramBuilder`** apenas para o programa `Geral CazéTv`:
+   - `thumbPrincipalFontFamily="'General Sans', sans-serif"`
 
-### Files to create/modify
+5. **Aplicar a fonte condicional no canvas de preview** (`CortesCanvas.tsx`):
+   - No Layer 5 (texto fora do quadrant grid), quando `thumbModel === 'thumb-principal'`, usar `thumbPrincipalFontFamily` em vez de `customFontFamily`
 
-| File | Action |
-|------|--------|
-| `vite.config.ts` | Add `preview` config for PORT |
-| `package.json` | Add `start` script |
-| `Dockerfile` | Create (multi-stage Node 20) |
-| `.env.example` | Create with placeholders |
-| `DEPLOY_RAILWAY.md` | Create deployment guide |
+6. **Aplicar a fonte condicional no export** (`CortesControls.tsx`):
+   - Na renderização do Layer 6 (texto), mesma lógica: se `showThumbPrincipal && !useQuadrantGrid`, usar a fonte alternativa
 
-### Final commands
-- **Build**: `npm run build`
-- **Start**: `npm start` (runs `vite preview --host 0.0.0.0 --port $PORT`)
-- **Env vars for Railway**: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_PROJECT_ID`, `PORT` (auto-set by Railway)
+### Arquivos alterados
+
+- `public/fonts/GeneralSans-Bold.otf` (novo)
+- `src/index.css` — novo `@font-face`
+- `src/components/cortes/CortesThumbBuilder.tsx` — nova prop + passagem
+- `src/components/cortes/CortesCanvas.tsx` — uso condicional da fonte
+- `src/components/cortes/CortesControls.tsx` — uso condicional da fonte no export
+- `src/pages/CortesProgramBuilder.tsx` — passar `thumbPrincipalFontFamily` para Geral CazéTv
 
