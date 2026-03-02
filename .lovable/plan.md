@@ -1,37 +1,33 @@
 
 
-## Plano: Export Server-Side via Playwright (Railway) ✅ IMPLEMENTADO
+## Plano: Usar `VITE_EXPORT_API_BASE` no `serverExport`
 
-### Contexto
+### Alteração
 
-Atualmente existem 3 fluxos de exportação separados usando html2canvas ou Canvas 2D no cliente, que geram diferenças visuais. O objetivo é unificar tudo em um endpoint `POST /api/export` que renderiza a thumb exata via Playwright headless no servidor (Railway).
+Apenas **1 arquivo** precisa mudar: `src/lib/serverExport.ts`.
 
-### Arquitetura
+Adicionar no topo a leitura da variável de ambiente e usá-la na construção da URL. Todos os 3 pontos de chamada (`ExportControls.tsx`, `AoVivo.tsx`, `CortesControls.tsx`) já usam `serverExport()` — ficam automaticamente cobertos.
 
-```text
-Frontend (click "Exportar")
-  → POST /api/export { type, state }
-  → Express server (Railway)
-     → Playwright abre /render/:type
-     → page.evaluate(state) → window.__EXPORT_STATE__
-     → Aguarda data-ready="true"
-     → Screenshot #export-frame (1280×720)
-     → Retorna JPG blob
-  → Frontend baixa o arquivo
+```ts
+const API_BASE = (import.meta.env.VITE_EXPORT_API_BASE || '').replace(/\/$/, '');
+
+export async function serverExport(type: string, state: object, filename: string) {
+  const url = `${API_BASE}/api/export`;
+  const toastId = toast.loading('Gerando JPG via servidor...');
+  try {
+    const res = await fetch(url, { ... });
+    // resto igual, mas com alert amigável no catch
+  }
+}
 ```
 
-### Arquivos criados/alterados
-- `src/pages/Render.tsx` (novo) ✅
-- `src/lib/serverExport.ts` (novo) ✅
-- `server.js` (novo) ✅
-- `src/App.tsx` (nova rota) ✅
-- `src/components/controls/ExportControls.tsx` (usar serverExport) ✅
-- `src/pages/AoVivo.tsx` (usar serverExport) ✅
-- `src/components/cortes/CortesControls.tsx` (usar serverExport) ✅
-- `Dockerfile` (Playwright + Express) ✅
-- `package.json` (deps + start script) ✅
+### Detalhes
+- **Preview do Lovable**: setar `VITE_EXPORT_API_BASE=https://<app>.up.railway.app` para chamar o Railway remotamente
+- **Railway (produção)**: deixar vazio → chama `/api/export` no próprio domínio
+- O `.env.example` será atualizado com a nova variável documentada
+- Manter toast de loading + erro amigável com status e mensagem
 
-### Notas técnicas
-- **Só funciona em produção (Railway)** — no preview do Lovable o endpoint retornará 404 porque não há servidor Express
-- As fotos são passadas como base64 no body do POST; Playwright as injeta no DOM normalmente
-- O `Render.tsx` reutiliza os mesmos componentes de canvas existentes, garantindo 100% de paridade visual
+### Arquivos alterados
+- `src/lib/serverExport.ts`
+- `.env.example`
+
