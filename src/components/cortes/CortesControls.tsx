@@ -341,6 +341,7 @@ interface CurrentCanvasProps {
   pipBorderColor?: string;
   highlightColor?: string;
   customFontFamily?: string;
+  thumbPrincipalFontFamily?: string;
   divisoriaImage?: string;
   textBoxHeight?: number;
   quadrantVisibility?: boolean[];
@@ -910,7 +911,9 @@ export const CortesControls = ({
       ctx.drawImage(logosImg, 0, 0, W, H);
 
       // ── Layer 6: Texto ──────────────────────────────────────────────────
-      const fontFamily = (props.customFontFamily || "'Clash Grotesk', sans-serif")
+      const baseFontFamilyRaw = (props.customFontFamily || "'Clash Grotesk', sans-serif");
+      const tpFontFamilyRaw = props.thumbPrincipalFontFamily || baseFontFamilyRaw;
+      const fontFamily = (showThumbPrincipal && !useQuadrantGrid ? tpFontFamilyRaw : baseFontFamilyRaw)
         .split(',')[0].trim().replace(/'/g, '');
       const textColor = props.textColor || '#F1E8D5';
       const strokeColor = props.strokeColor || '#0C0C20';

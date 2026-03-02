@@ -72,6 +72,7 @@ const CortesProgramBuilder = () => {
       highlightColor={program!.highlight_color}
       customFontFamily={program!.font_family || undefined}
       allowAllModels={program!.name === 'Geral CazéTv' || program!.name === 'Geral CazéTv Brasil'}
+      thumbPrincipalFontFamily={program!.name === 'Geral CazéTv' ? "'General Sans', sans-serif" : undefined}
       backUrl="/cortes"
     />
   );

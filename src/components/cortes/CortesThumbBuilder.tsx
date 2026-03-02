@@ -43,6 +43,7 @@ interface CortesThumbBuilderProps {
   useQuadrantGrid?: boolean;
   thumbPrincipalLogosImage?: string;
   thumbPrincipalBgImage?: string;
+  thumbPrincipalFontFamily?: string;
 }
 
 export const CortesThumbBuilder = ({
@@ -63,6 +64,7 @@ export const CortesThumbBuilder = ({
   useQuadrantGrid = false,
   thumbPrincipalLogosImage,
   thumbPrincipalBgImage,
+  thumbPrincipalFontFamily,
 }: CortesThumbBuilderProps) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
@@ -393,6 +395,7 @@ export const CortesThumbBuilder = ({
             pipBorderColor={pipBorderColor}
             highlightColor={highlightColor}
             customFontFamily={customFontFamily}
+            thumbPrincipalFontFamily={thumbPrincipalFontFamily}
             textBoxHeight={textBoxHeight}
             quadrantVisibility={quadrantVisibility}
             useQuadrantGrid={useQuadrantGrid}
@@ -535,6 +538,7 @@ export const CortesThumbBuilder = ({
               pipBorderColor,
               highlightColor,
               customFontFamily,
+              thumbPrincipalFontFamily,
               textBoxHeight,
               quadrantVisibility,
             }}

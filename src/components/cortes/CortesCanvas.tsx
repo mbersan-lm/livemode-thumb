@@ -42,6 +42,7 @@ interface CortesCanvasProps {
   pipBorderColor?: string;
   highlightColor?: string;
   customFontFamily?: string;
+  thumbPrincipalFontFamily?: string;
   textBoxHeight?: number;
   quadrantVisibility?: boolean[];
   useQuadrantGrid?: boolean;
@@ -61,6 +62,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
      divisoriaImage = '/cortes/divisoria-geral.png',
      textColor = '#F1E8D5', strokeColor = '#0C0C20', pipBorderColor = '#D02046',
      highlightColor = '#D02046', customFontFamily = "'Clash Grotesk', sans-serif",
+     thumbPrincipalFontFamily,
      textBoxHeight = 38, quadrantVisibility = [true, true, true, true], useQuadrantGrid = false,
      tpHomeTeamId = null, tpAwayTeamId = null }, ref) => {
    const showPip = thumbModel === 'pip';
@@ -563,7 +565,10 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               maxHeight: '38%',
               overflow: 'hidden',
               zIndex: 6,
-              fontFamily: customFontFamily.includes(',') ? customFontFamily : `'${customFontFamily}', sans-serif`,
+              fontFamily: (() => {
+                const ff = (showThumbPrincipal && thumbPrincipalFontFamily) ? thumbPrincipalFontFamily : customFontFamily;
+                return ff.includes(',') ? ff : `'${ff}', sans-serif`;
+              })(),
               fontWeight: 800,
               fontSize: `${fontSize}px`,
               lineHeight: 1.2,
