@@ -100,7 +100,7 @@ const AoVivo = () => {
       gradientLeftColor,
       gradientRightColor,
       showSomAmbiente,
-    }, filename);
+    }, filename, canvasRefAoVivo);
   };
 
   const handleMatchDataChange = (data: Partial<typeof matchData>) => {
