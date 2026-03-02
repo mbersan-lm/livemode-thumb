@@ -100,35 +100,38 @@ function stripHighlightMarkers(text: string): string {
 
 /** Quebra texto em linhas que caibam em maxWidth, com suporte a word-break. */
 function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
-  const words = text.split(' ');
+  const paragraphs = text.split('\n');
   const lines: string[] = [];
-  let current = '';
-  for (const word of words) {
-    // Word-break: se a palavra sozinha excede maxWidth, quebrar por caractere
-    if (ctx.measureText(word).width > maxWidth) {
-      if (current) { lines.push(current); current = ''; }
-      let chunk = '';
-      for (const char of word) {
-        const test = chunk + char;
-        if (ctx.measureText(test).width > maxWidth && chunk) {
-          lines.push(chunk);
-          chunk = char;
-        } else {
-          chunk = test;
+  for (const paragraph of paragraphs) {
+    const words = paragraph.split(' ');
+    let current = '';
+    for (const word of words) {
+      if (ctx.measureText(word).width > maxWidth) {
+        if (current) { lines.push(current); current = ''; }
+        let chunk = '';
+        for (const char of word) {
+          const test = chunk + char;
+          if (ctx.measureText(test).width > maxWidth && chunk) {
+            lines.push(chunk);
+            chunk = char;
+          } else {
+            chunk = test;
+          }
         }
+        current = chunk;
+        continue;
       }
-      current = chunk;
-      continue;
+      const test = current ? `${current} ${word}` : word;
+      if (ctx.measureText(test).width > maxWidth && current) {
+        lines.push(current);
+        current = word;
+      } else {
+        current = test;
+      }
     }
-    const test = current ? `${current} ${word}` : word;
-    if (ctx.measureText(test).width > maxWidth && current) {
-      lines.push(current);
-      current = word;
-    } else {
-      current = test;
-    }
+    if (current) lines.push(current);
+    else if (paragraph === '') lines.push('');
   }
-  if (current) lines.push(current);
   return lines;
 }
 
