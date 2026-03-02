@@ -697,8 +697,9 @@ export const CortesControls = ({
       // ── Layer 2: PIP meio + 2 pessoas — centered PIP ──────────────────
       if (showPipMeio2Pessoas && pipImg) {
         const pip = props.pipFrame;
-        const fx = (pip.x / 100) * W;
-        const fy = (pip.y / 100) * H;
+        const forcedX = (100 - pip.width) / 2;
+        const fx = (forcedX / 100) * W;
+        const fy = (15.4 / 100) * H;
         const fw = (pip.width / 100) * W;
         const fh = (pip.height / 100) * H;
         const cx = fx + fw / 2;
@@ -1400,8 +1401,6 @@ export const CortesControls = ({
                 <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Moldura PIP</Label>
                 <button onClick={() => onPipFrameChange({ x: 37, y: 15.4, width: 26, height: 64.3 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
               </div>
-              <div><Label className="text-xs">Posição X: {pipFrame.x.toFixed(1)}%</Label><Slider value={[pipFrame.x]} onValueChange={([x]) => onPipFrameChange({ x })} min={0} max={80} step={0.1} className="mt-1" /></div>
-              <div><Label className="text-xs">Posição Y: {pipFrame.y.toFixed(1)}%</Label><Slider value={[pipFrame.y]} onValueChange={([y]) => onPipFrameChange({ y })} min={-20} max={60} step={0.1} className="mt-1" /></div>
               <Collapsible>
                 <CollapsibleTrigger className="flex items-center gap-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors w-full">
                   <ChevronDown className="w-3 h-3" />Propriedades avançadas
