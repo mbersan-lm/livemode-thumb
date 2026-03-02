@@ -1446,7 +1446,7 @@ export const CortesControls = ({
         <>
           {/* PIP central */}
           <div className="space-y-2">
-            <Label className="font-semibold">Imagem PIP (centro)</Label>
+            <Label className="font-semibold">{pipMeioDividido ? 'PIP esquerdo' : 'Imagem PIP (centro)'}</Label>
             <input ref={pipInputRef} type="file" accept="image/*" className="hidden"
               onChange={(e) => e.target.files?.[0] && onPipUpload(e.target.files[0])} />
             <Button variant={pipImage ? 'secondary' : 'outline'} className="w-full"
