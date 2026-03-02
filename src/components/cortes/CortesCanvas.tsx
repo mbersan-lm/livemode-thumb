@@ -583,16 +583,11 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               wordBreak: 'break-word',
             } as React.CSSProperties}
           >
-            {thumbText.split('\n').map((line, li, arr) => (
-              <span key={li}>
-                {line.split(/(\*[^*]+\*)/g).map((part, pi) =>
-                  part.startsWith('*') && part.endsWith('*')
-                    ? <span key={pi} style={{ color: highlightColor, marginLeft: '0.15em', marginRight: '0.15em' }}>{part.slice(1, -1)}</span>
-                    : part
-                )}
-                {li < arr.length - 1 && <br />}
-              </span>
-            ))}
+            {thumbText.split(/(\*[^*]+\*)/g).map((part, i) =>
+              part.startsWith('*') && part.endsWith('*')
+                ? <span key={i} style={{ color: highlightColor, marginLeft: '0.15em', marginRight: '0.15em' }}>{part.slice(1, -1)}</span>
+                : part
+            )}
           </div>
         )}
 
@@ -627,16 +622,11 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
             } as React.CSSProperties}
           >
             <span>
-              {thumbText.split('\n').map((line, li, arr) => (
-                <span key={li}>
-                  {line.split(/(\*[^*]+\*)/g).map((part, pi) =>
-                    part.startsWith('*') && part.endsWith('*')
-                      ? <span key={pi} style={{ color: '#00f2f4', marginLeft: '0.15em', marginRight: '0.15em' }}>{part.slice(1, -1)}</span>
-                      : part
-                  )}
-                  {li < arr.length - 1 && <br />}
-                </span>
-              ))}
+              {thumbText.split(/(\*[^*]+\*)/g).map((part, i) =>
+                part.startsWith('*') && part.endsWith('*')
+                  ? <span key={i} style={{ color: '#00f2f4', marginLeft: '0.15em', marginRight: '0.15em' }}>{part.slice(1, -1)}</span>
+                  : part
+              )}
             </span>
           </div>
         )}
