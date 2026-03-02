@@ -1,16 +1,51 @@
-## Plano: Export server-side via Playwright — IMPLEMENTADO ✅
 
-Todos os exports (Cortes, Melhores Momentos, Jogo Completo, Ao Vivo) agora usam `exportViaServer()` que faz POST para `/api/export` no Railway. O servidor Express + Playwright abre a rota `/render/:type`, injeta o estado e captura um screenshot PNG de 1280x720.
 
-### Arquivos criados
-- `src/lib/serverExport.ts` — Função utilitária compartilhada
-- `src/pages/RenderExport.tsx` — Página de renderização sem UI
-- `server/index.mjs` — Express + Playwright server
+## Plano: Mover "PIP esquerdo" para dentro do toggle PIP dividido
 
-### Arquivos alterados
-- `src/App.tsx` — Rota `/render/:type`
-- `src/components/cortes/CortesControls.tsx` — Export via server (removido ~650 linhas de Native Canvas)
-- `src/components/controls/ExportControls.tsx` — Export via server (removido html2canvas)
-- `src/pages/AoVivo.tsx` — Export via server (removido ~140 linhas de Native Canvas)
-- `Dockerfile` — Playwright base image
-- `package.json` — express + playwright deps, start script
+### Alteração
+
+**`src/components/cortes/CortesControls.tsx`** (linhas 1447-1493):
+
+Reorganizar a estrutura para que:
+- Quando `pipMeioDividido` é **false**: o bloco "Imagem PIP (centro)" + upload fica **antes** do switch (como já está).
+- Quando `pipMeioDividido` é **true**: o bloco "Imagem PIP (centro)" some de cima, e dentro do toggle aparecem "PIP esquerdo" e "PIP direito" lado a lado ou em sequência.
+
+Concretamente:
+1. O bloco de upload PIP central (linhas 1447-1456) fica condicional a `!pipMeioDividido`.
+2. Dentro do bloco `{pipMeioDividido && (...)}` (linha 1466), adicionar o upload "PIP esquerdo" **antes** do "PIP direito", movendo o conteúdo de upload + botão para lá.
+
+```tsx
+{/* PIP central — só quando NÃO dividido */}
+{!pipMeioDividido && (
+  <div className="space-y-2">
+    <Label className="font-semibold">Imagem PIP (centro)</Label>
+    <input ... />
+    <Button ...>Upload PIP</Button>
+  </div>
+)}
+
+{/* Switch PIP dividido */}
+<div className="flex ...">
+  <Label>PIP dividido</Label>
+  <Switch ... />
+</div>
+
+{/* Conteúdo dentro do toggle */}
+{pipMeioDividido && (
+  <>
+    <div className="space-y-2">
+      <Label className="font-semibold">PIP esquerdo</Label>
+      <input ... /> {/* mesmo pipInputRef */}
+      <Button ...>Upload PIP esquerdo</Button>
+    </div>
+    <div className="space-y-2">
+      <Label className="font-semibold">PIP direito</Label>
+      ...
+    </div>
+  </>
+)}
+```
+
+### Arquivo alterado
+- `src/components/cortes/CortesControls.tsx`
+
