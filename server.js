@@ -76,8 +76,8 @@ app.post('/api/export', async (req, res) => {
   }
 });
 
-// SPA fallback — serve index.html for all non-API, non-static routes
-app.get('/*', (req, res) => {
+// SPA fallback — MUST BE LAST
+app.use((req, res) => {
   res.sendFile(join(__dirname, 'dist', 'index.html'));
 });
 
