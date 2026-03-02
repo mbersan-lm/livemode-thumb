@@ -9,7 +9,10 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "vite preview --host 0.0.0.0 --port $PORT"
+    "start": "node server/index.mjs"
+  },
+  "optionalDependencies": {
+    "playwright": "^1.49.1"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -47,7 +50,7 @@
     "cmdk": "^1.1.1",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.6.0",
-    "html2canvas": "^1.4.1",
+    "express": "^5.2.1",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.462.0",
     "next-themes": "^0.3.0",
