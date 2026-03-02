@@ -18,6 +18,12 @@ export async function exportViaServer(
       body: JSON.stringify({ type, state }),
     });
 
+    if (resp.status === 404) {
+      toast.dismiss(toastId);
+      toast.error('Export server-side disponível apenas no deploy Railway. No preview do Lovable, esta funcionalidade não está ativa.', { duration: 5000 });
+      return;
+    }
+
     if (!resp.ok) {
       const errorText = await resp.text().catch(() => 'Unknown error');
       throw new Error(`Export failed (${resp.status}): ${errorText}`);
@@ -36,9 +42,8 @@ export async function exportViaServer(
   } catch (error) {
     toast.dismiss(toastId);
 
-    // Check if we're likely not on Railway (no /api/export endpoint)
     if (error instanceof TypeError && error.message.includes('fetch')) {
-      toast.error('Export server-side disponível apenas no deploy Railway.');
+      toast.error('Export server-side disponível apenas no deploy Railway.', { duration: 5000 });
     } else {
       console.error('Server export error:', error);
       toast.error(`Falha ao exportar: ${(error as Error).message}`);
