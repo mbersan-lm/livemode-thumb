@@ -67,6 +67,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
      tpHomeTeamId = null, tpAwayTeamId = null }, ref) => {
    const showPip = thumbModel === 'pip';
    const showPipDividido = thumbModel === 'pip-dividido';
+   const showPipMeio2Pessoas = thumbModel === 'pip-meio-2pessoas';
    const showPerson2 = thumbModel === 'duas-pessoas';
    const showJogoV1 = thumbModel === 'jogo-v1';
    const showJogoPipDuplo = thumbModel === 'jogo-pip-duplo';
@@ -220,8 +221,81 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           </div>
         )}
 
+        {/* Layer 2: PIP meio + 2 pessoas — centered PIP */}
+        {showPipMeio2Pessoas && pipImage && (
+          <div
+            style={{
+              position: 'absolute',
+              left: `${pipFrame.x}%`,
+              top: `${pipFrame.y}%`,
+              width: `${pipFrame.width}%`,
+              height: `${pipFrame.height}%`,
+              border: `10px solid ${pipBorderColor}`,
+              transform: 'rotate(-1.2deg)',
+              overflow: 'hidden',
+              zIndex: 2,
+            }}
+          >
+            {(() => {
+              const finalScale = pipTransform.scale;
+              return (
+                <img
+                  src={pipImage}
+                  alt=""
+                  style={{
+                    position: 'absolute',
+                    left: '50%',
+                    top: '50%',
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain',
+                    transform: `translate(-50%, -50%) translate(${pipTransform.x}px, ${pipTransform.y}px) scale(${finalScale}) rotate(${pipTransform.rotation}deg)`,
+                    transformOrigin: 'center center',
+                  }}
+                />
+              );
+            })()}
+          </div>
+        )}
+
+        {/* Layer 3: pip-meio-2pessoas — person left */}
+        {showPipMeio2Pessoas && personCutout && (
+          <img
+            src={personCutout}
+            alt=""
+            style={{
+              position: 'absolute',
+              left: '-2%',
+              top: '-2%',
+              height: '108%',
+              width: 'auto',
+              zIndex: 3,
+              transform: `translate(${personTransform.x}px, ${personTransform.y}px) scale(${personTransform.scale}) rotate(${personTransform.rotation}deg)`,
+              transformOrigin: 'center center',
+            }}
+          />
+        )}
+
+        {/* Layer 3: pip-meio-2pessoas — person right */}
+        {showPipMeio2Pessoas && person2Cutout && (
+          <img
+            src={person2Cutout}
+            alt=""
+            style={{
+              position: 'absolute',
+              right: '-2%',
+              top: '-2%',
+              height: '108%',
+              width: 'auto',
+              zIndex: 3,
+              transform: `translate(${person2Transform.x}px, ${person2Transform.y}px) scale(${person2Transform.scale}) rotate(${person2Transform.rotation}deg)`,
+              transformOrigin: 'center center',
+            }}
+          />
+        )}
+
         {/* Layer 3: Person cutout (right side) — pip, pip-dividido & duas-pessoas models */}
-        {!showMeioAMeio && !showSoLettering && !showJogoV1 && !showJogoPipDuplo && !showThumbPrincipal && personCutout && (
+        {!showMeioAMeio && !showSoLettering && !showJogoV1 && !showJogoPipDuplo && !showThumbPrincipal && !showPipMeio2Pessoas && personCutout && (
           <img
             src={personCutout}
             alt=""
