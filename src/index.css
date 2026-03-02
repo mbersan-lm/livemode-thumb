@@ -51,6 +51,13 @@ html, body {
   font-style: italic;
 }
 
+@font-face {
+  font-family: 'General Sans';
+  src: url('/fonts/GeneralSans-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
 */
