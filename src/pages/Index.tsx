@@ -321,6 +321,11 @@ const Index = () => {
                 canvasRef={canvasRef}
                 canvasRefJogoCompleto={canvasRefJogoCompleto}
                 matchData={state.matchData}
+                playerPhoto={state.playerPhoto}
+                photoTransform={state.photoTransform}
+                jogoCompletoPhoto={state.jogoCompletoPhoto}
+                jogoCompletoPhotoTransform={state.jogoCompletoPhotoTransform}
+                template={state.template}
               />
             </TabsContent>
           </Tabs>
