@@ -48,6 +48,7 @@ interface CortesCanvasProps {
   useQuadrantGrid?: boolean;
   tpHomeTeamId?: string | null;
   tpAwayTeamId?: string | null;
+  pipMeioDividido?: boolean;
 }
 
 export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
@@ -64,7 +65,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
      highlightColor = '#D02046', customFontFamily = "'Clash Grotesk', sans-serif",
      thumbPrincipalFontFamily,
      textBoxHeight = 38, quadrantVisibility = [true, true, true, true], useQuadrantGrid = false,
-     tpHomeTeamId = null, tpAwayTeamId = null }, ref) => {
+     tpHomeTeamId = null, tpAwayTeamId = null, pipMeioDividido = false }, ref) => {
    const showPip = thumbModel === 'pip';
    const showPipDividido = thumbModel === 'pip-dividido';
    const showPipMeio2Pessoas = thumbModel === 'pip-meio-2pessoas';
@@ -221,8 +222,8 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
           </div>
         )}
 
-        {/* Layer 2: PIP meio + 2 pessoas — centered PIP */}
-        {showPipMeio2Pessoas && pipImage && (
+        {/* Layer 2: PIP meio + 2 pessoas — centered PIP (normal) */}
+        {showPipMeio2Pessoas && !pipMeioDividido && pipImage && (
           <div
             style={{
               position: 'absolute',
@@ -236,25 +237,63 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               zIndex: 2,
             }}
           >
-            {(() => {
-              const finalScale = pipTransform.scale;
-              return (
-                <img
-                  src={pipImage}
-                  alt=""
-                  style={{
-                    position: 'absolute',
-                    left: '50%',
-                    top: '50%',
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'contain',
-                    transform: `translate(-50%, -50%) translate(${pipTransform.x}px, ${pipTransform.y}px) scale(${finalScale}) rotate(${pipTransform.rotation}deg)`,
-                    transformOrigin: 'center center',
-                  }}
-                />
-              );
-            })()}
+            <img
+              src={pipImage}
+              alt=""
+              style={{
+                position: 'absolute',
+                left: '50%',
+                top: '50%',
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+                transform: `translate(-50%, -50%) translate(${pipTransform.x}px, ${pipTransform.y}px) scale(${pipTransform.scale}) rotate(${pipTransform.rotation}deg)`,
+                transformOrigin: 'center center',
+              }}
+            />
+          </div>
+        )}
+
+        {/* Layer 2: PIP meio + 2 pessoas — dividido (two photos side by side) */}
+        {showPipMeio2Pessoas && pipMeioDividido && (pipImage || pip2Image) && (
+          <div
+            style={{
+              position: 'absolute',
+              left: `${(100 - pipFrame.width) / 2}%`,
+              top: `${15.4}%`,
+              width: `${pipFrame.width}%`,
+              height: `${pipFrame.height}%`,
+              border: `10px solid ${pipBorderColor}`,
+              transform: 'rotate(-1.2deg)',
+              overflow: 'hidden',
+              zIndex: 2,
+              display: 'flex',
+            }}
+          >
+            {/* Left half */}
+            <div style={{ width: '50%', height: '100%', overflow: 'hidden', position: 'relative' }}>
+              {pipImage && (
+                <img src={pipImage} alt="" style={{
+                  position: 'absolute', left: '50%', top: '50%',
+                  width: '100%', height: '100%', objectFit: 'contain',
+                  transform: `translate(-50%, -50%) translate(${pipTransform.x}px, ${pipTransform.y}px) scale(${pipTransform.scale}) rotate(${pipTransform.rotation}deg)`,
+                  transformOrigin: 'center center',
+                }} />
+              )}
+            </div>
+            {/* Vertical divider */}
+            <div style={{ width: '4px', height: '100%', backgroundColor: pipBorderColor, flexShrink: 0 }} />
+            {/* Right half */}
+            <div style={{ width: '50%', height: '100%', overflow: 'hidden', position: 'relative' }}>
+              {pip2Image && (
+                <img src={pip2Image} alt="" style={{
+                  position: 'absolute', left: '50%', top: '50%',
+                  width: '100%', height: '100%', objectFit: 'contain',
+                  transform: `translate(-50%, -50%) translate(${pip2Transform.x}px, ${pip2Transform.y}px) scale(${pip2Transform.scale}) rotate(${pip2Transform.rotation}deg)`,
+                  transformOrigin: 'center center',
+                }} />
+              )}
+            </div>
           </div>
         )}
 

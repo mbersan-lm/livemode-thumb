@@ -348,6 +348,7 @@ interface CurrentCanvasProps {
   divisoriaImage?: string;
   textBoxHeight?: number;
   quadrantVisibility?: boolean[];
+  pipMeioDividido?: boolean;
 }
 
 interface CortesControlsProps {
@@ -425,6 +426,8 @@ interface CortesControlsProps {
   onClearPerson2?: () => void;
   onClearPerson3?: () => void;
   onClearPerson4?: () => void;
+  pipMeioDividido?: boolean;
+  onPipMeioDivididoChange?: (v: boolean) => void;
 }
 
 export const CortesControls = ({
@@ -502,6 +505,8 @@ export const CortesControls = ({
   onClearPerson2,
   onClearPerson3,
   onClearPerson4,
+  pipMeioDividido = false,
+  onPipMeioDivididoChange,
 }: CortesControlsProps) => {
   const pipInputRef = useRef<HTMLInputElement>(null);
   const pip2InputRef = useRef<HTMLInputElement>(null);
@@ -698,7 +703,7 @@ export const CortesControls = ({
       }
 
       // ── Layer 2: PIP meio + 2 pessoas — centered PIP ──────────────────
-      if (showPipMeio2Pessoas && pipImg) {
+      if (showPipMeio2Pessoas && !pipMeioDividido && pipImg) {
         const pip = props.pipFrame;
         const forcedX = (100 - pip.width) / 2;
         const fx = (forcedX / 100) * W;
@@ -733,6 +738,75 @@ export const CortesControls = ({
         ctx.strokeStyle = props.pipBorderColor || '#D02046';
         ctx.lineWidth = borderW;
         ctx.strokeRect(-fw / 2, -fh / 2, fw, fh);
+        ctx.restore();
+      }
+
+      // ── Layer 2: PIP meio + 2 pessoas — dividido ──────────────────────
+      if (showPipMeio2Pessoas && pipMeioDividido && (pipImg || pip2Img)) {
+        const pip = props.pipFrame;
+        const forcedX = (100 - pip.width) / 2;
+        const fx = (forcedX / 100) * W;
+        const fy = (15.4 / 100) * H;
+        const fw = (pip.width / 100) * W;
+        const fh = (pip.height / 100) * H;
+        const cx = fx + fw / 2;
+        const cy = fy + fh / 2;
+        const rotDeg = -1.2;
+        const halfW = fw / 2;
+        const dividerW = 4;
+
+        if (pipImg) {
+          const t = props.pipTransform;
+          ctx.save();
+          ctx.translate(cx, cy);
+          ctx.rotate((rotDeg * Math.PI) / 180);
+          ctx.beginPath();
+          ctx.rect(-fw / 2, -fh / 2, halfW, fh);
+          ctx.clip();
+          const imgRatio = pipImg.naturalWidth / pipImg.naturalHeight;
+          const contRatio = halfW / fh;
+          let drawW: number, drawH: number;
+          if (imgRatio > contRatio) { drawW = halfW; drawH = halfW / imgRatio; }
+          else { drawH = fh; drawW = fh * imgRatio; }
+          ctx.translate(-halfW / 2 + t.x, t.y);
+          ctx.rotate((t.rotation * Math.PI) / 180);
+          ctx.scale(t.scale, t.scale);
+          ctx.drawImage(pipImg, -drawW / 2, -drawH / 2, drawW, drawH);
+          ctx.restore();
+        }
+
+        if (pip2Img) {
+          const t = props.pip2Transform ?? { x: 0, y: 0, scale: 1, rotation: 0 };
+          ctx.save();
+          ctx.translate(cx, cy);
+          ctx.rotate((rotDeg * Math.PI) / 180);
+          ctx.beginPath();
+          ctx.rect(0, -fh / 2, halfW, fh);
+          ctx.clip();
+          const imgRatio = pip2Img.naturalWidth / pip2Img.naturalHeight;
+          const contRatio = halfW / fh;
+          let drawW: number, drawH: number;
+          if (imgRatio > contRatio) { drawW = halfW; drawH = halfW / imgRatio; }
+          else { drawH = fh; drawW = fh * imgRatio; }
+          ctx.translate(halfW / 2 + t.x, t.y);
+          ctx.rotate((t.rotation * Math.PI) / 180);
+          ctx.scale(t.scale, t.scale);
+          ctx.drawImage(pip2Img, -drawW / 2, -drawH / 2, drawW, drawH);
+          ctx.restore();
+        }
+
+        const borderW = 10;
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate((rotDeg * Math.PI) / 180);
+        ctx.strokeStyle = props.pipBorderColor || '#D02046';
+        ctx.lineWidth = borderW;
+        ctx.strokeRect(-fw / 2, -fh / 2, fw, fh);
+        ctx.beginPath();
+        ctx.moveTo(0, -fh / 2);
+        ctx.lineTo(0, fh / 2);
+        ctx.lineWidth = dividerW;
+        ctx.stroke();
         ctx.restore();
       }
 
@@ -1377,14 +1451,51 @@ export const CortesControls = ({
               onChange={(e) => e.target.files?.[0] && onPipUpload(e.target.files[0])} />
             <Button variant={pipImage ? 'secondary' : 'outline'} className="w-full"
               onClick={() => pipInputRef.current?.click()}>
-              <Upload className="w-4 h-4 mr-2" />{pipImage ? 'Trocar PIP' : 'Upload PIP'}
+              <Upload className="w-4 h-4 mr-2" />{pipImage ? (pipMeioDividido ? 'Trocar PIP esquerdo' : 'Trocar PIP') : (pipMeioDividido ? 'Upload PIP esquerdo' : 'Upload PIP')}
             </Button>
           </div>
           {onPipFromBase64 && <PipAiGenerator onImageGenerated={onPipFromBase64} />}
+
+          {/* Switch PIP dividido */}
+          <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-muted/30">
+            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">PIP dividido</Label>
+            <Switch checked={pipMeioDividido} onCheckedChange={(v) => onPipMeioDivididoChange?.(v)} />
+          </div>
+
+          {/* PIP direito (só aparece quando dividido) */}
+          {pipMeioDividido && (
+            <div className="space-y-2">
+              <Label className="font-semibold">PIP direito</Label>
+              <input ref={pip2InputRef} type="file" accept="image/*" className="hidden"
+                onChange={(e) => e.target.files?.[0] && onPip2Upload?.(e.target.files[0])} />
+              <Button variant={pip2Image ? 'secondary' : 'outline'} className="w-full"
+                onClick={() => pip2InputRef.current?.click()}>
+                <Upload className="w-4 h-4 mr-2" />{pip2Image ? 'Trocar PIP direito' : 'Upload PIP direito'}
+              </Button>
+            </div>
+          )}
+          {pipMeioDividido && pip2Image && (
+            <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste PIP direito</Label>
+                <div className="flex items-center gap-2">
+                  <Switch checked={showPip2Adjust} onCheckedChange={setShowPip2Adjust} />
+                  <button onClick={() => onPip2TransformChange?.({ x: 0, y: 0, scale: pip2BaseScale, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                </div>
+              </div>
+              {showPip2Adjust && (<>
+                <div><Label className="text-xs">Posição X: {pip2Transform.x}px</Label><Slider value={[pip2Transform.x]} onValueChange={([x]) => onPip2TransformChange?.({ x })} min={-500} max={500} step={1} className="mt-1" /></div>
+                <div><Label className="text-xs">Posição Y: {pip2Transform.y}px</Label><Slider value={[pip2Transform.y]} onValueChange={([y]) => onPip2TransformChange?.({ y })} min={-500} max={500} step={1} className="mt-1" /></div>
+                <div><Label className="text-xs">Zoom: {pip2Transform.scale.toFixed(2)}x</Label><Slider value={[pip2Transform.scale]} onValueChange={([scale]) => onPip2TransformChange?.({ scale })} min={0.5} max={3} step={0.01} className="mt-1" /></div>
+                <div><Label className="text-xs">Rotação: {pip2Transform.rotation}°</Label><Slider value={[pip2Transform.rotation]} onValueChange={([rotation]) => onPip2TransformChange?.({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
+              </>)}
+            </div>
+          )}
+
           {pipImage && (
             <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
               <div className="flex items-center justify-between">
-                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste da imagem PIP</Label>
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{pipMeioDividido ? 'Ajuste PIP esquerdo' : 'Ajuste da imagem PIP'}</Label>
                 <div className="flex items-center gap-2">
                   <Switch checked={showPipAdjust} onCheckedChange={setShowPipAdjust} />
                   <button onClick={() => onPipTransformChange({ x: 0, y: 0, scale: pipBaseScale, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
