@@ -571,7 +571,7 @@ export const CortesControls = ({
       textBoxHeight: props.textBoxHeight,
       quadrantVisibility: props.quadrantVisibility,
       pipMeioDividido: props.pipMeioDividido,
-    }, filename, canvasRef);
+    }, filename);
   };
 
   return (

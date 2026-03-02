@@ -9,6 +9,7 @@ interface ExportControlsProps {
   canvasRef: React.RefObject<HTMLDivElement>;
   canvasRefJogoCompleto: React.RefObject<HTMLDivElement>;
   matchData: MatchData;
+  // State needed for server-side export
   playerPhoto: string | null;
   photoTransform: PhotoTransform;
   jogoCompletoPhoto: string | null;
@@ -36,7 +37,7 @@ export const ExportControls = ({
       photoTransform,
       matchData,
       template,
-    }, filename, canvasRef);
+    }, filename);
   };
 
   const handleExportJogoCompleto = async () => {
@@ -49,7 +50,7 @@ export const ExportControls = ({
       jogoCompletoPhotoTransform,
       matchData,
       template,
-    }, filename, canvasRefJogoCompleto);
+    }, filename);
   };
 
   return (
