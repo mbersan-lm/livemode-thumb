@@ -100,6 +100,7 @@ export const CortesThumbBuilder = ({
   const [pip2Frame, setPip2Frame] = useState(DEFAULT_PIP2_FRAME);
   const [pip2BaseScale, setPip2BaseScale] = useState(1);
   const [customBgImage, setCustomBgImage] = useState<string | null>(null);
+  const [pipMeioDividido, setPipMeioDividido] = useState(false);
   const [quadrantVisibility, setQuadrantVisibility] = useState([true, true, true, true]);
   const [logosVariant, setLogosVariant] = useState<'positiva' | 'negativa'>('positiva');
   const [tpHomeTeamId, setTpHomeTeamId] = useState<string | null>(null);
@@ -396,12 +397,13 @@ export const CortesThumbBuilder = ({
             highlightColor={highlightColor}
             customFontFamily={customFontFamily}
             thumbPrincipalFontFamily={thumbPrincipalFontFamily}
-            textBoxHeight={textBoxHeight}
-            quadrantVisibility={quadrantVisibility}
-            useQuadrantGrid={useQuadrantGrid}
-            tpHomeTeamId={tpHomeTeamId}
-            tpAwayTeamId={tpAwayTeamId}
-           />
+             textBoxHeight={textBoxHeight}
+             quadrantVisibility={quadrantVisibility}
+             useQuadrantGrid={useQuadrantGrid}
+             tpHomeTeamId={tpHomeTeamId}
+             tpAwayTeamId={tpAwayTeamId}
+             pipMeioDividido={pipMeioDividido}
+            />
         </div>
       </div>
 
@@ -508,9 +510,11 @@ export const CortesThumbBuilder = ({
             onTextBoxHeightChange={setTextBoxHeight}
             onClearPerson={handleClearPerson}
             onClearPerson2={handleClearPerson2}
-            onClearPerson3={handleClearPerson3}
-            onClearPerson4={handleClearPerson4}
-            onPipFromBase64={handlePipFromBase64}
+             onClearPerson3={handleClearPerson3}
+             onClearPerson4={handleClearPerson4}
+             onPipFromBase64={handlePipFromBase64}
+             pipMeioDividido={pipMeioDividido}
+             onPipMeioDivididoChange={setPipMeioDividido}
             currentCanvasProps={{
               thumbModel,
               pipImage,
@@ -540,8 +544,9 @@ export const CortesThumbBuilder = ({
               customFontFamily,
               thumbPrincipalFontFamily,
               textBoxHeight,
-              quadrantVisibility,
-            }}
+               quadrantVisibility,
+               pipMeioDividido,
+             }}
           />
         </div>
       </div>
