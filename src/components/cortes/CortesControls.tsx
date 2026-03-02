@@ -557,6 +557,7 @@ export const CortesControls = ({
       const thumbModel = props.thumbModel;
       const showPip = thumbModel === 'pip';
       const showPipDividido = thumbModel === 'pip-dividido';
+      const showPipMeio2Pessoas = thumbModel === 'pip-meio-2pessoas';
       const showPerson2 = thumbModel === 'duas-pessoas';
       const showMeioAMeio = thumbModel === 'meio-a-meio';
       const showSoLettering = thumbModel === 'so-lettering';
@@ -693,6 +694,81 @@ export const CortesControls = ({
         ctx.restore();
       }
 
+      // ── Layer 2: PIP meio + 2 pessoas — centered PIP ──────────────────
+      if (showPipMeio2Pessoas && pipImg) {
+        const pip = props.pipFrame;
+        const fx = (pip.x / 100) * W;
+        const fy = (pip.y / 100) * H;
+        const fw = (pip.width / 100) * W;
+        const fh = (pip.height / 100) * H;
+        const cx = fx + fw / 2;
+        const cy = fy + fh / 2;
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate((-1.2 * Math.PI) / 180);
+        ctx.beginPath();
+        ctx.rect(-fw / 2, -fh / 2, fw, fh);
+        ctx.clip();
+        const t = props.pipTransform;
+        const imgR = pipImg.naturalWidth / pipImg.naturalHeight;
+        const contR = fw / fh;
+        let drawW2: number, drawH2: number;
+        if (imgR > contR) { drawW2 = fw; drawH2 = fw / imgR; }
+        else { drawH2 = fh; drawW2 = fh * imgR; }
+        ctx.translate(t.x, t.y);
+        ctx.rotate((t.rotation * Math.PI) / 180);
+        ctx.scale(t.scale, t.scale);
+        ctx.drawImage(pipImg, -drawW2 / 2, -drawH2 / 2, drawW2, drawH2);
+        ctx.restore();
+
+        const borderW = 10;
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate((-1.2 * Math.PI) / 180);
+        ctx.strokeStyle = props.pipBorderColor || '#D02046';
+        ctx.lineWidth = borderW;
+        ctx.strokeRect(-fw / 2, -fh / 2, fw, fh);
+        ctx.restore();
+      }
+
+      // ── Layer 3: pip-meio-2pessoas — person left ───────────────────────
+      if (showPipMeio2Pessoas && personImg) {
+        const t = props.personTransform;
+        const baseH = H * 1.08;
+        const aspect = personImg.naturalWidth / personImg.naturalHeight;
+        const baseW = baseH * aspect;
+        const baseX = -0.02 * W;
+        const baseY = -0.02 * H;
+        const cx = baseX + baseW / 2;
+        const cy = baseY + baseH / 2;
+        ctx.save();
+        ctx.translate(cx + t.x, cy + t.y);
+        ctx.rotate((t.rotation * Math.PI) / 180);
+        ctx.scale(t.scale, t.scale);
+        ctx.drawImage(personImg, -baseW / 2, -baseH / 2, baseW, baseH);
+        ctx.restore();
+      }
+
+      // ── Layer 3: pip-meio-2pessoas — person right ──────────────────────
+      if (showPipMeio2Pessoas && person2Img) {
+        const t = props.person2Transform;
+        const baseH = H * 1.08;
+        const aspect = person2Img.naturalWidth / person2Img.naturalHeight;
+        const baseW = baseH * aspect;
+        const baseRight = -0.02 * W;
+        const baseX = W - baseRight - baseW;
+        const baseY = -0.02 * H;
+        const cx = baseX + baseW / 2;
+        const cy = baseY + baseH / 2;
+        ctx.save();
+        ctx.translate(cx + t.x, cy + t.y);
+        ctx.rotate((t.rotation * Math.PI) / 180);
+        ctx.scale(t.scale, t.scale);
+        ctx.drawImage(person2Img, -baseW / 2, -baseH / 2, baseW, baseH);
+        ctx.restore();
+      }
+
       if (showMeioAMeio) {
         // Esquerda: objectFit cover, metade esquerda
         if (personImg) {
@@ -717,7 +793,7 @@ export const CortesControls = ({
       }
 
       // ── Layer 3: Person cutout (pip / duas-pessoas) ─────────────────────
-      if (!showMeioAMeio && !showSoLettering && !showJogoV1 && !showJogoPipDuplo && !showThumbPrincipal && personImg) {
+      if (!showMeioAMeio && !showSoLettering && !showJogoV1 && !showJogoPipDuplo && !showThumbPrincipal && !showPipMeio2Pessoas && personImg) {
         const t = props.personTransform;
         const baseRight = showPerson2 ? -0.02 * W : -0.06 * W;
         const baseH = H * 1.08;
@@ -736,7 +812,7 @@ export const CortesControls = ({
       }
 
       // Layer 3b: Person2 (esquerda, duas-pessoas)
-      if (showPerson2 && !showJogoV1 && !showJogoPipDuplo && !showThumbPrincipal && person2Img) {
+      if (showPerson2 && !showJogoV1 && !showJogoPipDuplo && !showThumbPrincipal && !showPipMeio2Pessoas && person2Img) {
         const t = props.person2Transform;
         const baseH = H * 1.08;
         const aspectRatio = person2Img.naturalWidth / person2Img.naturalHeight;
@@ -1055,6 +1131,7 @@ export const CortesControls = ({
           <SelectContent>
             <SelectItem value="pip">Com PIP</SelectItem>
             <SelectItem value="pip-dividido">Com PIP dividido</SelectItem>
+            <SelectItem value="pip-meio-2pessoas">PIP meio + 2 pessoas</SelectItem>
             {allowJogoV1 && (
               <>
                 <SelectItem value="jogo-v1">Jogo v1</SelectItem>
@@ -1283,6 +1360,129 @@ export const CortesControls = ({
               </CollapsibleContent>
             </Collapsible>
           </div>
+        </>
+      )}
+
+      {/* PIP meio + 2 pessoas */}
+      {thumbModel === 'pip-meio-2pessoas' && (
+        <>
+          {/* PIP central */}
+          <div className="space-y-2">
+            <Label className="font-semibold">Imagem PIP (centro)</Label>
+            <input ref={pipInputRef} type="file" accept="image/*" className="hidden"
+              onChange={(e) => e.target.files?.[0] && onPipUpload(e.target.files[0])} />
+            <Button variant={pipImage ? 'secondary' : 'outline'} className="w-full"
+              onClick={() => pipInputRef.current?.click()}>
+              <Upload className="w-4 h-4 mr-2" />{pipImage ? 'Trocar PIP' : 'Upload PIP'}
+            </Button>
+          </div>
+          {onPipFromBase64 && <PipAiGenerator onImageGenerated={onPipFromBase64} />}
+          {pipImage && (
+            <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste da imagem PIP</Label>
+                <div className="flex items-center gap-2">
+                  <Switch checked={showPipAdjust} onCheckedChange={setShowPipAdjust} />
+                  <button onClick={() => onPipTransformChange({ x: 0, y: 0, scale: pipBaseScale, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                </div>
+              </div>
+              {showPipAdjust && (<>
+                <div><Label className="text-xs">Posição X: {pipTransform.x}px</Label><Slider value={[pipTransform.x]} onValueChange={([x]) => onPipTransformChange({ x })} min={-500} max={500} step={1} className="mt-1" /></div>
+                <div><Label className="text-xs">Posição Y: {pipTransform.y}px</Label><Slider value={[pipTransform.y]} onValueChange={([y]) => onPipTransformChange({ y })} min={-500} max={500} step={1} className="mt-1" /></div>
+                <div><Label className="text-xs">Zoom: {pipTransform.scale.toFixed(2)}x</Label><Slider value={[pipTransform.scale]} onValueChange={([scale]) => onPipTransformChange({ scale })} min={0.5} max={3} step={0.01} className="mt-1" /></div>
+                <div><Label className="text-xs">Rotação: {pipTransform.rotation}°</Label><Slider value={[pipTransform.rotation]} onValueChange={([rotation]) => onPipTransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
+              </>)}
+            </div>
+          )}
+          {pipImage && (
+            <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Moldura PIP</Label>
+                <button onClick={() => onPipFrameChange({ x: 37, y: 15.4, width: 26, height: 64.3 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+              </div>
+              <div><Label className="text-xs">Posição X: {pipFrame.x.toFixed(1)}%</Label><Slider value={[pipFrame.x]} onValueChange={([x]) => onPipFrameChange({ x })} min={0} max={80} step={0.1} className="mt-1" /></div>
+              <div><Label className="text-xs">Posição Y: {pipFrame.y.toFixed(1)}%</Label><Slider value={[pipFrame.y]} onValueChange={([y]) => onPipFrameChange({ y })} min={-20} max={60} step={0.1} className="mt-1" /></div>
+              <Collapsible>
+                <CollapsibleTrigger className="flex items-center gap-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors w-full">
+                  <ChevronDown className="w-3 h-3" />Propriedades avançadas
+                </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-3 pt-3">
+                  <div><Label className="text-xs">Largura: {pipFrame.width.toFixed(1)}%</Label><Slider value={[pipFrame.width]} onValueChange={([width]) => onPipFrameChange({ width })} min={10} max={60} step={0.1} className="mt-1" /></div>
+                  <div><Label className="text-xs">Altura: {pipFrame.height.toFixed(1)}%</Label><Slider value={[pipFrame.height]} onValueChange={([height]) => onPipFrameChange({ height })} min={10} max={90} step={0.1} className="mt-1" /></div>
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
+          )}
+
+          {/* Foto esquerda */}
+          <div className="space-y-2">
+            <Label className="font-semibold">Foto esquerda</Label>
+            <input ref={personInputRef} type="file" accept="image/*" className="hidden"
+              onChange={(e) => e.target.files?.[0] && onPersonUpload(e.target.files[0])} />
+            <Button variant={personCutout ? 'secondary' : 'outline'} className="w-full"
+              disabled={isRemovingBg} onClick={() => personInputRef.current?.click()}>
+              {isRemovingBg ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Removendo fundo...</>
+                : <><Upload className="w-4 h-4 mr-2" />{personCutout ? 'Trocar foto esquerda' : 'Upload foto esquerda'}</>}
+            </Button>
+            {personCutout && onUpscalePerson && (
+              <Button variant="outline" className="w-full border-primary/40 text-primary hover:bg-primary/10"
+                disabled={isUpscalingPerson} onClick={onUpscalePerson}>
+                {isUpscalingPerson ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Melhorando...</> : <>✨ Melhorar com Gemini</>}
+              </Button>
+            )}
+          </div>
+          {personCutout && (
+            <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste foto esquerda</Label>
+                <div className="flex items-center gap-2">
+                  <Switch checked={showPerson1Adjust} onCheckedChange={setShowPerson1Adjust} />
+                  <button onClick={() => onPersonTransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                </div>
+              </div>
+              {showPerson1Adjust && (<>
+                <div><Label className="text-xs">Posição X: {personTransform.x}px</Label><Slider value={[personTransform.x]} onValueChange={([x]) => onPersonTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
+                <div><Label className="text-xs">Posição Y: {personTransform.y}px</Label><Slider value={[personTransform.y]} onValueChange={([y]) => onPersonTransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
+                <div><Label className="text-xs">Zoom: {personTransform.scale.toFixed(2)}x</Label><Slider value={[personTransform.scale]} onValueChange={([scale]) => onPersonTransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
+                <div><Label className="text-xs">Rotação: {personTransform.rotation}°</Label><Slider value={[personTransform.rotation]} onValueChange={([rotation]) => onPersonTransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
+              </>)}
+            </div>
+          )}
+
+          {/* Foto direita */}
+          <div className="space-y-2">
+            <Label className="font-semibold">Foto direita</Label>
+            <input ref={person2InputRef} type="file" accept="image/*" className="hidden"
+              onChange={(e) => e.target.files?.[0] && onPerson2Upload(e.target.files[0])} />
+            <Button variant={person2Cutout ? 'secondary' : 'outline'} className="w-full"
+              disabled={isRemovingBg2} onClick={() => person2InputRef.current?.click()}>
+              {isRemovingBg2 ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Removendo fundo...</>
+                : <><Upload className="w-4 h-4 mr-2" />{person2Cutout ? 'Trocar foto direita' : 'Upload foto direita'}</>}
+            </Button>
+            {person2Cutout && onUpscalePerson2 && (
+              <Button variant="outline" className="w-full border-primary/40 text-primary hover:bg-primary/10"
+                disabled={isUpscalingPerson2} onClick={onUpscalePerson2}>
+                {isUpscalingPerson2 ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Melhorando...</> : <>✨ Melhorar com Gemini</>}
+              </Button>
+            )}
+          </div>
+          {person2Cutout && (
+            <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ajuste foto direita</Label>
+                <div className="flex items-center gap-2">
+                  <Switch checked={showPerson2Adjust} onCheckedChange={setShowPerson2Adjust} />
+                  <button onClick={() => onPerson2TransformChange({ x: 0, y: 0, scale: 1, rotation: 0 })} className="text-muted-foreground hover:text-foreground transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+                </div>
+              </div>
+              {showPerson2Adjust && (<>
+                <div><Label className="text-xs">Posição X: {person2Transform.x}px</Label><Slider value={[person2Transform.x]} onValueChange={([x]) => onPerson2TransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
+                <div><Label className="text-xs">Posição Y: {person2Transform.y}px</Label><Slider value={[person2Transform.y]} onValueChange={([y]) => onPerson2TransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
+                <div><Label className="text-xs">Zoom: {person2Transform.scale.toFixed(2)}x</Label><Slider value={[person2Transform.scale]} onValueChange={([scale]) => onPerson2TransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
+                <div><Label className="text-xs">Rotação: {person2Transform.rotation}°</Label><Slider value={[person2Transform.rotation]} onValueChange={([rotation]) => onPerson2TransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
+              </>)}
+            </div>
+          )}
         </>
       )}
 
@@ -1709,7 +1909,7 @@ export const CortesControls = ({
       )}
 
       {/* Person Upload (right side / single person) — pip, pip-dividido & duas-pessoas */}
-      {thumbModel !== 'meio-a-meio' && thumbModel !== 'so-lettering' && thumbModel !== 'jogo-v1' && thumbModel !== 'jogo-pip-duplo' && thumbModel !== 'thumb-principal' && (
+      {thumbModel !== 'meio-a-meio' && thumbModel !== 'so-lettering' && thumbModel !== 'jogo-v1' && thumbModel !== 'jogo-pip-duplo' && thumbModel !== 'thumb-principal' && thumbModel !== 'pip-meio-2pessoas' && (
         <>
           <div className="space-y-2">
             <Label className="font-semibold">{thumbModel === 'duas-pessoas' ? 'Pessoa (direita)' : 'Foto da pessoa'}</Label>

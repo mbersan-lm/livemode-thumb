@@ -23,7 +23,7 @@ const DEFAULT_DUPLO_PIP_HEIGHT = 55.0;
 const DEFAULT_PIP1_DUPLO_FRAME = { x: DEFAULT_DUPLO_PIP_X, y: DEFAULT_DUPLO_PIP_Y, width: DEFAULT_DUPLO_PIP_WIDTH, height: DEFAULT_DUPLO_PIP_HEIGHT };
 const DEFAULT_PIP2_FRAME = { x: 100 - DEFAULT_DUPLO_PIP_X - DEFAULT_DUPLO_PIP_WIDTH, y: DEFAULT_DUPLO_PIP_Y, width: DEFAULT_DUPLO_PIP_WIDTH, height: DEFAULT_DUPLO_PIP_HEIGHT };
 
-export type ThumbModel = 'pip' | 'pip-dividido' | 'duas-pessoas' | 'meio-a-meio' | 'so-lettering' | 'jogo-v1' | 'jogo-pip-duplo' | 'thumb-principal';
+export type ThumbModel = 'pip' | 'pip-dividido' | 'pip-meio-2pessoas' | 'duas-pessoas' | 'meio-a-meio' | 'so-lettering' | 'jogo-v1' | 'jogo-pip-duplo' | 'thumb-principal';
 
 interface CortesThumbBuilderProps {
   programName?: string;
