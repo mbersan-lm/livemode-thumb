@@ -1,31 +1,24 @@
 
 
-## Plano: Restaurar suporte a quebra de linha (Enter) no texto
+## Plano: Adicionar switch "PIP dividido" no modelo PIP meio + 2 pessoas
 
-### Diagnóstico
+### O que será feito
 
-O texto renderiza `\n` como texto corrido porque:
-1. **Preview** (`CortesCanvas.tsx` linha 660): o split só procura `*highlights*`, ignora `\n`. Falta `whiteSpace: 'pre-wrap'` no estilo do container.
-2. **Export** (`CortesControls.tsx` linha 102-103): `wrapText` faz `text.split(' ')` sem considerar `\n`.
+Adicionar um toggle (Switch on/off) dentro dos controles do modelo `pip-meio-2pessoas` que, quando ativado, transforma o PIP central em um PIP dividido (duas fotos lado a lado com divisória vertical), reutilizando o `pip2Image` e `pip2Transform` já existentes.
 
-### Correções
+### Alterações
 
-1. **`CortesCanvas.tsx`** — Adicionar `whiteSpace: 'pre-wrap'` ao estilo do container de texto nos Layers 5 e 5tp (linhas ~634 e ~671). Isso faz o browser respeitar `\n` automaticamente, sem precisar mudar a lógica de split/highlight.
+1. **`CortesThumbBuilder.tsx`** — Adicionar estado `pipMeioDividido` (boolean, default false) e passá-lo como prop para `CortesCanvas` e `CortesControls`.
 
-2. **`CortesControls.tsx`** — Na função `wrapText` (linha 102), primeiro dividir por `\n` para criar linhas forçadas, depois aplicar word-wrap dentro de cada segmento:
-   ```
-   function wrapText(ctx, text, maxWidth) {
-     const paragraphs = text.split('\n');
-     const lines = [];
-     for (const para of paragraphs) {
-       // word-wrap dentro de cada parágrafo
-       ...
-     }
-     return lines;
-   }
-   ```
+2. **`CortesCanvas.tsx`** — Nova prop `pipMeioDividido`. No bloco `showPipMeio2Pessoas`, quando `pipMeioDividido` é true, renderizar o PIP central com layout dividido (duas metades + divisória vertical, igual ao `pip-dividido`), usando `pipImage`/`pipTransform` na esquerda e `pip2Image`/`pip2Transform` na direita.
+
+3. **`CortesControls.tsx`** — Três alterações:
+   - Nova prop `pipMeioDividido` + `onPipMeioDivididoChange`.
+   - No bloco de controles `pip-meio-2pessoas`, adicionar um Switch "PIP dividido" logo após o upload do PIP. Quando ativo, mostrar também o upload do "PIP direito" (pip2) com controles de transformação.
+   - No export (Canvas 2D), quando `pip-meio-2pessoas` + `pipMeioDividido`, usar a lógica de renderização dividida (clip em duas metades + divisória) em vez do PIP simples.
 
 ### Arquivos alterados
-- `src/components/cortes/CortesCanvas.tsx` — `whiteSpace: 'pre-wrap'` nos containers de texto
-- `src/components/cortes/CortesControls.tsx` — `wrapText` respeitar `\n`
+- `src/components/cortes/CortesThumbBuilder.tsx`
+- `src/components/cortes/CortesCanvas.tsx`
+- `src/components/cortes/CortesControls.tsx`
 
