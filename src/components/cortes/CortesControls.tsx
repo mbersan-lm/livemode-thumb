@@ -1444,17 +1444,19 @@ export const CortesControls = ({
       {/* PIP meio + 2 pessoas */}
       {thumbModel === 'pip-meio-2pessoas' && (
         <>
-          {/* PIP central */}
-          <div className="space-y-2">
-            <Label className="font-semibold">{pipMeioDividido ? 'PIP esquerdo' : 'Imagem PIP (centro)'}</Label>
-            <input ref={pipInputRef} type="file" accept="image/*" className="hidden"
-              onChange={(e) => e.target.files?.[0] && onPipUpload(e.target.files[0])} />
-            <Button variant={pipImage ? 'secondary' : 'outline'} className="w-full"
-              onClick={() => pipInputRef.current?.click()}>
-              <Upload className="w-4 h-4 mr-2" />{pipImage ? (pipMeioDividido ? 'Trocar PIP esquerdo' : 'Trocar PIP') : (pipMeioDividido ? 'Upload PIP esquerdo' : 'Upload PIP')}
-            </Button>
-          </div>
-          {onPipFromBase64 && <PipAiGenerator onImageGenerated={onPipFromBase64} />}
+          {/* PIP central — só quando NÃO dividido */}
+          {!pipMeioDividido && (
+            <div className="space-y-2">
+              <Label className="font-semibold">Imagem PIP (centro)</Label>
+              <input ref={pipInputRef} type="file" accept="image/*" className="hidden"
+                onChange={(e) => e.target.files?.[0] && onPipUpload(e.target.files[0])} />
+              <Button variant={pipImage ? 'secondary' : 'outline'} className="w-full"
+                onClick={() => pipInputRef.current?.click()}>
+                <Upload className="w-4 h-4 mr-2" />{pipImage ? 'Trocar PIP' : 'Upload PIP'}
+              </Button>
+            </div>
+          )}
+          {!pipMeioDividido && onPipFromBase64 && <PipAiGenerator onImageGenerated={onPipFromBase64} />}
 
           {/* Switch PIP dividido */}
           <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-muted/30">
@@ -1462,17 +1464,28 @@ export const CortesControls = ({
             <Switch checked={pipMeioDividido} onCheckedChange={(v) => onPipMeioDivididoChange?.(v)} />
           </div>
 
-          {/* PIP direito (só aparece quando dividido) */}
+          {/* PIP esquerdo + PIP direito (só quando dividido) */}
           {pipMeioDividido && (
-            <div className="space-y-2">
-              <Label className="font-semibold">PIP direito</Label>
-              <input ref={pip2InputRef} type="file" accept="image/*" className="hidden"
-                onChange={(e) => e.target.files?.[0] && onPip2Upload?.(e.target.files[0])} />
-              <Button variant={pip2Image ? 'secondary' : 'outline'} className="w-full"
-                onClick={() => pip2InputRef.current?.click()}>
-                <Upload className="w-4 h-4 mr-2" />{pip2Image ? 'Trocar PIP direito' : 'Upload PIP direito'}
-              </Button>
-            </div>
+            <>
+              <div className="space-y-2">
+                <Label className="font-semibold">PIP esquerdo</Label>
+                <input ref={pipInputRef} type="file" accept="image/*" className="hidden"
+                  onChange={(e) => e.target.files?.[0] && onPipUpload(e.target.files[0])} />
+                <Button variant={pipImage ? 'secondary' : 'outline'} className="w-full"
+                  onClick={() => pipInputRef.current?.click()}>
+                  <Upload className="w-4 h-4 mr-2" />{pipImage ? 'Trocar PIP esquerdo' : 'Upload PIP esquerdo'}
+                </Button>
+              </div>
+              <div className="space-y-2">
+                <Label className="font-semibold">PIP direito</Label>
+                <input ref={pip2InputRef} type="file" accept="image/*" className="hidden"
+                  onChange={(e) => e.target.files?.[0] && onPip2Upload?.(e.target.files[0])} />
+                <Button variant={pip2Image ? 'secondary' : 'outline'} className="w-full"
+                  onClick={() => pip2InputRef.current?.click()}>
+                  <Upload className="w-4 h-4 mr-2" />{pip2Image ? 'Trocar PIP direito' : 'Upload PIP direito'}
+                </Button>
+              </div>
+            </>
           )}
           {pipMeioDividido && pip2Image && (
             <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
