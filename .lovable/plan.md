@@ -1,34 +1,47 @@
 
 
-## Plano: Trocar fonte da Thumb Principal no Geral CazéTv para GeneralSans-Bold
+## Plano: Novo modelo "PIP meio + 2 pessoas"
 
 ### O que será feito
 
-Adicionar a fonte **GeneralSans-Bold.otf** ao projeto e aplicá-la **exclusivamente** ao modelo "Thumb Principal" do programa "Geral CazéTv" (não afeta Roda de Bobo, outros modelos, nem outros programas).
+Criar um novo modelo de thumbnail chamado **"PIP meio + 2 pessoas"** (`pip-meio-2pessoas`), onde o PIP fica centralizado na tela e há dois slots de fotos (pessoa esquerda e pessoa direita) nos lados. Disponível em **todos os programas**.
 
-### Etapas
+### Layout do modelo
 
-1. **Copiar a fonte** `GeneralSans-Bold.otf` para `public/fonts/`
+```text
+┌──────────────────────────────────┐
+│  Pessoa     ┌─────┐     Pessoa  │
+│  Esquerda   │ PIP │    Direita  │
+│  (cutout)   │(centro)│  (cutout) │
+│             └─────┘             │
+│         [TEXTO DA THUMB]        │
+│              [LOGOS]            │
+└──────────────────────────────────┘
+```
 
-2. **Registrar a fonte** em `src/index.css` com `@font-face` para `General Sans`
+- PIP centralizado com moldura colorida e rotação -1.2°
+- Pessoa esquerda: cutout posicionado à esquerda (usa `personCutout` + `personTransform`)
+- Pessoa direita: cutout posicionado à direita (usa `person2Cutout` + `person2Transform`)
+- Texto e logos: idênticos ao modelo PIP padrão
 
-3. **Adicionar prop `thumbPrincipalFontFamily`** ao `CortesThumbBuilder` — uma fonte opcional usada apenas quando o modelo ativo for `thumb-principal`
+### Alterações por arquivo
 
-4. **Passar a prop no `CortesProgramBuilder`** apenas para o programa `Geral CazéTv`:
-   - `thumbPrincipalFontFamily="'General Sans', sans-serif"`
+1. **`CortesThumbBuilder.tsx`** — Adicionar `'pip-meio-2pessoas'` ao type `ThumbModel`
 
-5. **Aplicar a fonte condicional no canvas de preview** (`CortesCanvas.tsx`):
-   - No Layer 5 (texto fora do quadrant grid), quando `thumbModel === 'thumb-principal'`, usar `thumbPrincipalFontFamily` em vez de `customFontFamily`
+2. **`CortesCanvas.tsx`** — Adicionar renderização do novo modelo:
+   - PIP centralizado (pipFrame padrão ajustado para centro, ~37% x, ~15% y, ~26% width, ~64% height)
+   - Pessoa esquerda (personCutout) posicionada à esquerda
+   - Pessoa direita (person2Cutout) posicionada à direita
+   - Texto e gradiente padrão
 
-6. **Aplicar a fonte condicional no export** (`CortesControls.tsx`):
-   - Na renderização do Layer 6 (texto), mesma lógica: se `showThumbPrincipal && !useQuadrantGrid`, usar a fonte alternativa
+3. **`CortesControls.tsx`** — Duas alterações:
+   - Adicionar `<SelectItem value="pip-meio-2pessoas">PIP meio + 2 pessoas</SelectItem>` disponível para **todos os programas** (fora dos blocos condicionais)
+   - Controles UI: mostrar upload PIP + controles de 2 pessoas (esquerda/direita) + texto
+   - Export: replicar a lógica de renderização do canvas para o novo modelo
 
 ### Arquivos alterados
 
-- `public/fonts/GeneralSans-Bold.otf` (novo)
-- `src/index.css` — novo `@font-face`
-- `src/components/cortes/CortesThumbBuilder.tsx` — nova prop + passagem
-- `src/components/cortes/CortesCanvas.tsx` — uso condicional da fonte
-- `src/components/cortes/CortesControls.tsx` — uso condicional da fonte no export
-- `src/pages/CortesProgramBuilder.tsx` — passar `thumbPrincipalFontFamily` para Geral CazéTv
+- `src/components/cortes/CortesThumbBuilder.tsx` — type union + defaults de pipFrame para este modelo
+- `src/components/cortes/CortesCanvas.tsx` — preview do novo layout
+- `src/components/cortes/CortesControls.tsx` — seletor de modelo + controles + export
 
