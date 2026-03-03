@@ -1,43 +1,39 @@
 
 
-## Plano: Corrigir fonte personalizada ausente na exportação
+## Plano: Criar template "Libertadores" para Melhores Momentos
 
-### Problema raiz
-O programa "Live CazéTv" usa uma fonte personalizada (`CustomFont-8f7747ce`) carregada de uma URL do Supabase Storage. No preview do navegador, o `CortesProgramBuilder` carrega essa fonte dinamicamente via `FontFace` API. Porém, na exportação via Railway, a `font_url` nunca é enviada no payload — o servidor não tem a fonte e renderiza com fallback (sans-serif genérico), resultando em texto completamente diferente.
+### O que será feito
 
-O `fixedFontSize` implementado anteriormente funciona corretamente, mas não resolve este caso porque o **tipo de fonte** é diferente, não apenas o tamanho.
+Adicionar o template "Libertadores" seguindo exatamente o padrão dos templates europeus (Ligue 1, Bundesliga, Serie A, Europa League).
 
-### Solução
-Propagar a `font_url` desde o banco de dados até o servidor de exportação, e carregá-la dinamicamente no `Render.tsx` antes de marcar o frame como pronto.
+### Arquivos e alterações
 
-### Alterações
+**1. Copiar o KV enviado para o projeto**
+- `public/kv/kv-libertadores.png` — KV de Melhores Momentos (imagem enviada)
+- `public/kv/kv-jogo-completo-libertadores.png` — Será necessário um KV de Jogo Completo. Por ora, usarei o mesmo KV enviado até que um específico seja fornecido.
 
-**1. `src/components/cortes/CortesThumbBuilder.tsx`**
-- Adicionar prop `fontUrl?: string`
-- Incluir `fontUrl` no objeto `currentCanvasProps`
+**2. `src/data/templates.ts`**
+- Adicionar `'libertadores'` ao type `TemplateType`
+- Adicionar entrada no objeto `templates` com:
+  - Fonte: `Gilroy ExtraBold` (padrão europeu)
+  - X: `Gilroy Medium` branco
+  - KV paths apontando para os novos arquivos
 
-**2. `src/pages/CortesProgramBuilder.tsx`**
-- Passar `fontUrl={program.font_url || undefined}` ao `CortesThumbBuilder`
+**3. `src/data/teamsLibertadores.ts`** (novo arquivo)
+- Criar lista de times da Libertadores usando os escudos do Brasileirão já existentes no projeto (Botafogo, Flamengo, Palmeiras, São Paulo, etc.)
 
-**3. `src/components/cortes/CortesControls.tsx`**
-- Adicionar `fontUrl?: string` à interface `CurrentCanvasProps`
-- Incluir `fontUrl: props.fontUrl` no payload de `handleExport`
+**4. Atualizar seletores de times em 4 arquivos:**
+- `src/components/ThumbnailCanvas.tsx` — adicionar case `'libertadores'`
+- `src/components/ThumbnailCanvasJogoCompleto.tsx` — idem
+- `src/components/controls/TeamControls.tsx` — idem
 
-**4. `src/pages/Render.tsx`**
-- No case `'cortes'`, antes de marcar `ready=true`, verificar se `state.fontUrl` e `state.customFontFamily` existem
-- Se sim, carregar a fonte via `FontFace` API:
-```ts
-if (state.fontUrl && state.customFontFamily) {
-  const fontName = state.customFontFamily.replace(/'/g, '');
-  const font = new FontFace(fontName, `url(${state.fontUrl})`);
-  await font.load();
-  document.fonts.add(font);
-}
-```
-- Isso garante que a fonte esteja disponível antes do screenshot
+**5. `src/types/thumbnail.ts`**
+- Adicionar `'libertadores'` ao union type do campo `template`
 
-### Impacto
-- Corrige a exportação de TODOS os programas com fonte personalizada (Live CazéTv e qualquer outro criado pelo usuário)
-- Programas com fontes built-in (Clash Grotesk, General Sans) já funcionam porque estão no `index.css`
-- Requer re-deploy no Railway após a alteração
+**6. Posicionamento e penalidades**
+- Seguirá o padrão europeu: `top-[335px]` nos escudos de MM, `-top-[20px]` no JC
+- Penalidades com `translateX(-3%)`
+
+### Pergunta antes de implementar
+Preciso saber quais times incluir na lista da Libertadores. Posso começar com os times brasileiros já presentes no projeto. Você tem uma lista específica de times?
 
