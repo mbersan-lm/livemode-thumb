@@ -1,33 +1,37 @@
 
 
-## Plano: Usar `VITE_EXPORT_API_BASE` no `serverExport`
+## Plano: Configurar URL do Railway no export
 
-### Alteração
+### Problema
 
-Apenas **1 arquivo** precisa mudar: `src/lib/serverExport.ts`.
+A variável `VITE_EXPORT_API_BASE` é lida em **build-time** pelo Vite (`import.meta.env`). O arquivo `.env` do projeto é gerenciado automaticamente pelo Lovable Cloud e não pode ser editado manualmente. Secrets do projeto ficam disponíveis apenas para edge functions, não para o build do Vite.
 
-Adicionar no topo a leitura da variável de ambiente e usá-la na construção da URL. Todos os 3 pontos de chamada (`ExportControls.tsx`, `AoVivo.tsx`, `CortesControls.tsx`) já usam `serverExport()` — ficam automaticamente cobertos.
+### Solução
 
-```ts
-const API_BASE = (import.meta.env.VITE_EXPORT_API_BASE || '').replace(/\/$/, '');
+Hardcodar a URL do Railway diretamente em `src/lib/serverExport.ts` como fallback default. Isso garante que funcione tanto no preview do Lovable quanto em produção no Railway.
 
-export async function serverExport(type: string, state: object, filename: string) {
-  const url = `${API_BASE}/api/export`;
-  const toastId = toast.loading('Gerando JPG via servidor...');
-  try {
-    const res = await fetch(url, { ... });
-    // resto igual, mas com alert amigável no catch
-  }
-}
+### Lógica
+
+```
+Se VITE_EXPORT_API_BASE estiver definida → usa ela
+Senão, se estiver rodando no Railway (mesmo domínio) → usa '' (relativo)
+Senão (preview Lovable) → usa a URL hardcoded do Railway
 ```
 
-### Detalhes
-- **Preview do Lovable**: setar `VITE_EXPORT_API_BASE=https://<app>.up.railway.app` para chamar o Railway remotamente
-- **Railway (produção)**: deixar vazio → chama `/api/export` no próprio domínio
-- O `.env.example` será atualizado com a nova variável documentada
-- Manter toast de loading + erro amigável com status e mensagem
+### Arquivo alterado
 
-### Arquivos alterados
-- `src/lib/serverExport.ts`
-- `.env.example`
+**`src/lib/serverExport.ts`** — trocar a linha do `API_BASE` por:
+
+```ts
+const RAILWAY_URL = 'https://livemode-thumb-production.up.railway.app';
+
+const API_BASE = (
+  import.meta.env.VITE_EXPORT_API_BASE ||
+  (window.location.hostname.includes('railway.app') ? '' : RAILWAY_URL)
+).replace(/\/$/, '');
+```
+
+Isso faz:
+- No **Railway** (produção): chama `/api/export` relativo (mesmo domínio)
+- No **preview do Lovable** ou qualquer outro ambiente: chama o Railway diretamente
 
