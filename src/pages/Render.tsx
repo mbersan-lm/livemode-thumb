@@ -34,6 +34,17 @@ const Render = () => {
     if (!state) return;
 
     const waitForReady = async () => {
+      // Load custom font if provided (for cortes with custom program fonts)
+      if (state.fontUrl && state.customFontFamily) {
+        try {
+          const fontName = state.customFontFamily.replace(/'/g, '');
+          const font = new FontFace(fontName, `url(${state.fontUrl})`);
+          await font.load();
+          document.fonts.add(font);
+        } catch (e) {
+          console.error('Failed to load custom font:', e);
+        }
+      }
       await document.fonts.ready;
 
       // Wait for all images in #export-frame to load

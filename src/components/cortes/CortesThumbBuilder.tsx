@@ -36,6 +36,7 @@ interface CortesThumbBuilderProps {
   pipBorderColor?: string;
   highlightColor?: string;
   customFontFamily?: string;
+  fontUrl?: string;
   backUrl?: string;
   allowAllModels?: boolean;
   allowJogoV1?: boolean;
@@ -57,6 +58,7 @@ export const CortesThumbBuilder = ({
   pipBorderColor,
   highlightColor,
   customFontFamily,
+  fontUrl,
   backUrl = '/',
   allowAllModels = false,
   allowJogoV1 = false,
@@ -551,10 +553,11 @@ export const CortesThumbBuilder = ({
                useQuadrantGrid,
                tpHomeTeamId,
                tpAwayTeamId,
-               fixedFontSize: computedFontSizes.fontSize,
-               fixedFontSizeLeft: computedFontSizes.fontSizeLeft,
-               fixedFontSizeRight: computedFontSizes.fontSizeRight,
-             }}
+                fixedFontSize: computedFontSizes.fontSize,
+                fixedFontSizeLeft: computedFontSizes.fontSizeLeft,
+                fixedFontSizeRight: computedFontSizes.fontSizeRight,
+                fontUrl,
+              }}
           />
         </div>
       </div>
