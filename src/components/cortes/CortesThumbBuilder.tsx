@@ -87,6 +87,7 @@ export const CortesThumbBuilder = ({
   const [isRemovingBg4, setIsRemovingBg4] = useState(false);
   const DEFAULT_PERSON4_TRANSFORM = { x: 0, y: 0, scale: 1, rotation: 0 };
   const [person4Transform, setPerson4Transform] = useState(DEFAULT_PERSON4_TRANSFORM);
+  const [computedFontSizes, setComputedFontSizes] = useState<{ fontSize: number; fontSizeLeft: number; fontSizeRight: number }>({ fontSize: 200, fontSizeLeft: 160, fontSizeRight: 160 });
 
   const [pipTransform, setPipTransform] = useState(DEFAULT_PIP_TRANSFORM);
   const [personTransform, setPersonTransform] = useState(DEFAULT_PERSON_TRANSFORM);
@@ -402,7 +403,8 @@ export const CortesThumbBuilder = ({
              useQuadrantGrid={useQuadrantGrid}
              tpHomeTeamId={tpHomeTeamId}
              tpAwayTeamId={tpAwayTeamId}
-             pipMeioDividido={pipMeioDividido}
+              pipMeioDividido={pipMeioDividido}
+              onFontSizeComputed={setComputedFontSizes}
             />
         </div>
       </div>
@@ -549,6 +551,9 @@ export const CortesThumbBuilder = ({
                useQuadrantGrid,
                tpHomeTeamId,
                tpAwayTeamId,
+               fixedFontSize: computedFontSizes.fontSize,
+               fixedFontSizeLeft: computedFontSizes.fontSizeLeft,
+               fixedFontSizeRight: computedFontSizes.fontSizeRight,
              }}
           />
         </div>

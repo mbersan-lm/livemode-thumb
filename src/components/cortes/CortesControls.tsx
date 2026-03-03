@@ -353,6 +353,9 @@ interface CurrentCanvasProps {
   useQuadrantGrid?: boolean;
   tpHomeTeamId?: string | null;
   tpAwayTeamId?: string | null;
+  fixedFontSize?: number;
+  fixedFontSizeLeft?: number;
+  fixedFontSizeRight?: number;
 }
 
 interface CortesControlsProps {
@@ -577,6 +580,9 @@ export const CortesControls = ({
       useQuadrantGrid: props.useQuadrantGrid,
       tpHomeTeamId: props.tpHomeTeamId,
       tpAwayTeamId: props.tpAwayTeamId,
+      fixedFontSize: props.fixedFontSize,
+      fixedFontSizeLeft: props.fixedFontSizeLeft,
+      fixedFontSizeRight: props.fixedFontSizeRight,
     }, filename);
   };
 

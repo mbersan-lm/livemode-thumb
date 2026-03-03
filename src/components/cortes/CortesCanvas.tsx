@@ -49,6 +49,10 @@ interface CortesCanvasProps {
   tpHomeTeamId?: string | null;
   tpAwayTeamId?: string | null;
   pipMeioDividido?: boolean;
+  fixedFontSize?: number;
+  fixedFontSizeLeft?: number;
+  fixedFontSizeRight?: number;
+  onFontSizeComputed?: (sizes: { fontSize: number; fontSizeLeft: number; fontSizeRight: number }) => void;
 }
 
 export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
@@ -65,7 +69,8 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
      highlightColor = '#D02046', customFontFamily = "'Clash Grotesk', sans-serif",
      thumbPrincipalFontFamily,
      textBoxHeight = 38, quadrantVisibility = [true, true, true, true], useQuadrantGrid = false,
-     tpHomeTeamId = null, tpAwayTeamId = null, pipMeioDividido = false }, ref) => {
+     tpHomeTeamId = null, tpAwayTeamId = null, pipMeioDividido = false,
+     fixedFontSize, fixedFontSizeLeft, fixedFontSizeRight, onFontSizeComputed }, ref) => {
    const showPip = thumbModel === 'pip';
    const showPipDividido = thumbModel === 'pip-dividido';
    const showPipMeio2Pessoas = thumbModel === 'pip-meio-2pessoas';
@@ -84,6 +89,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
     const strokeShadow = useMemo(() => generateStrokeShadow(15, strokeColor, 32), [strokeColor]);
 
     useEffect(() => {
+      if (fixedFontSize != null) { setFontSize(fixedFontSize); return; }
       if (!textRef.current || !thumbText) {
         setFontSize(200);
         return;
@@ -96,25 +102,34 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
         el.style.fontSize = `${size}px`;
       }
       setFontSize(size);
-    }, [thumbText, textBoxHeight]);
+    }, [thumbText, textBoxHeight, fixedFontSize]);
 
     useEffect(() => {
+      if (fixedFontSizeLeft != null) { setFontSizeLeft(fixedFontSizeLeft); return; }
       if (!textLeftRef.current || !thumbTextLeft) { setFontSizeLeft(160); return; }
       let size = 160;
       const el = textLeftRef.current;
       el.style.fontSize = `${size}px`;
       while (el.scrollHeight > el.clientHeight && size > 20) { size -= 2; el.style.fontSize = `${size}px`; }
       setFontSizeLeft(size);
-    }, [thumbTextLeft, textBoxHeight]);
+    }, [thumbTextLeft, textBoxHeight, fixedFontSizeLeft]);
 
     useEffect(() => {
+      if (fixedFontSizeRight != null) { setFontSizeRight(fixedFontSizeRight); return; }
       if (!textRightRef.current || !thumbTextRight) { setFontSizeRight(160); return; }
       let size = 160;
       const el = textRightRef.current;
       el.style.fontSize = `${size}px`;
       while (el.scrollHeight > el.clientHeight && size > 20) { size -= 2; el.style.fontSize = `${size}px`; }
       setFontSizeRight(size);
-    }, [thumbTextRight, textBoxHeight]);
+    }, [thumbTextRight, textBoxHeight, fixedFontSizeRight]);
+
+    // Report computed font sizes to parent
+    useEffect(() => {
+      if (onFontSizeComputed) {
+        onFontSizeComputed({ fontSize, fontSizeLeft, fontSizeRight });
+      }
+    }, [fontSize, fontSizeLeft, fontSizeRight, onFontSizeComputed]);
 
     return (
       <div
