@@ -1,9 +1,9 @@
 
 
-## Plano: Aumentar escudo do Barcelona SC em 15%
+## Plano: Aumentar mais 15% o escudo do Barcelona SC
 
 ### Alteração
 
 **`src/data/teamsLibertadores.ts`**
-- Adicionar `maxSize: 248` ao Barcelona SC (216 × 1.15 ≈ 248)
+- Atualizar `maxSize` de 248 para 285 (248 × 1.15 ≈ 285)
 
