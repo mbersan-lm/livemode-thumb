@@ -156,6 +156,9 @@ const Render = () => {
             tpHomeTeamId={state.tpHomeTeamId}
             tpAwayTeamId={state.tpAwayTeamId}
             pipMeioDividido={state.pipMeioDividido}
+            fixedFontSize={state.fixedFontSize}
+            fixedFontSizeLeft={state.fixedFontSizeLeft}
+            fixedFontSizeRight={state.fixedFontSizeRight}
           />
         );
 
