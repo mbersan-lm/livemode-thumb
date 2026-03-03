@@ -7,6 +7,7 @@ import { teamsBundesliga } from '@/data/teamsBundesliga';
 import { teamsSerieA } from '@/data/teamsSerieA';
 import { teamsPaulistao } from '@/data/teamsPaulistao';
 import { teamsEuropaLeague } from '@/data/teamsEuropaLeague';
+import { teamsLibertadores } from '@/data/teamsLibertadores';
 import { teamsAoVivo } from '@/data/teamsAoVivo';
 import { teamsConferenceLeague } from '@/data/teamsConferenceLeague';
 import { MatchData } from '@/types/thumbnail';
@@ -37,6 +38,7 @@ export const TeamControls = ({ matchData, onMatchDataChange, template, activeCan
       template === 'seriea' ? teamsSerieA :
       template === 'paulistao' ? teamsPaulistao :
       template === 'europaleague' ? teamsEuropaLeague :
+      template === 'libertadores' ? teamsLibertadores :
       teamsLigue1;
 
   return (
