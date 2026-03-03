@@ -1,4 +1,4 @@
-export type TemplateType = 'brasileirao' | 'ligue1' | 'bundesliga' | 'seriea' | 'paulistao' | 'europaleague';
+export type TemplateType = 'brasileirao' | 'ligue1' | 'bundesliga' | 'seriea' | 'paulistao' | 'europaleague' | 'libertadores';
 
 export interface Template {
   id: TemplateType;
@@ -71,6 +71,17 @@ export const templates: Record<TemplateType, Template> = {
     name: 'Europa League',
     kvPath: '/kv/kv-europa-league.png',
     kvJogoCompletoPath: '/kv/kv-jogo-completo-europa-league.png',
+    fontFamily: 'Gilroy ExtraBold, sans-serif',
+    scoreFontSize: '140px',
+    xFontSize: '110px',
+    xFontFamily: 'Gilroy Medium, sans-serif',
+    xColor: '#FFFFFF',
+  },
+  libertadores: {
+    id: 'libertadores',
+    name: 'Libertadores',
+    kvPath: '/kv/kv-libertadores.png',
+    kvJogoCompletoPath: '/kv/kv-jogo-completo-libertadores.png',
     fontFamily: 'Gilroy ExtraBold, sans-serif',
     scoreFontSize: '140px',
     xFontSize: '110px',
