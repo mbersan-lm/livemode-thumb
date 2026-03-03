@@ -12,6 +12,15 @@ const PORT = process.env.PORT || 3000;
 // Parse large JSON bodies (base64 images can be big)
 app.use(express.json({ limit: '50mb' }));
 
+// CORS — allow cross-origin requests from Lovable preview
+app.use('/api/export', (req, res, next) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
+
 // Serve static files from dist/
 app.use(express.static(join(__dirname, 'dist')));
 
