@@ -544,8 +544,11 @@ export const CortesThumbBuilder = ({
               customFontFamily,
               thumbPrincipalFontFamily,
               textBoxHeight,
-               quadrantVisibility,
+              quadrantVisibility,
                pipMeioDividido,
+               useQuadrantGrid,
+               tpHomeTeamId,
+               tpAwayTeamId,
              }}
           />
         </div>
