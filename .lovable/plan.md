@@ -1,29 +1,36 @@
 
 
-## Plano: Adicionar CORS ao server.js
+## Plano: Corrigir exportação de thumbnails com props faltando
 
 ### Problema
-O servidor Express no Railway não retorna headers CORS. Chamadas cross-origin do preview Lovable são bloqueadas pelo navegador ("Failed to fetch").
+A exportação das thumbs de "Cortes" está incorreta porque três propriedades essenciais não são enviadas ao servidor Railway:
+
+1. **`useQuadrantGrid`** — controla se o modelo "Thumb Principal" usa grade 2x2 (Roda de Bobo) ou cutouts livres. Sem essa prop, o servidor sempre renderiza como cutouts livres.
+2. **`tpHomeTeamId`** / **`tpAwayTeamId`** — escudos dos times no círculo central da Thumb Principal.
+
+Essas props existem no `CortesThumbBuilder` mas não são incluídas no objeto `currentCanvasProps` passado ao `CortesControls`, portanto nunca chegam ao `handleExport`.
 
 ### Solução
-Adicionar middleware CORS antes do endpoint `/api/export` em `server.js`:
+Incluir as 3 props faltantes em dois pontos:
 
-```js
-// CORS — allow cross-origin requests from Lovable preview
-app.use('/api/export', (req, res, next) => {
-  res.set('Access-Control-Allow-Origin', '*');
-  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.set('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') return res.sendStatus(204);
-  next();
-});
+**Arquivo 1: `src/components/cortes/CortesThumbBuilder.tsx`** (linhas ~547-549)
+
+Adicionar ao objeto `currentCanvasProps`:
+```ts
+useQuadrantGrid,
+tpHomeTeamId,
+tpAwayTeamId,
 ```
 
-Inserir entre a linha `app.use(express.json(...))` (linha 13) e o endpoint `app.post('/api/export', ...)` (linha 19).
+**Arquivo 2: `src/components/cortes/CortesControls.tsx`** (linhas ~571-574)
 
-### Arquivo alterado
-- `server.js`
+Adicionar ao payload do `handleExport`:
+```ts
+useQuadrantGrid: props.useQuadrantGrid,
+tpHomeTeamId: props.tpHomeTeamId,
+tpAwayTeamId: props.tpAwayTeamId,
+```
 
-### Importante
-Depois de alterar, sera necessario fazer um novo deploy no Railway para que a mudanca tenha efeito.
+### Impacto
+Após a correção, um novo deploy no Railway NÃO é necessário — o servidor já aceita essas props no `Render.tsx`. A mudança é apenas no frontend que agora passa os valores corretos.
 
