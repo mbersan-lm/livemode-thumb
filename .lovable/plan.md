@@ -1,9 +1,12 @@
 
 
-## Plano: Diminuir em 10% o escudo do Barcelona SC
+## Plano: Substituir KV de Melhores Momentos da Libertadores
 
-### Alteração
+### Alterações
 
-**`src/data/teamsLibertadores.ts`**
-- Atualizar `maxSize` de 285 para 257 (285 × 0.90 ≈ 257)
+1. **Copiar a imagem enviada para o projeto**
+   - Copiar `user-uploads://mm_recopa-2.png` para `public/kv/kv-libertadores.png` (substituindo o arquivo atual)
+
+2. **Nenhuma alteração de código necessária**
+   - O template Libertadores já referencia `/kv/kv-libertadores.png` como `kvPath`, então basta substituir o arquivo.
 
