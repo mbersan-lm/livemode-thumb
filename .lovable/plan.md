@@ -1,10 +1,18 @@
 
 
-## Plano: Reduzir lista de times da Libertadores para apenas Botafogo
+## Plano: Adicionar Barcelona SC ao template Libertadores
 
-### Alteração
+### Alterações
 
-**`src/data/teamsLibertadores.ts`**
-- Remover todos os 16 times da lista
-- Manter apenas o Botafogo
+**1. Copiar escudo**
+- Copiar `user-uploads://BARCELONA_EQU_1.png` para `public/crests/barcelona-sc.png`
+
+**2. `src/data/teamsLibertadores.ts`**
+- Adicionar Barcelona SC à lista, mantendo Botafogo:
+```ts
+export const teamsLibertadores: Team[] = [
+  { id: 'lib-4', name: 'Botafogo', slug: 'botafogo', crest_url: '/crests/botafogo.png' },
+  { id: 'lib-17', name: 'Barcelona SC', slug: 'barcelona-sc', crest_url: '/crests/barcelona-sc.png' },
+];
+```
 
