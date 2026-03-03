@@ -350,6 +350,9 @@ interface CurrentCanvasProps {
   textBoxHeight?: number;
   quadrantVisibility?: boolean[];
   pipMeioDividido?: boolean;
+  useQuadrantGrid?: boolean;
+  tpHomeTeamId?: string | null;
+  tpAwayTeamId?: string | null;
 }
 
 interface CortesControlsProps {
@@ -571,6 +574,9 @@ export const CortesControls = ({
       textBoxHeight: props.textBoxHeight,
       quadrantVisibility: props.quadrantVisibility,
       pipMeioDividido: props.pipMeioDividido,
+      useQuadrantGrid: props.useQuadrantGrid,
+      tpHomeTeamId: props.tpHomeTeamId,
+      tpAwayTeamId: props.tpAwayTeamId,
     }, filename);
   };
 
