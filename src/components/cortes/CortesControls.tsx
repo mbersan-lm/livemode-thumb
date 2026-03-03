@@ -356,6 +356,7 @@ interface CurrentCanvasProps {
   fixedFontSize?: number;
   fixedFontSizeLeft?: number;
   fixedFontSizeRight?: number;
+  fontUrl?: string;
 }
 
 interface CortesControlsProps {
@@ -583,6 +584,7 @@ export const CortesControls = ({
       fixedFontSize: props.fixedFontSize,
       fixedFontSizeLeft: props.fixedFontSizeLeft,
       fixedFontSizeRight: props.fixedFontSizeRight,
+      fontUrl: props.fontUrl,
     }, filename);
   };
 

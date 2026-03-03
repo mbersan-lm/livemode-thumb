@@ -46,6 +46,7 @@ const CortesProgramBuilder = () => {
       programName={program!.name}
       bgImage={program!.bg_url || undefined}
       logosImage={program!.logos_url || undefined}
+      fontUrl={program!.font_url || undefined}
       logosNegativeImage={
         program!.name === 'Geral CazéTv' || program!.name === 'Geral CazéTv Brasil'
           ? '/cortes/logos-geral-negativa.png'
