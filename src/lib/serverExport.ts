@@ -1,6 +1,11 @@
 import { toast } from 'sonner';
 
-const API_BASE = (import.meta.env.VITE_EXPORT_API_BASE || '').replace(/\/$/, '');
+const RAILWAY_URL = 'https://livemode-thumb-production.up.railway.app';
+
+const API_BASE = (
+  import.meta.env.VITE_EXPORT_API_BASE ||
+  (window.location.hostname.includes('railway.app') ? '' : RAILWAY_URL)
+).replace(/\/$/, '');
 
 export async function serverExport(type: string, state: object, filename: string) {
   const url = `${API_BASE}/api/export`;
