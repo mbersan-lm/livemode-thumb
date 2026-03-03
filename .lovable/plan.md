@@ -1,18 +1,9 @@
 
 
-## Plano: Adicionar Barcelona SC ao template Libertadores
+## Plano: Aumentar escudo do Barcelona SC em 15%
 
-### Alterações
+### Alteração
 
-**1. Copiar escudo**
-- Copiar `user-uploads://BARCELONA_EQU_1.png` para `public/crests/barcelona-sc.png`
-
-**2. `src/data/teamsLibertadores.ts`**
-- Adicionar Barcelona SC à lista, mantendo Botafogo:
-```ts
-export const teamsLibertadores: Team[] = [
-  { id: 'lib-4', name: 'Botafogo', slug: 'botafogo', crest_url: '/crests/botafogo.png' },
-  { id: 'lib-17', name: 'Barcelona SC', slug: 'barcelona-sc', crest_url: '/crests/barcelona-sc.png' },
-];
-```
+**`src/data/teamsLibertadores.ts`**
+- Adicionar `maxSize: 248` ao Barcelona SC (216 × 1.15 ≈ 248)
 
