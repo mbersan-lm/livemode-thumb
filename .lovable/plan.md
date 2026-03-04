@@ -1,29 +1,24 @@
 
 
-## Plano: Criar template "Kings League" (com Jogo Completo)
+## Plano: Adicionar times da Kings League
 
 ### Alterações
 
-1. **Copiar KV para o projeto**
-   - `user-uploads://KV_KINGS.png` → `public/kv/kv-kingsleague.png`
-   - O KV de Jogo Completo será adicionado posteriormente quando o usuário enviar
+1. **Copiar 10 escudos para `public/crests/`**
+   - `CAPIM.png` → `public/crests/kl-capim.png`
+   - `DENDELE.png` → `public/crests/kl-dendele.png`
+   - `DESIMPAIN.png` → `public/crests/kl-desimpain.png`
+   - `DIBRADOS.png` → `public/crests/kl-dibrados.png`
+   - `FLUXO.png` → `public/crests/kl-fluxo.png`
+   - `FUNKBOL.png` → `public/crests/kl-funkbol.png`
+   - `FÚRIA.png` → `public/crests/kl-furia.png`
+   - `G3X.png` → `public/crests/kl-g3x.png`
+   - `LOUD.png` → `public/crests/kl-loud.png`
+   - `NYVELADOS.png` → `public/crests/kl-nyvelados.png`
 
-2. **`src/data/templates.ts`**
-   - Adicionar `'kingsleague'` ao tipo `TemplateType`
-   - Adicionar entrada no objeto `templates` com KV, fonte Gilroy ExtraBold, e `kvJogoCompletoPath` como string vazia (placeholder até receber o KV de JC)
+2. **`src/data/teamsKingsLeague.ts`**
+   - Preencher array com os 10 times em ordem alfabética
 
-3. **`src/types/thumbnail.ts`**
-   - Adicionar `'kingsleague'` ao union type do campo `template`
-
-4. **`src/data/teamsKingsLeague.ts`** (novo arquivo)
-   - Criar array vazio de times (será preenchido depois)
-
-5. **`src/components/ThumbnailCanvas.tsx`**
-   - Adicionar import e mapeamento para `template === 'kingsleague'`
-
-6. **`src/components/ThumbnailCanvasJogoCompleto.tsx`**
-   - Adicionar import e mapeamento para `template === 'kingsleague'`
-
-7. **Sem alteração em `ViewControls.tsx`**
-   - Kings League terá Jogo Completo disponível (diferente do Libertadores)
+3. **`src/components/controls/TeamControls.tsx`**
+   - Adicionar import de `teamsKingsLeague` e mapeamento `template === 'kingsleague'` na lógica de seleção de times (atualmente cai no fallback `teamsLigue1`)
 
