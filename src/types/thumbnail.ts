@@ -33,5 +33,5 @@ export interface ThumbnailState {
   initialScaleAoVivo: number;
   initialScaleAoVivoLeft: number;
   initialScaleAoVivoRight: number;
-  template: 'brasileirao' | 'ligue1' | 'bundesliga' | 'seriea' | 'paulistao' | 'europaleague' | 'libertadores';
+  template: 'brasileirao' | 'ligue1' | 'bundesliga' | 'seriea' | 'paulistao' | 'europaleague' | 'libertadores' | 'kingsleague';
 }
