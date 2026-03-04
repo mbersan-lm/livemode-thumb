@@ -6,6 +6,7 @@ import { teamsSerieA } from '@/data/teamsSerieA';
 import { teamsPaulistao } from '@/data/teamsPaulistao';
 import { teamsEuropaLeague } from '@/data/teamsEuropaLeague';
 import { teamsLibertadores } from '@/data/teamsLibertadores';
+import { teamsKingsLeague } from '@/data/teamsKingsLeague';
 import { PhotoTransform, MatchData } from '@/types/thumbnail';
 import { templates, TemplateType } from '@/data/templates';
 
@@ -26,6 +27,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
       template === 'paulistao' ? teamsPaulistao :
       template === 'europaleague' ? teamsEuropaLeague :
       template === 'libertadores' ? teamsLibertadores :
+      template === 'kingsleague' ? teamsKingsLeague :
       teamsLigue1;
     const homeTeam = currentTeams.find(t => t.id === matchData.homeTeamId) as Team | undefined;
     const awayTeam = currentTeams.find(t => t.id === matchData.awayTeamId) as Team | undefined;
@@ -90,7 +92,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
         {homeTeam && awayTeam && (
           <div 
             id="MATCH_ROW"
-            className={`absolute left-[22px] ${template === 'ligue1' || template === 'bundesliga' || template === 'seriea' || template === 'paulistao' || template === 'europaleague' || template === 'libertadores' ? 'top-[335px]' : 'top-[360px]'} flex items-center gap-[34px]`}
+            className={`absolute left-[22px] ${template === 'ligue1' || template === 'bundesliga' || template === 'seriea' || template === 'paulistao' || template === 'europaleague' || template === 'libertadores' || template === 'kingsleague' ? 'top-[335px]' : 'top-[360px]'} flex items-center gap-[34px]`}
             style={{ 
               zIndex: 20,
               transform: 'none'
@@ -155,7 +157,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
                     fontSize: `${Math.round(parseInt(config.scoreFontSize) * 0.245)}px`,
                     lineHeight: '1',
                     marginTop: '4px',
-                    transform: template === 'seriea' ? 'translateX(2%)' : template === 'brasileirao' ? 'translateX(-3%)' : template === 'bundesliga' ? 'translateX(-3%)' : template === 'paulistao' ? 'translateX(-3%)' : template === 'europaleague' ? 'translateX(-3%)' : template === 'libertadores' ? 'translateX(-3%)' : 'translateX(-15%)',
+                    transform: template === 'seriea' ? 'translateX(2%)' : template === 'brasileirao' ? 'translateX(-3%)' : template === 'bundesliga' ? 'translateX(-3%)' : template === 'paulistao' ? 'translateX(-3%)' : template === 'europaleague' ? 'translateX(-3%)' : template === 'libertadores' ? 'translateX(-3%)' : template === 'kingsleague' ? 'translateX(-3%)' : 'translateX(-15%)',
                   }}
                 >
                   <span>({matchData.homeScoreSmall})</span>
