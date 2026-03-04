@@ -333,6 +333,7 @@ const Index = () => {
                 jogoCompletoPhoto={state.jogoCompletoPhoto}
                 jogoCompletoPhotoTransform={state.jogoCompletoPhotoTransform}
                 template={state.template}
+                activeCanvas={activeCanvas}
               />
             </TabsContent>
           </Tabs>
