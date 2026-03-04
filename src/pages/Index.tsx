@@ -189,6 +189,12 @@ const Index = () => {
   };
 
   useEffect(() => {
+    if (state.template === 'libertadores' && activeCanvas === 'jc') {
+      setActiveCanvas('mm');
+    }
+  }, [state.template, activeCanvas]);
+
+  useEffect(() => {
     const updateScale = () => {
       const availableWidth = window.innerWidth >= 768
         ? (window.innerWidth / 2) - 32
@@ -257,6 +263,7 @@ const Index = () => {
             <ViewControls
               activeCanvas={activeCanvas}
               onActiveCanvasChange={setActiveCanvas}
+              template={state.template}
             />
           </div>
 
