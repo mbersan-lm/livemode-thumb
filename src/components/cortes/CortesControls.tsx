@@ -247,19 +247,20 @@ function drawAutoFitText(
   strokeRadius: number,
   rotationDeg: number,
   paddingPx: number,
-  lineHeightRatio = 1.2
+  lineHeightRatio = 1.2,
+  noWordWrap = true
 ) {
   const text = rawText.toUpperCase();
   const cleanText = stripHighlightMarkers(text);
   const innerW = areaW - paddingPx * 2;
   const innerH = areaH - paddingPx * 2;
 
-  const fontSize = fitFontSize(ctx, text, innerW, innerH, startFontSize, fontFamily, lineHeightRatio);
+  const fontSize = fitFontSize(ctx, text, innerW, innerH, startFontSize, fontFamily, lineHeightRatio, noWordWrap);
   ctx.font = `800 ${fontSize}px ${fontFamily}`;
   const lineHeight = fontSize * lineHeightRatio;
 
   // Layout com texto limpo (sem marcadores)
-  const cleanLines = wrapText(ctx, cleanText, innerW);
+  const cleanLines = noWordWrap ? wrapTextNoWordWrap(ctx, cleanText, innerW) : wrapText(ctx, cleanText, innerW);
   // Mapear de volta ao texto original para manter highlights
   const lines = mapCleanLinesToOriginal(cleanLines, text);
 
