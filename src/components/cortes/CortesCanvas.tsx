@@ -120,7 +120,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
       let size = 160;
       const el = textRightRef.current;
       el.style.fontSize = `${size}px`;
-      while (el.scrollHeight > el.clientHeight && size > 20) { size -= 2; el.style.fontSize = `${size}px`; }
+      while ((el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth) && size > 20) { size -= 2; el.style.fontSize = `${size}px`; }
       setFontSizeRight(size);
     }, [thumbTextRight, textBoxHeight, fixedFontSizeRight]);
 
