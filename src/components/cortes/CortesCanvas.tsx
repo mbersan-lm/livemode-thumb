@@ -110,7 +110,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
       let size = 160;
       const el = textLeftRef.current;
       el.style.fontSize = `${size}px`;
-      while (el.scrollHeight > el.clientHeight && size > 20) { size -= 2; el.style.fontSize = `${size}px`; }
+      while ((el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth) && size > 20) { size -= 2; el.style.fontSize = `${size}px`; }
       setFontSizeLeft(size);
     }, [thumbTextLeft, textBoxHeight, fixedFontSizeLeft]);
 
