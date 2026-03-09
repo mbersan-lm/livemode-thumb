@@ -97,7 +97,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
       let size = 200;
       const el = textRef.current;
       el.style.fontSize = `${size}px`;
-      while (el.scrollHeight > el.clientHeight && size > 20) {
+      while ((el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth) && size > 20) {
         size -= 2;
         el.style.fontSize = `${size}px`;
       }
@@ -110,7 +110,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
       let size = 160;
       const el = textLeftRef.current;
       el.style.fontSize = `${size}px`;
-      while (el.scrollHeight > el.clientHeight && size > 20) { size -= 2; el.style.fontSize = `${size}px`; }
+      while ((el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth) && size > 20) { size -= 2; el.style.fontSize = `${size}px`; }
       setFontSizeLeft(size);
     }, [thumbTextLeft, textBoxHeight, fixedFontSizeLeft]);
 
@@ -120,7 +120,7 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
       let size = 160;
       const el = textRightRef.current;
       el.style.fontSize = `${size}px`;
-      while (el.scrollHeight > el.clientHeight && size > 20) { size -= 2; el.style.fontSize = `${size}px`; }
+      while ((el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth) && size > 20) { size -= 2; el.style.fontSize = `${size}px`; }
       setFontSizeRight(size);
     }, [thumbTextRight, textBoxHeight, fixedFontSizeRight]);
 
@@ -708,8 +708,8 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               transformOrigin: 'center center',
               padding: '20px',
               boxSizing: 'border-box',
-              wordBreak: 'break-word',
-              whiteSpace: 'pre-wrap',
+              wordBreak: 'normal',
+              whiteSpace: 'pre',
             } as React.CSSProperties}
           >
             {thumbText.split(/(\*[^*]+\*)/g).map((part, i) =>
@@ -809,7 +809,8 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               transformOrigin: 'center center',
               padding: '14px',
               boxSizing: 'border-box',
-              wordBreak: 'break-word',
+              wordBreak: 'normal',
+              whiteSpace: 'pre',
             } as React.CSSProperties}
           >
             {thumbTextLeft.split(/(\*[^*]+\*)/g).map((part, i) =>
@@ -844,7 +845,8 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               transformOrigin: 'center center',
               padding: '14px',
               boxSizing: 'border-box',
-              wordBreak: 'break-word',
+              wordBreak: 'normal',
+              whiteSpace: 'pre',
             } as React.CSSProperties}
           >
             {thumbTextRight.split(/(\*[^*]+\*)/g).map((part, i) =>
