@@ -708,8 +708,8 @@ export const CortesCanvas = forwardRef<HTMLDivElement, CortesCanvasProps>(
               transformOrigin: 'center center',
               padding: '20px',
               boxSizing: 'border-box',
-              wordBreak: 'break-word',
-              whiteSpace: 'pre-wrap',
+              wordBreak: 'normal',
+              whiteSpace: 'pre',
             } as React.CSSProperties}
           >
             {thumbText.split(/(\*[^*]+\*)/g).map((part, i) =>
