@@ -33,7 +33,7 @@ export const teamsConferenceLeague: Team[] = [
   { id: 'cl29', name: 'SHELBOURNE', slug: 'cl-shelbourne', crest_url: '/crests/cl-shelbourne.png', color: '#D4213D' },
   { id: 'cl30', name: 'SHKËNDIJA', slug: 'cl-shkendija', crest_url: '/crests/cl-shkendija.png', color: '#D4213D' },
   { id: 'cl31', name: 'SIGMA', slug: 'cl-sigma', crest_url: '/crests/cl-sigma.png', color: '#0055A4' },
-  { id: 'cl32', name: 'SPARTA PRAGA', slug: 'cl-sparta-praga', crest_url: '/crests/cl-sparta-praga.png', color: '#8B0000' },
+  { id: 'cl32', name: 'SPARTA PRAHA', slug: 'cl-sparta-praga', crest_url: '/crests/cl-sparta-praga.png', color: '#8B0000' },
   { id: 'cl33', name: 'STRASBOURG', slug: 'cl-strasbourg', crest_url: '/crests/cl-strasbourg.png', color: '#0055A4' },
   { id: 'cl34', name: 'ZRINJSKI', slug: 'cl-zrinjski', crest_url: '/crests/cl-zrinjski.png', color: '#D4213D' },
 ];
