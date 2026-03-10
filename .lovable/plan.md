@@ -1,9 +1,13 @@
 
 
-## Plano: Aumentar escudos Kings League em 20%
+## Plano: Atualizar escudo do AEK Atenas na Conference League
+
+### Contexto
+O time AEK Atenas já existe em `teamsConferenceLeague.ts` com o caminho `/crests/cl-aek-atenas.png`. A ação é substituir o arquivo de escudo atual pelo novo enviado.
 
 ### Alteração
 
-**`src/data/teamsKingsLeague.ts`**
-- Adicionar `maxSize: 259` (216 × 1.2) e `jcMaxSize: 386` (322 × 1.2) a todos os 10 times
+1. **Copiar o novo escudo** `user-uploads://AEK_ATENAS.png` → `public/crests/cl-aek-atenas.png` (sobrescreve o existente)
+
+Nenhuma alteração de código é necessária — o caminho já está mapeado corretamente no array `teamsConferenceLeague`.
 
