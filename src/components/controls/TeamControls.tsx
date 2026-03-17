@@ -11,6 +11,7 @@ import { teamsLibertadores } from '@/data/teamsLibertadores';
 import { teamsAoVivo } from '@/data/teamsAoVivo';
 import { teamsConferenceLeague } from '@/data/teamsConferenceLeague';
 import { teamsKingsLeague } from '@/data/teamsKingsLeague';
+import { teamsSulamericana } from '@/data/teamsSulamericana';
 import { MatchData } from '@/types/thumbnail';
 import { TemplateType } from '@/data/templates';
 import { ActiveCanvas } from '@/components/controls/ViewControls';
