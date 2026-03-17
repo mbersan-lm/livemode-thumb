@@ -1,14 +1,9 @@
 
 
-## Plano: Normalizar escudos de Lens e Lorient no template Ligue 1
-
-### Problema
-Lens tem `maxSize: 590` e `jcMaxSize: 390`, Lorient tem `maxSize: 512` e `jcMaxSize: 338`. O padrão dos outros times é 216px (MM) e 322px (JC), tornando esses dois desproporcionalmente grandes.
+## Plano: Aumentar escudos Kings League em 20%
 
 ### Alteração
 
-**`src/data/teamsLigue1.ts`** — remover os overrides `maxSize` e `jcMaxSize` de Lens e Lorient para que usem os valores padrão (216px para MM, 322px para JC):
-
-- Lens: remover `maxSize: 590, jcMaxSize: 390`
-- Lorient: remover `maxSize: 512, jcMaxSize: 338`
+**`src/data/teamsKingsLeague.ts`**
+- Adicionar `maxSize: 259` (216 × 1.2) e `jcMaxSize: 386` (322 × 1.2) a todos os 10 times
 
