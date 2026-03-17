@@ -1,25 +1,9 @@
 
 
-## Plano: Adicionar 10 escudos ao template Sul-americana
+## Plano: Aumentar escudos Kings League em 20%
 
-### Assets (10 arquivos)
+### Alteração
 
-| Upload | Destino |
-|--------|---------|
-| MACARÁ_ECU_1.png | `public/crests/sul-macara.png` |
-| MELGAR_PER_1.png | `public/crests/sul-melgar.png` |
-| METROPOLITANOS_VEN_1.png | `public/crests/sul-metropolitanos.png` |
-| MILLONARIOS_COL_1.png | `public/crests/sul-millonarios.png` |
-| MONAGAS_VEN_1.png | `public/crests/sul-monagas.png` |
-| MONTEVIDEO_CITY_TORQUE_URU_1.png | `public/crests/sul-montevideo-city-torque.png` |
-| NACIONAL_PAR_1.png | `public/crests/sul-nacional.png` |
-| OLIMPIA_PAR_1.png | `public/crests/sul-olimpia.png` |
-| ORENSE_ECU_1.png | `public/crests/sul-orense.png` |
-| PALESTINO_CHI_1.png | `public/crests/sul-palestino.png` |
-
-### Codigo
-
-**`src/data/teamsSulamericana.ts`** — adicionar 10 entradas ao final do array (IDs sul-21 a sul-30), em ordem alfabética:
-
-Macará, Melgar, Metropolitanos, Millonarios, Monagas, Montevideo City Torque, Nacional, Olimpia, Orense, Palestino
+**`src/data/teamsKingsLeague.ts`**
+- Adicionar `maxSize: 259` (216 × 1.2) e `jcMaxSize: 386` (322 × 1.2) a todos os 10 times
 
