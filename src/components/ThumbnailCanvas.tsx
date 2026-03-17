@@ -7,6 +7,7 @@ import { teamsPaulistao } from '@/data/teamsPaulistao';
 import { teamsEuropaLeague } from '@/data/teamsEuropaLeague';
 import { teamsLibertadores } from '@/data/teamsLibertadores';
 import { teamsKingsLeague } from '@/data/teamsKingsLeague';
+import { teamsSulamericana } from '@/data/teamsSulamericana';
 import { PhotoTransform, MatchData } from '@/types/thumbnail';
 import { templates, TemplateType } from '@/data/templates';
 
