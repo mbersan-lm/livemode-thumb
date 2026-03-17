@@ -94,7 +94,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
         {homeTeam && awayTeam && (
           <div 
             id="MATCH_ROW"
-            className={`absolute left-[22px] ${template === 'ligue1' || template === 'bundesliga' || template === 'seriea' || template === 'paulistao' || template === 'europaleague' || template === 'libertadores' || template === 'kingsleague' ? 'top-[335px]' : 'top-[360px]'} flex items-center gap-[34px]`}
+            className={`absolute left-[22px] ${template === 'ligue1' || template === 'bundesliga' || template === 'seriea' || template === 'paulistao' || template === 'europaleague' || template === 'libertadores' || template === 'kingsleague' || template === 'sulamericana' ? 'top-[335px]' : 'top-[360px]'} flex items-center gap-[34px]`}
             style={{ 
               zIndex: 20,
               transform: 'none'
