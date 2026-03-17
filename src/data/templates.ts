@@ -99,4 +99,15 @@ export const templates: Record<TemplateType, Template> = {
     xFontFamily: 'Gilroy Medium, sans-serif',
     xColor: '#FFFFFF',
   },
+  sulamericana: {
+    id: 'sulamericana',
+    name: 'Sul-americana',
+    kvPath: '/kv/kv-sulamericana.png',
+    kvJogoCompletoPath: '',
+    fontFamily: 'Gilroy ExtraBold, sans-serif',
+    scoreFontSize: '140px',
+    xFontSize: '110px',
+    xFontFamily: 'Gilroy Medium, sans-serif',
+    xColor: '#FFFFFF',
+  },
 };
