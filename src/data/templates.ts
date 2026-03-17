@@ -1,4 +1,4 @@
-export type TemplateType = 'brasileirao' | 'ligue1' | 'bundesliga' | 'seriea' | 'paulistao' | 'europaleague' | 'libertadores' | 'kingsleague';
+export type TemplateType = 'brasileirao' | 'ligue1' | 'bundesliga' | 'seriea' | 'paulistao' | 'europaleague' | 'libertadores' | 'kingsleague' | 'sulamericana';
 
 export interface Template {
   id: TemplateType;
