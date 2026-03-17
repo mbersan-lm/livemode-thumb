@@ -45,4 +45,8 @@ export const teamsSulamericana: Team[] = [
   { id: 'sul-42', name: 'Trinidense', slug: 'sul-trinidense', crest_url: '/crests/sul-trinidense.png' },
   { id: 'sul-43', name: 'Universidad de Chile', slug: 'sul-universidad-de-chile', crest_url: '/crests/sul-universidad-de-chile.png' },
   { id: 'sul-44', name: 'Vasco da Gama', slug: 'sul-vasco-da-gama', crest_url: '/crests/sul-vasco-da-gama.png' },
+  { id: 'sul-45', name: 'Botafogo', slug: 'sul-botafogo', crest_url: '/crests/sul-botafogo.png' },
+  { id: 'sul-46', name: 'Carabobo', slug: 'sul-carabobo', crest_url: '/crests/sul-carabobo.png' },
+  { id: 'sul-47', name: 'Juventud', slug: 'sul-juventud', crest_url: '/crests/sul-juventud.png' },
+  { id: 'sul-48', name: "O'Higgins", slug: 'sul-ohiggins', crest_url: '/crests/sul-ohiggins.png' },
 ];
