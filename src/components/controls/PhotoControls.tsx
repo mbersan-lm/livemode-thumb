@@ -80,7 +80,7 @@ const PhotoSliders = ({
   return (
     <div className="space-y-4">
       <div>
-        <Label>Posição X: {transform.x}px</Label>
+        <Label>Horizontal: {transform.x}px</Label>
         <Slider value={[transform.x]} onValueChange={([x]) => onTransformChange({ x })} min={-1500} max={1500} step={1} className="mt-2" />
       </div>
       <div>
