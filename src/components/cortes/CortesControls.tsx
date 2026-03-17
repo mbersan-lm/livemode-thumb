@@ -1253,8 +1253,8 @@ export const CortesControls = ({
                   <RotateCcw className="w-3.5 h-3.5" />
                 </button>
               </div>
-              <div><Label className="text-xs">Posição X (esquerdo): {pipFrame.x.toFixed(1)}%</Label><Slider value={[pipFrame.x]} onValueChange={([x]) => onPipFrameChange({ x })} min={0} max={30} step={0.1} className="mt-1" /></div>
-              <div><Label className="text-xs">Posição Y: {pipFrame.y.toFixed(1)}%</Label><Slider value={[pipFrame.y]} onValueChange={([y]) => onPipFrameChange({ y })} min={-20} max={80} step={0.1} className="mt-1" /></div>
+              <div><Label className="text-xs">Horizontal (esquerdo): {pipFrame.x.toFixed(1)}%</Label><Slider value={[pipFrame.x]} onValueChange={([x]) => onPipFrameChange({ x })} min={0} max={30} step={0.1} className="mt-1" /></div>
+              <div><Label className="text-xs">Vertical: {pipFrame.y.toFixed(1)}%</Label><Slider value={[pipFrame.y]} onValueChange={([y]) => onPipFrameChange({ y })} min={-20} max={80} step={0.1} className="mt-1" /></div>
               <div><Label className="text-xs">Largura: {pipFrame.width.toFixed(1)}%</Label><Slider value={[pipFrame.width]} onValueChange={([width]) => onPipFrameChange({ width })} min={10} max={45} step={0.1} className="mt-1" /></div>
               <div><Label className="text-xs">Altura: {pipFrame.height.toFixed(1)}%</Label><Slider value={[pipFrame.height]} onValueChange={([height]) => onPipFrameChange({ height })} min={10} max={90} step={0.1} className="mt-1" /></div>
             </div>
