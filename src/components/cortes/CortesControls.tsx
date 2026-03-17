@@ -733,11 +733,11 @@ export const CortesControls = ({
                 </button>
               </div>
               <div>
-                <Label className="text-xs">Posição X: {pipFrame.x.toFixed(1)}%</Label>
+                <Label className="text-xs">Horizontal: {pipFrame.x.toFixed(1)}%</Label>
                 <Slider value={[pipFrame.x]} onValueChange={([x]) => onPipFrameChange({ x })} min={-20} max={60} step={0.1} className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs">Posição Y: {pipFrame.y.toFixed(1)}%</Label>
+                <Label className="text-xs">Vertical: {pipFrame.y.toFixed(1)}%</Label>
                 <Slider value={[pipFrame.y]} onValueChange={([y]) => onPipFrameChange({ y })} min={-20} max={60} step={0.1} className="mt-1" />
               </div>
 
