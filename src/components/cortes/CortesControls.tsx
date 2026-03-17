@@ -1515,11 +1515,11 @@ export const CortesControls = ({
               {showPerson1Adjust && (
                 <>
               <div>
-                <Label className="text-xs">Posição X: {personTransform.x}px</Label>
+                <Label className="text-xs">Horizontal: {personTransform.x}px</Label>
                 <Slider value={[personTransform.x]} onValueChange={([x]) => onPersonTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs">Posição Y: {personTransform.y}px</Label>
+                <Label className="text-xs">Vertical: {personTransform.y}px</Label>
                 <Slider value={[personTransform.y]} onValueChange={([y]) => onPersonTransformChange({ y })} min={-800} max={800} step={1} className="mt-1" />
               </div>
               <div>
