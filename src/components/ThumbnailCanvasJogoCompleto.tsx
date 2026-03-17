@@ -7,6 +7,7 @@ import { teamsPaulistao } from '@/data/teamsPaulistao';
 import { teamsEuropaLeague } from '@/data/teamsEuropaLeague';
 import { teamsLibertadores } from '@/data/teamsLibertadores';
 import { teamsKingsLeague } from '@/data/teamsKingsLeague';
+import { teamsSulamericana } from '@/data/teamsSulamericana';
 import { PhotoTransform, MatchData } from '@/types/thumbnail';
 import { templates, TemplateType } from '@/data/templates';
 
@@ -28,6 +29,7 @@ export const ThumbnailCanvasJogoCompleto = forwardRef<HTMLDivElement, ThumbnailC
       template === 'europaleague' ? teamsEuropaLeague :
       template === 'libertadores' ? teamsLibertadores :
       template === 'kingsleague' ? teamsKingsLeague :
+      template === 'sulamericana' ? teamsSulamericana :
       teamsLigue1;
     const homeTeam = currentTeams.find(t => t.id === matchData.homeTeamId) as Team | undefined;
     const awayTeam = currentTeams.find(t => t.id === matchData.awayTeamId) as Team | undefined;
@@ -92,7 +94,7 @@ export const ThumbnailCanvasJogoCompleto = forwardRef<HTMLDivElement, ThumbnailC
         {homeTeam && awayTeam && (
           <div 
             id="MATCH_ROW_JC"
-            className={`absolute -left-[3px] ${template === 'ligue1' || template === 'bundesliga' || template === 'seriea' || template === 'paulistao' || template === 'europaleague' || template === 'libertadores' || template === 'kingsleague' ? '-top-[20px]' : '-top-[15px]'} flex items-center`}
+            className={`absolute -left-[3px] ${template === 'ligue1' || template === 'bundesliga' || template === 'seriea' || template === 'paulistao' || template === 'europaleague' || template === 'libertadores' || template === 'kingsleague' || template === 'sulamericana' ? '-top-[20px]' : '-top-[15px]'} flex items-center`}
             style={{ 
               zIndex: 20,
               transform: 'none'

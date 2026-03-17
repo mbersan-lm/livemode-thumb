@@ -14,7 +14,7 @@ export const ViewControls = ({
   onActiveCanvasChange,
   template,
 }: ViewControlsProps) => {
-  const hideJogoCompleto = template === 'libertadores';
+  const hideJogoCompleto = template === 'libertadores' || template === 'sulamericana';
 
   return (
     <div className="space-y-2">

@@ -11,6 +11,7 @@ import { teamsLibertadores } from '@/data/teamsLibertadores';
 import { teamsAoVivo } from '@/data/teamsAoVivo';
 import { teamsConferenceLeague } from '@/data/teamsConferenceLeague';
 import { teamsKingsLeague } from '@/data/teamsKingsLeague';
+import { teamsSulamericana } from '@/data/teamsSulamericana';
 import { MatchData } from '@/types/thumbnail';
 import { TemplateType } from '@/data/templates';
 import { ActiveCanvas } from '@/components/controls/ViewControls';
@@ -41,6 +42,7 @@ export const TeamControls = ({ matchData, onMatchDataChange, template, activeCan
       template === 'europaleague' ? teamsEuropaLeague :
       template === 'libertadores' ? teamsLibertadores :
       template === 'kingsleague' ? teamsKingsLeague :
+      template === 'sulamericana' ? teamsSulamericana :
       teamsLigue1;
 
   return (
