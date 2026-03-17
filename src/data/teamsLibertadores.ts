@@ -32,4 +32,8 @@ export const teamsLibertadores: Team[] = [
   { id: 'lib-29', name: 'Platense', slug: 'platense', crest_url: '/crests/lib-platense.png' },
   { id: 'lib-30', name: 'Rosario Central', slug: 'rosario-central', crest_url: '/crests/lib-rosario-central.png' },
   { id: 'lib-31', name: 'Sporting Cristal', slug: 'sporting-cristal', crest_url: '/crests/lib-sporting-cristal.png' },
+  { id: 'lib-32', name: 'Tolima', slug: 'tolima', crest_url: '/crests/lib-tolima.png' },
+  { id: 'lib-33', name: 'Universidad Católica', slug: 'universidad-catolica', crest_url: '/crests/lib-universidad-catolica.png' },
+  { id: 'lib-34', name: 'Universidad Central', slug: 'universidad-central', crest_url: '/crests/lib-universidad-central.png' },
+  { id: 'lib-35', name: 'Universitario', slug: 'universitario', crest_url: '/crests/lib-universitario.png' },
 ];
