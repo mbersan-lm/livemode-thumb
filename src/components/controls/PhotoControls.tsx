@@ -84,7 +84,7 @@ const PhotoSliders = ({
         <Slider value={[transform.x]} onValueChange={([x]) => onTransformChange({ x })} min={-1500} max={1500} step={1} className="mt-2" />
       </div>
       <div>
-        <Label>Posição Y: {transform.y}px</Label>
+        <Label>Vertical: {transform.y}px</Label>
         <Slider value={[transform.y]} onValueChange={([y]) => onTransformChange({ y })} min={-1500} max={1500} step={1} className="mt-2" />
       </div>
       <div>
