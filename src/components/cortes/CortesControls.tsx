@@ -703,11 +703,11 @@ export const CortesControls = ({
               {showPipAdjust && (
                 <>
               <div>
-                <Label className="text-xs">Posição X: {pipTransform.x}px</Label>
+                <Label className="text-xs">Horizontal: {pipTransform.x}px</Label>
                 <Slider value={[pipTransform.x]} onValueChange={([x]) => onPipTransformChange({ x })} min={-500} max={500} step={1} className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs">Posição Y: {pipTransform.y}px</Label>
+                <Label className="text-xs">Vertical: {pipTransform.y}px</Label>
                 <Slider value={[pipTransform.y]} onValueChange={([y]) => onPipTransformChange({ y })} min={-500} max={500} step={1} className="mt-1" />
               </div>
               <div>
