@@ -42,6 +42,7 @@ export const TeamControls = ({ matchData, onMatchDataChange, template, activeCan
       template === 'europaleague' ? teamsEuropaLeague :
       template === 'libertadores' ? teamsLibertadores :
       template === 'kingsleague' ? teamsKingsLeague :
+      template === 'sulamericana' ? teamsSulamericana :
       teamsLigue1;
 
   return (

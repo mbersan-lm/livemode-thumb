@@ -159,7 +159,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
                     fontSize: `${Math.round(parseInt(config.scoreFontSize) * 0.245)}px`,
                     lineHeight: '1',
                     marginTop: '4px',
-                    transform: template === 'seriea' ? 'translateX(2%)' : template === 'brasileirao' ? 'translateX(-3%)' : template === 'bundesliga' ? 'translateX(-3%)' : template === 'paulistao' ? 'translateX(-3%)' : template === 'europaleague' ? 'translateX(-3%)' : template === 'libertadores' ? 'translateX(-3%)' : template === 'kingsleague' ? 'translateX(-3%)' : 'translateX(-15%)',
+                    transform: template === 'seriea' ? 'translateX(2%)' : template === 'brasileirao' ? 'translateX(-3%)' : template === 'bundesliga' ? 'translateX(-3%)' : template === 'paulistao' ? 'translateX(-3%)' : template === 'europaleague' ? 'translateX(-3%)' : template === 'libertadores' ? 'translateX(-3%)' : template === 'kingsleague' ? 'translateX(-3%)' : template === 'sulamericana' ? 'translateX(-3%)' : 'translateX(-15%)',
                   }}
                 >
                   <span>({matchData.homeScoreSmall})</span>
