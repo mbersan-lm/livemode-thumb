@@ -90,6 +90,16 @@ export const ThumbnailCanvasJogoCompleto = forwardRef<HTMLDivElement, ThumbnailC
           style={{ height: '720px', objectFit: 'contain', objectPosition: 'left', zIndex: 10 }}
         />
 
+        {/* Kings League logo overlay */}
+        {template === 'kingsleague' && (
+          <img 
+            src="/kv/logo-kingsleague.png"
+            alt="Kings League Logo"
+            className="absolute pointer-events-none"
+            style={{ top: '24px', left: '24px', width: '320px', zIndex: 11 }}
+          />
+        )}
+
         {/* Team Crests Only - No Scores */}
         {homeTeam && awayTeam && (
           <div 
