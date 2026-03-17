@@ -818,8 +818,8 @@ export const CortesControls = ({
               </div>
               {showPip2Adjust && (
                 <>
-              <div><Label className="text-xs">Posição X: {pip2Transform.x}px</Label><Slider value={[pip2Transform.x]} onValueChange={([x]) => onPip2TransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
-              <div><Label className="text-xs">Posição Y: {pip2Transform.y}px</Label><Slider value={[pip2Transform.y]} onValueChange={([y]) => onPip2TransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Horizontal: {pip2Transform.x}px</Label><Slider value={[pip2Transform.x]} onValueChange={([x]) => onPip2TransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Vertical: {pip2Transform.y}px</Label><Slider value={[pip2Transform.y]} onValueChange={([y]) => onPip2TransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Zoom: {pip2Transform.scale.toFixed(2)}x</Label><Slider value={[pip2Transform.scale]} onValueChange={([scale]) => onPip2TransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
                 </>
                )}
