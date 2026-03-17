@@ -703,11 +703,11 @@ export const CortesControls = ({
               {showPipAdjust && (
                 <>
               <div>
-                <Label className="text-xs">Posição X: {pipTransform.x}px</Label>
+                <Label className="text-xs">Horizontal: {pipTransform.x}px</Label>
                 <Slider value={[pipTransform.x]} onValueChange={([x]) => onPipTransformChange({ x })} min={-500} max={500} step={1} className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs">Posição Y: {pipTransform.y}px</Label>
+                <Label className="text-xs">Vertical: {pipTransform.y}px</Label>
                 <Slider value={[pipTransform.y]} onValueChange={([y]) => onPipTransformChange({ y })} min={-500} max={500} step={1} className="mt-1" />
               </div>
               <div>
@@ -733,11 +733,11 @@ export const CortesControls = ({
                 </button>
               </div>
               <div>
-                <Label className="text-xs">Posição X: {pipFrame.x.toFixed(1)}%</Label>
+                <Label className="text-xs">Horizontal: {pipFrame.x.toFixed(1)}%</Label>
                 <Slider value={[pipFrame.x]} onValueChange={([x]) => onPipFrameChange({ x })} min={-20} max={60} step={0.1} className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs">Posição Y: {pipFrame.y.toFixed(1)}%</Label>
+                <Label className="text-xs">Vertical: {pipFrame.y.toFixed(1)}%</Label>
                 <Slider value={[pipFrame.y]} onValueChange={([y]) => onPipFrameChange({ y })} min={-20} max={60} step={0.1} className="mt-1" />
               </div>
 
@@ -789,8 +789,8 @@ export const CortesControls = ({
               </div>
               {showPipAdjust && (
                 <>
-              <div><Label className="text-xs">Posição X: {pipTransform.x}px</Label><Slider value={[pipTransform.x]} onValueChange={([x]) => onPipTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
-              <div><Label className="text-xs">Posição Y: {pipTransform.y}px</Label><Slider value={[pipTransform.y]} onValueChange={([y]) => onPipTransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Horizontal: {pipTransform.x}px</Label><Slider value={[pipTransform.x]} onValueChange={([x]) => onPipTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Vertical: {pipTransform.y}px</Label><Slider value={[pipTransform.y]} onValueChange={([y]) => onPipTransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Zoom: {pipTransform.scale.toFixed(2)}x</Label><Slider value={[pipTransform.scale]} onValueChange={([scale]) => onPipTransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
                 </>
                )}
@@ -818,8 +818,8 @@ export const CortesControls = ({
               </div>
               {showPip2Adjust && (
                 <>
-              <div><Label className="text-xs">Posição X: {pip2Transform.x}px</Label><Slider value={[pip2Transform.x]} onValueChange={([x]) => onPip2TransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
-              <div><Label className="text-xs">Posição Y: {pip2Transform.y}px</Label><Slider value={[pip2Transform.y]} onValueChange={([y]) => onPip2TransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Horizontal: {pip2Transform.x}px</Label><Slider value={[pip2Transform.x]} onValueChange={([x]) => onPip2TransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Vertical: {pip2Transform.y}px</Label><Slider value={[pip2Transform.y]} onValueChange={([y]) => onPip2TransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Zoom: {pip2Transform.scale.toFixed(2)}x</Label><Slider value={[pip2Transform.scale]} onValueChange={([scale]) => onPip2TransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
                 </>
                )}
@@ -830,11 +830,11 @@ export const CortesControls = ({
           <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
             <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Moldura PIP</Label>
             <div>
-              <Label className="text-xs">Posição X: {pipFrame.x.toFixed(1)}%</Label>
+              <Label className="text-xs">Horizontal: {pipFrame.x.toFixed(1)}%</Label>
               <Slider value={[pipFrame.x]} onValueChange={([x]) => onPipFrameChange({ x })} min={-20} max={80} step={0.1} className="mt-1" />
             </div>
             <div>
-              <Label className="text-xs">Posição Y: {pipFrame.y.toFixed(1)}%</Label>
+              <Label className="text-xs">Vertical: {pipFrame.y.toFixed(1)}%</Label>
               <Slider value={[pipFrame.y]} onValueChange={([y]) => onPipFrameChange({ y })} min={-20} max={60} step={0.1} className="mt-1" />
             </div>
             <Collapsible>
@@ -913,8 +913,8 @@ export const CortesControls = ({
                 </div>
               </div>
               {showPip2Adjust && (<>
-                <div><Label className="text-xs">Posição X: {pip2Transform.x}px</Label><Slider value={[pip2Transform.x]} onValueChange={([x]) => onPip2TransformChange?.({ x })} min={-500} max={500} step={1} className="mt-1" /></div>
-                <div><Label className="text-xs">Posição Y: {pip2Transform.y}px</Label><Slider value={[pip2Transform.y]} onValueChange={([y]) => onPip2TransformChange?.({ y })} min={-500} max={500} step={1} className="mt-1" /></div>
+                <div><Label className="text-xs">Horizontal: {pip2Transform.x}px</Label><Slider value={[pip2Transform.x]} onValueChange={([x]) => onPip2TransformChange?.({ x })} min={-500} max={500} step={1} className="mt-1" /></div>
+                <div><Label className="text-xs">Vertical: {pip2Transform.y}px</Label><Slider value={[pip2Transform.y]} onValueChange={([y]) => onPip2TransformChange?.({ y })} min={-500} max={500} step={1} className="mt-1" /></div>
                 <div><Label className="text-xs">Zoom: {pip2Transform.scale.toFixed(2)}x</Label><Slider value={[pip2Transform.scale]} onValueChange={([scale]) => onPip2TransformChange?.({ scale })} min={0.5} max={3} step={0.01} className="mt-1" /></div>
                 <div><Label className="text-xs">Rotação: {pip2Transform.rotation}°</Label><Slider value={[pip2Transform.rotation]} onValueChange={([rotation]) => onPip2TransformChange?.({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
               </>)}
@@ -931,8 +931,8 @@ export const CortesControls = ({
                 </div>
               </div>
               {showPipAdjust && (<>
-                <div><Label className="text-xs">Posição X: {pipTransform.x}px</Label><Slider value={[pipTransform.x]} onValueChange={([x]) => onPipTransformChange({ x })} min={-500} max={500} step={1} className="mt-1" /></div>
-                <div><Label className="text-xs">Posição Y: {pipTransform.y}px</Label><Slider value={[pipTransform.y]} onValueChange={([y]) => onPipTransformChange({ y })} min={-500} max={500} step={1} className="mt-1" /></div>
+                <div><Label className="text-xs">Horizontal: {pipTransform.x}px</Label><Slider value={[pipTransform.x]} onValueChange={([x]) => onPipTransformChange({ x })} min={-500} max={500} step={1} className="mt-1" /></div>
+                <div><Label className="text-xs">Vertical: {pipTransform.y}px</Label><Slider value={[pipTransform.y]} onValueChange={([y]) => onPipTransformChange({ y })} min={-500} max={500} step={1} className="mt-1" /></div>
                 <div><Label className="text-xs">Zoom: {pipTransform.scale.toFixed(2)}x</Label><Slider value={[pipTransform.scale]} onValueChange={([scale]) => onPipTransformChange({ scale })} min={0.5} max={3} step={0.01} className="mt-1" /></div>
                 <div><Label className="text-xs">Rotação: {pipTransform.rotation}°</Label><Slider value={[pipTransform.rotation]} onValueChange={([rotation]) => onPipTransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
               </>)}
@@ -983,8 +983,8 @@ export const CortesControls = ({
                 </div>
               </div>
               {showPerson1Adjust && (<>
-                <div><Label className="text-xs">Posição X: {personTransform.x}px</Label><Slider value={[personTransform.x]} onValueChange={([x]) => onPersonTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
-                <div><Label className="text-xs">Posição Y: {personTransform.y}px</Label><Slider value={[personTransform.y]} onValueChange={([y]) => onPersonTransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
+                <div><Label className="text-xs">Horizontal: {personTransform.x}px</Label><Slider value={[personTransform.x]} onValueChange={([x]) => onPersonTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
+                <div><Label className="text-xs">Vertical: {personTransform.y}px</Label><Slider value={[personTransform.y]} onValueChange={([y]) => onPersonTransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
                 <div><Label className="text-xs">Zoom: {personTransform.scale.toFixed(2)}x</Label><Slider value={[personTransform.scale]} onValueChange={([scale]) => onPersonTransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
                 <div><Label className="text-xs">Rotação: {personTransform.rotation}°</Label><Slider value={[personTransform.rotation]} onValueChange={([rotation]) => onPersonTransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
               </>)}
@@ -1018,8 +1018,8 @@ export const CortesControls = ({
                 </div>
               </div>
               {showPerson2Adjust && (<>
-                <div><Label className="text-xs">Posição X: {person2Transform.x}px</Label><Slider value={[person2Transform.x]} onValueChange={([x]) => onPerson2TransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
-                <div><Label className="text-xs">Posição Y: {person2Transform.y}px</Label><Slider value={[person2Transform.y]} onValueChange={([y]) => onPerson2TransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
+                <div><Label className="text-xs">Horizontal: {person2Transform.x}px</Label><Slider value={[person2Transform.x]} onValueChange={([x]) => onPerson2TransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
+                <div><Label className="text-xs">Vertical: {person2Transform.y}px</Label><Slider value={[person2Transform.y]} onValueChange={([y]) => onPerson2TransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
                 <div><Label className="text-xs">Zoom: {person2Transform.scale.toFixed(2)}x</Label><Slider value={[person2Transform.scale]} onValueChange={([scale]) => onPerson2TransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
                 <div><Label className="text-xs">Rotação: {person2Transform.rotation}°</Label><Slider value={[person2Transform.rotation]} onValueChange={([rotation]) => onPerson2TransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
               </>)}
@@ -1053,8 +1053,8 @@ export const CortesControls = ({
               </div>
               {showPerson1Adjust && (
                 <>
-              <div><Label className="text-xs">Posição X: {personTransform.x}px</Label><Slider value={[personTransform.x]} onValueChange={([x]) => onPersonTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
-              <div><Label className="text-xs">Posição Y: {personTransform.y}px</Label><Slider value={[personTransform.y]} onValueChange={([y]) => onPersonTransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Horizontal: {personTransform.x}px</Label><Slider value={[personTransform.x]} onValueChange={([x]) => onPersonTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Vertical: {personTransform.y}px</Label><Slider value={[personTransform.y]} onValueChange={([y]) => onPersonTransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Zoom: {personTransform.scale.toFixed(2)}x</Label><Slider value={[personTransform.scale]} onValueChange={([scale]) => onPersonTransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
               <div><Label className="text-xs">Rotação: {personTransform.rotation}°</Label><Slider value={[personTransform.rotation]} onValueChange={([rotation]) => onPersonTransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
                 </>
@@ -1083,8 +1083,8 @@ export const CortesControls = ({
                 </div>
               </div>
               {showPerson2Adjust && (<>
-              <div><Label className="text-xs">Posição X: {person2Transform.x}px</Label><Slider value={[person2Transform.x]} onValueChange={([x]) => onPerson2TransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
-              <div><Label className="text-xs">Posição Y: {person2Transform.y}px</Label><Slider value={[person2Transform.y]} onValueChange={([y]) => onPerson2TransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Horizontal: {person2Transform.x}px</Label><Slider value={[person2Transform.x]} onValueChange={([x]) => onPerson2TransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Vertical: {person2Transform.y}px</Label><Slider value={[person2Transform.y]} onValueChange={([y]) => onPerson2TransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Zoom: {person2Transform.scale.toFixed(2)}x</Label><Slider value={[person2Transform.scale]} onValueChange={([scale]) => onPerson2TransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
               <div><Label className="text-xs">Rotação: {person2Transform.rotation}°</Label><Slider value={[person2Transform.rotation]} onValueChange={([rotation]) => onPerson2TransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
               </>)}
@@ -1112,8 +1112,8 @@ export const CortesControls = ({
                 </div>
               </div>
               {showPerson3Adjust && (<>
-              <div><Label className="text-xs">Posição X: {person3Transform.x}px</Label><Slider value={[person3Transform.x]} onValueChange={([x]) => onPerson3TransformChange?.({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
-              <div><Label className="text-xs">Posição Y: {person3Transform.y}px</Label><Slider value={[person3Transform.y]} onValueChange={([y]) => onPerson3TransformChange?.({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Horizontal: {person3Transform.x}px</Label><Slider value={[person3Transform.x]} onValueChange={([x]) => onPerson3TransformChange?.({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Vertical: {person3Transform.y}px</Label><Slider value={[person3Transform.y]} onValueChange={([y]) => onPerson3TransformChange?.({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Zoom: {person3Transform.scale.toFixed(2)}x</Label><Slider value={[person3Transform.scale]} onValueChange={([scale]) => onPerson3TransformChange?.({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
               <div><Label className="text-xs">Rotação: {person3Transform.rotation}°</Label><Slider value={[person3Transform.rotation]} onValueChange={([rotation]) => onPerson3TransformChange?.({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
               </>)}
@@ -1146,8 +1146,8 @@ export const CortesControls = ({
                 </div>
               </div>
               {showPerson1Adjust && (<>
-              <div><Label className="text-xs">Posição X: {personTransform.x}px</Label><Slider value={[personTransform.x]} onValueChange={([x]) => onPersonTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
-              <div><Label className="text-xs">Posição Y: {personTransform.y}px</Label><Slider value={[personTransform.y]} onValueChange={([y]) => onPersonTransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Horizontal: {personTransform.x}px</Label><Slider value={[personTransform.x]} onValueChange={([x]) => onPersonTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Vertical: {personTransform.y}px</Label><Slider value={[personTransform.y]} onValueChange={([y]) => onPersonTransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Zoom: {personTransform.scale.toFixed(2)}x</Label><Slider value={[personTransform.scale]} onValueChange={([scale]) => onPersonTransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
               <div><Label className="text-xs">Rotação: {personTransform.rotation}°</Label><Slider value={[personTransform.rotation]} onValueChange={([rotation]) => onPersonTransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
               </>)}
@@ -1175,8 +1175,8 @@ export const CortesControls = ({
                 </div>
               </div>
               {showPerson2Adjust && (<>
-              <div><Label className="text-xs">Posição X: {person2Transform.x}px</Label><Slider value={[person2Transform.x]} onValueChange={([x]) => onPerson2TransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
-              <div><Label className="text-xs">Posição Y: {person2Transform.y}px</Label><Slider value={[person2Transform.y]} onValueChange={([y]) => onPerson2TransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Horizontal: {person2Transform.x}px</Label><Slider value={[person2Transform.x]} onValueChange={([x]) => onPerson2TransformChange({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Vertical: {person2Transform.y}px</Label><Slider value={[person2Transform.y]} onValueChange={([y]) => onPerson2TransformChange({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Zoom: {person2Transform.scale.toFixed(2)}x</Label><Slider value={[person2Transform.scale]} onValueChange={([scale]) => onPerson2TransformChange({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
               <div><Label className="text-xs">Rotação: {person2Transform.rotation}°</Label><Slider value={[person2Transform.rotation]} onValueChange={([rotation]) => onPerson2TransformChange({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
               </>)}
@@ -1204,8 +1204,8 @@ export const CortesControls = ({
                 </div>
               </div>
               {showPerson3Adjust && (<>
-              <div><Label className="text-xs">Posição X: {person3Transform.x}px</Label><Slider value={[person3Transform.x]} onValueChange={([x]) => onPerson3TransformChange?.({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
-              <div><Label className="text-xs">Posição Y: {person3Transform.y}px</Label><Slider value={[person3Transform.y]} onValueChange={([y]) => onPerson3TransformChange?.({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Horizontal: {person3Transform.x}px</Label><Slider value={[person3Transform.x]} onValueChange={([x]) => onPerson3TransformChange?.({ x })} min={-800} max={800} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Vertical: {person3Transform.y}px</Label><Slider value={[person3Transform.y]} onValueChange={([y]) => onPerson3TransformChange?.({ y })} min={-800} max={800} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Zoom: {person3Transform.scale.toFixed(2)}x</Label><Slider value={[person3Transform.scale]} onValueChange={([scale]) => onPerson3TransformChange?.({ scale })} min={0.3} max={3} step={0.01} className="mt-1" /></div>
               <div><Label className="text-xs">Rotação: {person3Transform.rotation}°</Label><Slider value={[person3Transform.rotation]} onValueChange={([rotation]) => onPerson3TransformChange?.({ rotation })} min={-180} max={180} step={1} className="mt-1" /></div>
               </>)}
@@ -1235,8 +1235,8 @@ export const CortesControls = ({
                 </div>
               </div>
               {showPipAdjust && (<>
-              <div><Label className="text-xs">Posição X: {pipTransform.x}px</Label><Slider value={[pipTransform.x]} onValueChange={([x]) => onPipTransformChange({ x })} min={-500} max={500} step={1} className="mt-1" /></div>
-              <div><Label className="text-xs">Posição Y: {pipTransform.y}px</Label><Slider value={[pipTransform.y]} onValueChange={([y]) => onPipTransformChange({ y })} min={-500} max={500} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Horizontal: {pipTransform.x}px</Label><Slider value={[pipTransform.x]} onValueChange={([x]) => onPipTransformChange({ x })} min={-500} max={500} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Vertical: {pipTransform.y}px</Label><Slider value={[pipTransform.y]} onValueChange={([y]) => onPipTransformChange({ y })} min={-500} max={500} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Zoom: {pipTransform.scale.toFixed(2)}x</Label><Slider value={[pipTransform.scale]} onValueChange={([scale]) => onPipTransformChange({ scale })} min={0.5} max={3} step={0.01} className="mt-1" /></div>
               </>)}
             </div>
@@ -1253,8 +1253,8 @@ export const CortesControls = ({
                   <RotateCcw className="w-3.5 h-3.5" />
                 </button>
               </div>
-              <div><Label className="text-xs">Posição X (esquerdo): {pipFrame.x.toFixed(1)}%</Label><Slider value={[pipFrame.x]} onValueChange={([x]) => onPipFrameChange({ x })} min={0} max={30} step={0.1} className="mt-1" /></div>
-              <div><Label className="text-xs">Posição Y: {pipFrame.y.toFixed(1)}%</Label><Slider value={[pipFrame.y]} onValueChange={([y]) => onPipFrameChange({ y })} min={-20} max={80} step={0.1} className="mt-1" /></div>
+              <div><Label className="text-xs">Horizontal (esquerdo): {pipFrame.x.toFixed(1)}%</Label><Slider value={[pipFrame.x]} onValueChange={([x]) => onPipFrameChange({ x })} min={0} max={30} step={0.1} className="mt-1" /></div>
+              <div><Label className="text-xs">Vertical: {pipFrame.y.toFixed(1)}%</Label><Slider value={[pipFrame.y]} onValueChange={([y]) => onPipFrameChange({ y })} min={-20} max={80} step={0.1} className="mt-1" /></div>
               <div><Label className="text-xs">Largura: {pipFrame.width.toFixed(1)}%</Label><Slider value={[pipFrame.width]} onValueChange={([width]) => onPipFrameChange({ width })} min={10} max={45} step={0.1} className="mt-1" /></div>
               <div><Label className="text-xs">Altura: {pipFrame.height.toFixed(1)}%</Label><Slider value={[pipFrame.height]} onValueChange={([height]) => onPipFrameChange({ height })} min={10} max={90} step={0.1} className="mt-1" /></div>
             </div>
@@ -1281,8 +1281,8 @@ export const CortesControls = ({
                 </div>
               </div>
               {showPip2Adjust && (<>
-              <div><Label className="text-xs">Posição X: {pip2Transform.x}px</Label><Slider value={[pip2Transform.x]} onValueChange={([x]) => onPip2TransformChange?.({ x })} min={-500} max={500} step={1} className="mt-1" /></div>
-              <div><Label className="text-xs">Posição Y: {pip2Transform.y}px</Label><Slider value={[pip2Transform.y]} onValueChange={([y]) => onPip2TransformChange?.({ y })} min={-500} max={500} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Horizontal: {pip2Transform.x}px</Label><Slider value={[pip2Transform.x]} onValueChange={([x]) => onPip2TransformChange?.({ x })} min={-500} max={500} step={1} className="mt-1" /></div>
+              <div><Label className="text-xs">Vertical: {pip2Transform.y}px</Label><Slider value={[pip2Transform.y]} onValueChange={([y]) => onPip2TransformChange?.({ y })} min={-500} max={500} step={1} className="mt-1" /></div>
               <div><Label className="text-xs">Zoom: {pip2Transform.scale.toFixed(2)}x</Label><Slider value={[pip2Transform.scale]} onValueChange={([scale]) => onPip2TransformChange?.({ scale })} min={0.5} max={3} step={0.01} className="mt-1" /></div>
               </>)}
             </div>
@@ -1515,11 +1515,11 @@ export const CortesControls = ({
               {showPerson1Adjust && (
                 <>
               <div>
-                <Label className="text-xs">Posição X: {personTransform.x}px</Label>
+                <Label className="text-xs">Horizontal: {personTransform.x}px</Label>
                 <Slider value={[personTransform.x]} onValueChange={([x]) => onPersonTransformChange({ x })} min={-800} max={800} step={1} className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs">Posição Y: {personTransform.y}px</Label>
+                <Label className="text-xs">Vertical: {personTransform.y}px</Label>
                 <Slider value={[personTransform.y]} onValueChange={([y]) => onPersonTransformChange({ y })} min={-800} max={800} step={1} className="mt-1" />
               </div>
               <div>
@@ -1600,11 +1600,11 @@ export const CortesControls = ({
               {showPerson2Adjust && (
                 <>
               <div>
-                <Label className="text-xs">Posição X: {person2Transform.x}px</Label>
+                <Label className="text-xs">Horizontal: {person2Transform.x}px</Label>
                 <Slider value={[person2Transform.x]} onValueChange={([x]) => onPerson2TransformChange({ x })} min={-800} max={800} step={1} className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs">Posição Y: {person2Transform.y}px</Label>
+                <Label className="text-xs">Vertical: {person2Transform.y}px</Label>
                 <Slider value={[person2Transform.y]} onValueChange={([y]) => onPerson2TransformChange({ y })} min={-800} max={800} step={1} className="mt-1" />
               </div>
               <div>
@@ -1660,11 +1660,11 @@ export const CortesControls = ({
               {showMeioLeftAdjust && (
                 <>
               <div>
-                <Label className="text-xs">Posição X: {personTransform.x}px</Label>
+                <Label className="text-xs">Horizontal: {personTransform.x}px</Label>
                 <Slider value={[personTransform.x]} onValueChange={([x]) => onPersonTransformChange({ x })} min={-640} max={640} step={1} className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs">Posição Y: {personTransform.y}px</Label>
+                <Label className="text-xs">Vertical: {personTransform.y}px</Label>
                 <Slider value={[personTransform.y]} onValueChange={([y]) => onPersonTransformChange({ y })} min={-360} max={360} step={1} className="mt-1" />
               </div>
               <div>
@@ -1711,11 +1711,11 @@ export const CortesControls = ({
               {showMeioRightAdjust && (
                 <>
               <div>
-                <Label className="text-xs">Posição X: {person2Transform.x}px</Label>
+                <Label className="text-xs">Horizontal: {person2Transform.x}px</Label>
                 <Slider value={[person2Transform.x]} onValueChange={([x]) => onPerson2TransformChange({ x })} min={-640} max={640} step={1} className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs">Posição Y: {person2Transform.y}px</Label>
+                <Label className="text-xs">Vertical: {person2Transform.y}px</Label>
                 <Slider value={[person2Transform.y]} onValueChange={([y]) => onPerson2TransformChange({ y })} min={-360} max={360} step={1} className="mt-1" />
               </div>
               <div>
@@ -1769,7 +1769,7 @@ export const CortesControls = ({
       {/* Text box Y position slider — all models */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label className="font-semibold">Posição Y do texto</Label>
+          <Label className="font-semibold">Vertical do texto</Label>
           <span className="text-xs text-muted-foreground">{textBoxHeight}%</span>
         </div>
         <Slider
