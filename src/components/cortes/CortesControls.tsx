@@ -1769,7 +1769,7 @@ export const CortesControls = ({
       {/* Text box Y position slider — all models */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label className="font-semibold">Posição Y do texto</Label>
+          <Label className="font-semibold">Vertical do texto</Label>
           <span className="text-xs text-muted-foreground">{textBoxHeight}%</span>
         </div>
         <Slider
