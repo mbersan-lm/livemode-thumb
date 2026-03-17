@@ -29,6 +29,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
       template === 'europaleague' ? teamsEuropaLeague :
       template === 'libertadores' ? teamsLibertadores :
       template === 'kingsleague' ? teamsKingsLeague :
+      template === 'sulamericana' ? teamsSulamericana :
       teamsLigue1;
     const homeTeam = currentTeams.find(t => t.id === matchData.homeTeamId) as Team | undefined;
     const awayTeam = currentTeams.find(t => t.id === matchData.awayTeamId) as Team | undefined;
