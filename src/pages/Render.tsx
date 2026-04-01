@@ -91,13 +91,16 @@ const Render = () => {
 
   const renderCanvas = () => {
     switch (type) {
-      case 'melhores-momentos':
+     case 'melhores-momentos':
         return (
           <ThumbnailCanvas
             playerPhoto={state.playerPhoto}
             photoTransform={state.photoTransform}
             matchData={state.matchData}
             template={state.template}
+            customKvUrl={state.customKvUrl}
+            customTeams={state.customTeams}
+            customConfig={state.customConfig}
           />
         );
 
