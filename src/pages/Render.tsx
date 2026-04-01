@@ -174,7 +174,16 @@ const Render = () => {
         );
 
       default:
-        return <div style={{ color: '#f00' }}>Tipo desconhecido: {type}</div>;
+        // Custom admin templates are variations of melhores-momentos
+        // They use the same ThumbnailCanvas component with custom data
+        return (
+          <ThumbnailCanvas
+            playerPhoto={state.playerPhoto}
+            photoTransform={state.photoTransform}
+            matchData={state.matchData}
+            template={state.template}
+          />
+        );
     }
   };
 
