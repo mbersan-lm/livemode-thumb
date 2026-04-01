@@ -173,15 +173,17 @@ const Render = () => {
           />
         );
 
-      default:
+     default:
         // Custom admin templates are variations of melhores-momentos
-        // They use the same ThumbnailCanvas component with custom data
         return (
           <ThumbnailCanvas
             playerPhoto={state.playerPhoto}
             photoTransform={state.photoTransform}
             matchData={state.matchData}
             template={state.template}
+            customKvUrl={state.customKvUrl}
+            customTeams={state.customTeams}
+            customConfig={state.customConfig}
           />
         );
     }
