@@ -16,21 +16,70 @@ interface ThumbnailCanvasProps {
   photoTransform: PhotoTransform;
   matchData: MatchData;
   template: TemplateType;
+  // Optional props for custom admin templates
+  customKvUrl?: string;
+  customTeams?: Array<{ id: string; name: string; crest_url: string; maxSize?: number }>;
+  customConfig?: {
+    fontFamily?: string;
+    scoreFontSize?: string;
+    xFontSize?: string;
+    xColor?: string;
+    xFontFamily?: string;
+  };
 }
 
+// Default config fallback for custom templates
+const DEFAULT_CUSTOM_CONFIG = {
+  fontFamily: "'Gilroy ExtraBold', sans-serif",
+  scoreFontSize: '140px',
+  xFontSize: '110px',
+  xColor: '#C9FF2E',
+  xFontFamily: "'Gilroy ExtraBold', sans-serif",
+  kvPath: '',
+};
+
 export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
-  ({ playerPhoto, photoTransform, matchData, template }, ref) => {
-    const config = templates[template];
-    const currentTeams = 
-      template === 'brasileirao' ? teamsBrasileirao : 
-      template === 'bundesliga' ? teamsBundesliga :
-      template === 'seriea' ? teamsSerieA :
-      template === 'paulistao' ? teamsPaulistao :
-      template === 'europaleague' ? teamsEuropaLeague :
-      template === 'libertadores' ? teamsLibertadores :
-      template === 'kingsleague' ? teamsKingsLeague :
-      template === 'sulamericana' ? teamsSulamericana :
-      teamsLigue1;
+  ({ playerPhoto, photoTransform, matchData, template, customKvUrl, customTeams, customConfig }, ref) => {
+    
+    const isCustomTemplate = template?.startsWith('custom:');
+    
+    // Get template config - use fixed templates or fallback for custom
+    const config = isCustomTemplate 
+      ? { ...DEFAULT_CUSTOM_CONFIG, kvPath: customKvUrl || '', ...(customConfig || {}) }
+      : templates[template];
+
+    // If config is still undefined (unknown template), use a safe fallback
+    if (!config) {
+      return (
+        <div ref={ref} id="CANVAS_1280x720" className="relative bg-black" style={{ width: '1280px', height: '720px' }}>
+          <div style={{ color: '#f00', padding: 20 }}>Template não encontrado: {template}</div>
+        </div>
+      );
+    }
+
+    // Resolve teams - for custom templates, use customTeams; for fixed, use the right team list
+    let currentTeams: Team[];
+    if (isCustomTemplate && customTeams) {
+      currentTeams = customTeams.map(t => ({
+        id: t.id,
+        name: t.name,
+        slug: t.id,
+        crest_url: t.crest_url,
+        maxSize: t.maxSize ?? 216,
+      })) as Team[];
+    } else {
+      currentTeams = 
+        template === 'brasileirao' ? teamsBrasileirao : 
+        template === 'bundesliga' ? teamsBundesliga :
+        template === 'seriea' ? teamsSerieA :
+        template === 'paulistao' ? teamsPaulistao :
+        template === 'europaleague' ? teamsEuropaLeague :
+        template === 'libertadores' ? teamsLibertadores :
+        template === 'kingsleague' ? teamsKingsLeague :
+        template === 'sulamericana' ? teamsSulamericana :
+        teamsLigue1;
+    }
+
     const homeTeam = currentTeams.find(t => t.id === matchData.homeTeamId) as Team | undefined;
     const awayTeam = currentTeams.find(t => t.id === matchData.awayTeamId) as Team | undefined;
 
@@ -48,6 +97,9 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
         maskImage: 'linear-gradient(to right, transparent 0%, black 150px)',
       })
     };
+
+    // Determine KV path
+    const kvPath = isCustomTemplate ? (customKvUrl || '') : config.kvPath;
 
     return (
       <div 
@@ -83,12 +135,14 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
         )}
 
         {/* KV Background - On top of photo */}
-        <img 
-          src={config.kvPath} 
-          alt="Background KV"
-          className="absolute left-0 top-0 pointer-events-none"
-          style={{ height: '720px', objectFit: 'contain', objectPosition: 'left', zIndex: 10 }}
-        />
+        {kvPath && (
+          <img 
+            src={kvPath} 
+            alt="Background KV"
+            className="absolute left-0 top-0 pointer-events-none"
+            style={{ height: '720px', objectFit: 'contain', objectPosition: 'left', zIndex: 10 }}
+          />
+        )}
 
         {/* Match Info Group - On top of everything */}
         {homeTeam && awayTeam && (
