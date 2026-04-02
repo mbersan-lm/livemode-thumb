@@ -31,8 +31,8 @@ interface ThumbnailCanvasProps {
 // Default config fallback for custom templates
 const DEFAULT_CUSTOM_CONFIG = {
   fontFamily: "'Gilroy ExtraBold', sans-serif",
-  scoreFontSize: '140px',
-  xFontSize: '110px',
+  scoreFontSize: '110px',
+  xFontSize: '70px',
   xColor: '#C9FF2E',
   xFontFamily: "'Gilroy ExtraBold', sans-serif",
   kvPath: '',
@@ -65,7 +65,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
         name: t.name,
         slug: t.id,
         crest_url: t.crest_url,
-        maxSize: t.maxSize ?? 216,
+        maxSize: t.maxSize ?? 130,
       })) as Team[];
     } else {
       currentTeams = 
@@ -148,7 +148,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
         {homeTeam && awayTeam && (
           <div 
             id="MATCH_ROW"
-            className={`absolute left-[22px] ${isCustomTemplate ? 'top-[335px]' : template === 'ligue1' || template === 'bundesliga' || template === 'seriea' || template === 'paulistao' || template === 'europaleague' || template === 'libertadores' || template === 'kingsleague' || template === 'sulamericana' ? 'top-[335px]' : 'top-[360px]'} flex items-center ${isCustomTemplate ? 'gap-[50px]' : 'gap-[34px]'}`}
+            className={`absolute left-[22px] ${isCustomTemplate ? 'top-[335px]' : template === 'ligue1' || template === 'bundesliga' || template === 'seriea' || template === 'paulistao' || template === 'europaleague' || template === 'libertadores' || template === 'kingsleague' || template === 'sulamericana' ? 'top-[335px]' : 'top-[360px]'} flex items-center ${isCustomTemplate ? 'gap-[40px]' : 'gap-[34px]'}`}
             style={{ 
               zIndex: 20,
               transform: 'none'
