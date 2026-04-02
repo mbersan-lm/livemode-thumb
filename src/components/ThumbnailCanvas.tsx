@@ -148,7 +148,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
         {homeTeam && awayTeam && (
           <div 
             id="MATCH_ROW"
-            className={`absolute left-[22px] ${isCustomTemplate ? 'top-[335px]' : template === 'ligue1' || template === 'bundesliga' || template === 'seriea' || template === 'paulistao' || template === 'europaleague' || template === 'libertadores' || template === 'kingsleague' || template === 'sulamericana' ? 'top-[335px]' : 'top-[360px]'} flex items-center ${isCustomTemplate ? 'gap-[40px]' : 'gap-[34px]'}`}
+            className={`absolute ${isCustomTemplate ? 'left-[55px] top-[370px]' : 'left-[22px]'} ${!isCustomTemplate && (template === 'ligue1' || template === 'bundesliga' || template === 'seriea' || template === 'paulistao' || template === 'europaleague' || template === 'libertadores' || template === 'kingsleague' || template === 'sulamericana') ? 'top-[335px]' : !isCustomTemplate ? 'top-[360px]' : ''} flex items-center ${isCustomTemplate ? 'gap-[40px]' : 'gap-[34px]'}`}
             style={{ 
               zIndex: 20,
               transform: 'none'
