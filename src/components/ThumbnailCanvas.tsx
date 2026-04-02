@@ -148,7 +148,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
         {homeTeam && awayTeam && (
           <div 
             id="MATCH_ROW"
-            className={`absolute left-[22px] ${template === 'ligue1' || template === 'bundesliga' || template === 'seriea' || template === 'paulistao' || template === 'europaleague' || template === 'libertadores' || template === 'kingsleague' || template === 'sulamericana' ? 'top-[335px]' : 'top-[360px]'} flex items-center gap-[34px]`}
+            className={`absolute left-[22px] ${isCustomTemplate ? 'top-[335px]' : template === 'ligue1' || template === 'bundesliga' || template === 'seriea' || template === 'paulistao' || template === 'europaleague' || template === 'libertadores' || template === 'kingsleague' || template === 'sulamericana' ? 'top-[335px]' : 'top-[360px]'} flex items-center ${isCustomTemplate ? 'gap-[50px]' : 'gap-[34px]'}`}
             style={{ 
               zIndex: 20,
               transform: 'none'
@@ -159,7 +159,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
               id="HOME_CREST"
               src={homeTeam.crest_url}
               alt={homeTeam.name}
-              className="h-auto w-auto object-contain -mr-[42px]"
+              className={`h-auto w-auto object-contain ${isCustomTemplate ? '' : '-mr-[42px]'}`}
               style={{ maxWidth: `${homeTeam.maxSize ?? 216}px`, maxHeight: `${homeTeam.maxSize ?? 216}px` }}
             />
 
@@ -213,7 +213,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
                     fontSize: `${Math.round(parseInt(config.scoreFontSize) * 0.245)}px`,
                     lineHeight: '1',
                     marginTop: '4px',
-                    transform: template === 'seriea' ? 'translateX(2%)' : template === 'brasileirao' ? 'translateX(-3%)' : template === 'bundesliga' ? 'translateX(-3%)' : template === 'paulistao' ? 'translateX(-3%)' : template === 'europaleague' ? 'translateX(-3%)' : template === 'libertadores' ? 'translateX(-3%)' : template === 'kingsleague' ? 'translateX(-3%)' : template === 'sulamericana' ? 'translateX(-3%)' : 'translateX(-15%)',
+                    transform: isCustomTemplate ? 'translateX(-3%)' : template === 'seriea' ? 'translateX(2%)' : template === 'brasileirao' ? 'translateX(-3%)' : template === 'bundesliga' ? 'translateX(-3%)' : template === 'paulistao' ? 'translateX(-3%)' : template === 'europaleague' ? 'translateX(-3%)' : template === 'libertadores' ? 'translateX(-3%)' : template === 'kingsleague' ? 'translateX(-3%)' : template === 'sulamericana' ? 'translateX(-3%)' : 'translateX(-15%)',
                   }}
                 >
                   <span>({matchData.homeScoreSmall})</span>
@@ -228,7 +228,7 @@ export const ThumbnailCanvas = forwardRef<HTMLDivElement, ThumbnailCanvasProps>(
               id="AWAY_CREST"
               src={awayTeam.crest_url}
               alt={awayTeam.name}
-              className="h-auto w-auto object-contain -ml-[42px]"
+              className={`h-auto w-auto object-contain ${isCustomTemplate ? '' : '-ml-[42px]'}`}
               style={{ maxWidth: `${awayTeam.maxSize ?? 216}px`, maxHeight: `${awayTeam.maxSize ?? 216}px` }}
             />
           </div>
